@@ -1,9 +1,9 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
-import type { PaymentStatus } from '@/types/database.types';
+import type { TransactionType, PaymentMethod } from '@/types/database.types';
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
-  variant?: 'emerald' | 'amber' | 'rose' | 'slate' | 'sky';
+  variant?: 'emerald' | 'amber' | 'rose' | 'slate' | 'sky' | 'purple';
   size?: 'sm' | 'md';
 }
 
@@ -20,10 +20,11 @@ export const Badge: React.FC<BadgeProps> = ({
     rose: 'bg-rose-50 text-rose-700 border-rose-200/80',
     slate: 'bg-slate-100 text-slate-700 border-slate-200',
     sky: 'bg-sky-50 text-sky-700 border-sky-200/80',
+    purple: 'bg-purple-50 text-purple-700 border-purple-200/80',
   };
 
   const sizes = {
-    sm: 'text-xs px-2 py-0.5',
+    sm: 'text-[11px] px-2 py-0.5',
     md: 'text-xs font-medium px-2.5 py-1',
   };
 
@@ -43,22 +44,42 @@ export const Badge: React.FC<BadgeProps> = ({
   );
 };
 
-export const StatusBadge: React.FC<{ status: PaymentStatus; className?: string }> = ({
-  status,
+export const TransactionTypeBadge: React.FC<{ type: TransactionType; className?: string }> = ({
+  type,
   className,
 }) => {
-  switch (status) {
-    case 'verified':
-      return <Badge variant="emerald" className={className}>Verified / Paid</Badge>;
-    case 'submitted':
-      return <Badge variant="sky" className={className}>Proof Submitted</Badge>;
-    case 'pending':
-      return <Badge variant="amber" className={className}>Pending Payment</Badge>;
-    case 'rejected':
-      return <Badge variant="rose" className={className}>Rejected / Recheck</Badge>;
-    case 'overdue':
-      return <Badge variant="rose" className={className}>Overdue</Badge>;
-    default:
-      return <Badge variant="slate" className={className}>{status}</Badge>;
+  if (type === 'income') {
+    return <Badge variant="emerald" className={className}>Income</Badge>;
   }
+  return <Badge variant="rose" className={className}>Expense</Badge>;
+};
+
+export const PaymentMethodBadge: React.FC<{ method: PaymentMethod; className?: string }> = ({
+  method,
+  className,
+}) => {
+  const labels: Record<PaymentMethod, { label: string; variant: BadgeProps['variant'] }> = {
+    credit_card: { label: 'Credit Card', variant: 'purple' },
+    debit_card: { label: 'Debit Card', variant: 'sky' },
+    cash: { label: 'Cash', variant: 'slate' },
+    bank_transfer: { label: 'Bank Transfer', variant: 'slate' },
+    upi: { label: 'UPI', variant: 'emerald' },
+    other: { label: 'Other', variant: 'slate' },
+  };
+
+  const item = labels[method] || labels.other;
+  return <Badge variant={item.variant} size="sm" className={className}>{item.label}</Badge>;
+};
+
+export const BudgetStatusBadge: React.FC<{ percentage: number; className?: string }> = ({
+  percentage,
+  className,
+}) => {
+  if (percentage >= 100) {
+    return <Badge variant="rose" size="sm" className={className}>Exceeded ({Math.round(percentage)}%)</Badge>;
+  }
+  if (percentage >= 80) {
+    return <Badge variant="amber" size="sm" className={className}>Near Limit ({Math.round(percentage)}%)</Badge>;
+  }
+  return <Badge variant="emerald" size="sm" className={className}>On Track ({Math.round(percentage)}%)</Badge>;
 };

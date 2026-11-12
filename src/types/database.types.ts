@@ -6,10 +6,15 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[];
 
-export type ClubRole = 'owner' | 'treasurer' | 'collector' | 'member';
-export type CampaignStatus = 'active' | 'closed' | 'archived';
-export type PaymentStatus = 'pending' | 'submitted' | 'verified' | 'rejected' | 'overdue';
-export type PaymentMode = 'upi' | 'cash' | 'bank_transfer' | 'other';
+export type TransactionType = 'expense' | 'income';
+export type CurrencyCode = 'USD' | 'INR' | 'EUR' | 'GBP' | 'CAD' | 'AUD';
+export type PaymentMethod =
+  | 'credit_card'
+  | 'debit_card'
+  | 'cash'
+  | 'bank_transfer'
+  | 'upi'
+  | 'other';
 
 export interface Database {
   public: {
@@ -17,234 +22,153 @@ export interface Database {
       profiles: {
         Row: {
           id: string;
-          full_name: string;
+          email: string;
+          full_name: string | null;
           avatar_url: string | null;
-          phone: string | null;
-          student_id: string | null;
-          college_name: string | null;
+          preferred_currency: CurrencyCode;
+          monthly_budget_target: number;
+          is_onboarded: boolean;
           created_at: string;
+          updated_at: string;
         };
         Insert: {
           id: string;
-          full_name: string;
+          email: string;
+          full_name?: string | null;
           avatar_url?: string | null;
-          phone?: string | null;
-          student_id?: string | null;
-          college_name?: string | null;
+          preferred_currency?: CurrencyCode;
+          monthly_budget_target?: number;
+          is_onboarded?: boolean;
           created_at?: string;
+          updated_at?: string;
         };
         Update: {
           id?: string;
-          full_name?: string;
+          email?: string;
+          full_name?: string | null;
           avatar_url?: string | null;
-          phone?: string | null;
-          student_id?: string | null;
-          college_name?: string | null;
+          preferred_currency?: CurrencyCode;
+          monthly_budget_target?: number;
+          is_onboarded?: boolean;
           created_at?: string;
+          updated_at?: string;
         };
+        Relationships: [];
       };
-      clubs: {
+      categories: {
         Row: {
           id: string;
+          user_id: string | null;
           name: string;
-          slug: string;
-          description: string | null;
-          logo_url: string | null;
-          upi_id: string;
-          upi_payee_name: string;
-          college_name: string | null;
-          created_by: string;
+          type: TransactionType;
+          icon: string;
+          color: string;
+          is_system: boolean;
           created_at: string;
         };
         Insert: {
           id?: string;
+          user_id?: string | null;
           name: string;
-          slug: string;
-          description?: string | null;
-          logo_url?: string | null;
-          upi_id: string;
-          upi_payee_name: string;
-          college_name?: string | null;
-          created_by: string;
+          type: TransactionType;
+          icon?: string;
+          color?: string;
+          is_system?: boolean;
           created_at?: string;
         };
         Update: {
           id?: string;
+          user_id?: string | null;
           name?: string;
-          slug?: string;
-          description?: string | null;
-          logo_url?: string | null;
-          upi_id?: string;
-          upi_payee_name?: string;
-          college_name?: string | null;
-          created_by?: string;
+          type?: TransactionType;
+          icon?: string;
+          color?: string;
+          is_system?: boolean;
           created_at?: string;
         };
+        Relationships: [];
       };
-      club_members: {
+      transactions: {
         Row: {
           id: string;
-          club_id: string;
           user_id: string;
-          role: ClubRole;
-          joined_at: string;
+          category_id: string | null;
+          type: TransactionType;
+          amount: number;
+          transaction_date: string;
+          payment_method: PaymentMethod;
+          merchant: string | null;
+          notes: string | null;
+          receipt_path: string | null;
+          created_at: string;
+          updated_at: string;
         };
         Insert: {
           id?: string;
-          club_id: string;
           user_id: string;
-          role?: ClubRole;
-          joined_at?: string;
+          category_id?: string | null;
+          type: TransactionType;
+          amount: number;
+          transaction_date?: string;
+          payment_method?: PaymentMethod;
+          merchant?: string | null;
+          notes?: string | null;
+          receipt_path?: string | null;
+          created_at?: string;
+          updated_at?: string;
         };
         Update: {
           id?: string;
-          club_id?: string;
           user_id?: string;
-          role?: ClubRole;
-          joined_at?: string;
-        };
-      };
-      campaigns: {
-        Row: {
-          id: string;
-          club_id: string;
-          title: string;
-          description: string | null;
-          target_amount_per_person: number;
-          due_date: string;
-          allow_custom_amount: boolean;
-          status: CampaignStatus;
-          created_by: string;
-          created_at: string;
-        };
-        Insert: {
-          id?: string;
-          club_id: string;
-          title: string;
-          description?: string | null;
-          target_amount_per_person: number;
-          due_date: string;
-          allow_custom_amount?: boolean;
-          status?: CampaignStatus;
-          created_by: string;
-          created_at?: string;
-        };
-        Update: {
-          id?: string;
-          club_id?: string;
-          title?: string;
-          description?: string | null;
-          target_amount_per_person?: number;
-          due_date?: string;
-          allow_custom_amount?: boolean;
-          status?: CampaignStatus;
-          created_by?: string;
-          created_at?: string;
-        };
-      };
-      dues_records: {
-        Row: {
-          id: string;
-          campaign_id: string;
-          club_id: string;
-          member_id: string | null;
-          payer_name: string;
-          payer_student_id: string | null;
-          payer_email: string | null;
-          payer_phone: string | null;
-          amount_due: number;
-          amount_paid: number;
-          status: PaymentStatus;
-          payment_mode: PaymentMode;
-          utr_reference: string | null;
-          proof_image_url: string | null;
-          submitted_at: string | null;
-          verified_by: string | null;
-          verified_at: string | null;
-          rejection_notes: string | null;
-          created_at: string;
-        };
-        Insert: {
-          id?: string;
-          campaign_id: string;
-          club_id: string;
-          member_id?: string | null;
-          payer_name: string;
-          payer_student_id?: string | null;
-          payer_email?: string | null;
-          payer_phone?: string | null;
-          amount_due: number;
-          amount_paid?: number;
-          status?: PaymentStatus;
-          payment_mode?: PaymentMode;
-          utr_reference?: string | null;
-          proof_image_url?: string | null;
-          submitted_at?: string | null;
-          verified_by?: string | null;
-          verified_at?: string | null;
-          rejection_notes?: string | null;
-          created_at?: string;
-        };
-        Update: {
-          id?: string;
-          campaign_id?: string;
-          club_id?: string;
-          member_id?: string | null;
-          payer_name?: string;
-          payer_student_id?: string | null;
-          payer_email?: string | null;
-          payer_phone?: string | null;
-          amount_due?: number;
-          amount_paid?: number;
-          status?: PaymentStatus;
-          payment_mode?: PaymentMode;
-          utr_reference?: string | null;
-          proof_image_url?: string | null;
-          submitted_at?: string | null;
-          verified_by?: string | null;
-          verified_at?: string | null;
-          rejection_notes?: string | null;
-          created_at?: string;
-        };
-      };
-      expenses: {
-        Row: {
-          id: string;
-          club_id: string;
-          campaign_id: string | null;
-          title: string;
-          amount: number;
-          category: string;
-          receipt_url: string | null;
-          expense_date: string;
-          created_by: string;
-          created_at: string;
-        };
-        Insert: {
-          id?: string;
-          club_id: string;
-          campaign_id?: string | null;
-          title: string;
-          amount: number;
-          category: string;
-          receipt_url?: string | null;
-          expense_date?: string;
-          created_by: string;
-          created_at?: string;
-        };
-        Update: {
-          id?: string;
-          club_id?: string;
-          campaign_id?: string | null;
-          title?: string;
+          category_id?: string | null;
+          type?: TransactionType;
           amount?: number;
-          category?: string;
-          receipt_url?: string | null;
-          expense_date?: string;
-          created_by?: string;
+          transaction_date?: string;
+          payment_method?: PaymentMethod;
+          merchant?: string | null;
+          notes?: string | null;
+          receipt_path?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      budgets: {
+        Row: {
+          id: string;
+          user_id: string;
+          category_id: string;
+          month: string;
+          budget_limit: number;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          category_id: string;
+          month: string;
+          budget_limit: number;
           created_at?: string;
         };
+        Update: {
+          id?: string;
+          user_id?: string;
+          category_id?: string;
+          month?: string;
+          budget_limit?: number;
+          created_at?: string;
+        };
+        Relationships: [];
       };
     };
+    Views: Record<string, never>;
+    Functions: Record<string, never>;
+    Enums: Record<string, never>;
+    CompositeTypes: Record<string, never>;
   };
 }
+
+export type Profile = Database['public']['Tables']['profiles']['Row'];
+export type Category = Database['public']['Tables']['categories']['Row'];
+export type Transaction = Database['public']['Tables']['transactions']['Row'];
+export type Budget = Database['public']['Tables']['budgets']['Row'];

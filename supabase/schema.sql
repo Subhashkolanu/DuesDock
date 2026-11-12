@@ -1,237 +1,152 @@
 -- ================================================================
--- DUESDOCK DATABASE SCHEMA & ROW LEVEL SECURITY (RLS) POLICIES
--- Target: Supabase (PostgreSQL 15+)
+-- DUESDOCK PERSONAL FINANCE & EXPENSE TRACKER
+-- Complete Schema and RLS Policies for Supabase
 -- ================================================================
 
 -- Enable UUID extension
 create extension if not exists "uuid-ossp";
 
--- 1. PROFILES TABLE (Extends Supabase auth.users)
+-- 1. USER PROFILES & ONBOARDING PREFERENCES
 create table if not exists public.profiles (
   id uuid references auth.users on delete cascade primary key,
-  full_name text not null,
+  email text not null,
+  full_name text,
   avatar_url text,
-  phone text,
-  student_id text,
-  college_name text,
-  created_at timestamptz default now() not null
+  preferred_currency text default 'USD' not null check (preferred_currency in ('USD', 'INR', 'EUR', 'GBP', 'CAD', 'AUD')),
+  monthly_budget_target numeric(12, 2) default 0.00 check (monthly_budget_target >= 0),
+  is_onboarded boolean default false not null,
+  created_at timestamptz default now() not null,
+  updated_at timestamptz default now() not null
 );
 
--- 2. CLUBS / ORGANIZATIONS
-create table if not exists public.clubs (
+-- 2. TRANSACTION CATEGORIES (System defaults + user custom categories)
+create table if not exists public.categories (
   id uuid default gen_random_uuid() primary key,
+  user_id uuid references public.profiles(id) on delete cascade,
   name text not null,
-  slug text unique not null,
-  description text,
-  logo_url text,
-  upi_id text not null,
-  upi_payee_name text not null,
-  college_name text,
-  created_by uuid references public.profiles(id) on delete set null,
+  type text check (type in ('expense', 'income')) not null,
+  icon text default 'Tag' not null,
+  color text default '#059669' not null,
+  is_system boolean default false not null,
   created_at timestamptz default now() not null
 );
 
--- 3. CLUB ROLES ENUM & MEMBERSHIP
-do $$ begin
-  create type public.club_role as enum ('owner', 'treasurer', 'collector', 'member');
-exception
-  when duplicate_object then null;
-end $$;
-
-create table if not exists public.club_members (
+-- 3. PERSONAL TRANSACTIONS (Income & Expense CRUD)
+create table if not exists public.transactions (
   id uuid default gen_random_uuid() primary key,
-  club_id uuid references public.clubs(id) on delete cascade not null,
   user_id uuid references public.profiles(id) on delete cascade not null,
-  role public.club_role default 'member' not null,
-  joined_at timestamptz default now() not null,
-  unique (club_id, user_id)
+  category_id uuid references public.categories(id) on delete set null,
+  type text check (type in ('expense', 'income')) not null,
+  amount numeric(12, 2) not null check (amount > 0),
+  transaction_date date default current_date not null,
+  payment_method text check (payment_method in ('credit_card', 'debit_card', 'cash', 'bank_transfer', 'upi', 'other')) default 'debit_card' not null,
+  merchant text,
+  notes text,
+  receipt_path text,
+  created_at timestamptz default now() not null,
+  updated_at timestamptz default now() not null
 );
 
--- 4. DUES CAMPAIGNS
-do $$ begin
-  create type public.campaign_status as enum ('active', 'closed', 'archived');
-exception
-  when duplicate_object then null;
-end $$;
-
-create table if not exists public.campaigns (
+-- 4. MONTHLY CATEGORY BUDGETS
+create table if not exists public.budgets (
   id uuid default gen_random_uuid() primary key,
-  club_id uuid references public.clubs(id) on delete cascade not null,
-  title text not null,
-  description text,
-  target_amount_per_person numeric(10, 2) not null check (target_amount_per_person >= 0),
-  due_date timestamptz not null,
-  allow_custom_amount boolean default false not null,
-  status public.campaign_status default 'active' not null,
-  created_by uuid references public.profiles(id) on delete set null,
-  created_at timestamptz default now() not null
+  user_id uuid references public.profiles(id) on delete cascade not null,
+  category_id uuid references public.categories(id) on delete cascade not null,
+  month text not null, -- 'YYYY-MM'
+  budget_limit numeric(12, 2) not null check (budget_limit >= 0),
+  created_at timestamptz default now() not null,
+  unique (user_id, category_id, month)
 );
 
--- 5. DUES RECORDS & PAYMENTS
-do $$ begin
-  create type public.payment_status as enum ('pending', 'submitted', 'verified', 'rejected', 'overdue');
-  create type public.payment_mode as enum ('upi', 'cash', 'bank_transfer', 'other');
-exception
-  when duplicate_object then null;
-end $$;
-
-create table if not exists public.dues_records (
-  id uuid default gen_random_uuid() primary key,
-  campaign_id uuid references public.campaigns(id) on delete cascade not null,
-  club_id uuid references public.clubs(id) on delete cascade not null,
-  member_id uuid references public.profiles(id) on delete set null,
-  payer_name text not null,
-  payer_student_id text,
-  payer_email text,
-  payer_phone text,
-  amount_due numeric(10, 2) not null check (amount_due >= 0),
-  amount_paid numeric(10, 2) default 0.00 not null check (amount_paid >= 0),
-  status public.payment_status default 'pending' not null,
-  payment_mode public.payment_mode default 'upi' not null,
-  utr_reference text,
-  proof_image_url text,
-  submitted_at timestamptz,
-  verified_by uuid references public.profiles(id) on delete set null,
-  verified_at timestamptz,
-  rejection_notes text,
-  created_at timestamptz default now() not null
-);
-
--- 6. CLUB EXPENSES (Treasury Cash-Flow Ledger)
-create table if not exists public.expenses (
-  id uuid default gen_random_uuid() primary key,
-  club_id uuid references public.clubs(id) on delete cascade not null,
-  campaign_id uuid references public.campaigns(id) on delete set null,
-  title text not null,
-  amount numeric(10, 2) not null check (amount > 0),
-  category text not null,
-  receipt_url text,
-  expense_date timestamptz default now() not null,
-  created_by uuid references public.profiles(id) on delete set null,
-  created_at timestamptz default now() not null
-);
-
--- ================================================================
 -- ROW LEVEL SECURITY (RLS) POLICIES
--- ================================================================
-
 alter table public.profiles enable row level security;
-alter table public.clubs enable row level security;
-alter table public.club_members enable row level security;
-alter table public.campaigns enable row level security;
-alter table public.dues_records enable row level security;
-alter table public.expenses enable row level security;
+alter table public.categories enable row level security;
+alter table public.transactions enable row level security;
+alter table public.budgets enable row level security;
 
--- Profiles: Users can view all profiles, but only edit their own
-create policy "Public profiles are viewable by authenticated users"
-  on public.profiles for select
-  to authenticated
-  using (true);
+-- PROFILES
+drop policy if exists "Users can view own profile" on public.profiles;
+create policy "Users can view own profile" on public.profiles for select to authenticated using (auth.uid() = id);
 
-create policy "Users can update own profile"
-  on public.profiles for update
-  to authenticated
-  using (auth.uid() = id);
+drop policy if exists "Users can update own profile" on public.profiles;
+create policy "Users can update own profile" on public.profiles for update to authenticated using (auth.uid() = id);
 
--- Clubs: Viewable if user is a member or public slug lookup
-create policy "Clubs are viewable by members or by public slug"
-  on public.clubs for select
-  using (true);
+drop policy if exists "Users can insert own profile" on public.profiles;
+create policy "Users can insert own profile" on public.profiles for insert to authenticated with check (auth.uid() = id);
 
-create policy "Club owners/treasurers can edit club details"
-  on public.clubs for update
-  to authenticated
-  using (
-    exists (
-      select 1 from public.club_members
-      where club_id = clubs.id
-        and user_id = auth.uid()
-        and role in ('owner', 'treasurer')
-    )
-  );
+-- CATEGORIES
+drop policy if exists "Categories viewable by system or creator" on public.categories;
+create policy "Categories viewable by system or creator" on public.categories for select to authenticated using (is_system = true or auth.uid() = user_id);
 
--- Campaigns: Viewable by anyone with link or club members
-create policy "Campaigns viewable by public and members"
-  on public.campaigns for select
-  using (true);
+drop policy if exists "Users can insert custom categories" on public.categories;
+create policy "Users can insert custom categories" on public.categories for insert to authenticated with check (auth.uid() = user_id and is_system = false);
 
-create policy "Club treasurers and owners can manage campaigns"
-  on public.campaigns for all
-  to authenticated
-  using (
-    exists (
-      select 1 from public.club_members
-      where club_id = campaigns.club_id
-        and user_id = auth.uid()
-        and role in ('owner', 'treasurer')
-    )
-  );
+drop policy if exists "Users can update own custom categories" on public.categories;
+create policy "Users can update own custom categories" on public.categories for update to authenticated using (auth.uid() = user_id and is_system = false);
 
--- Dues Records:
--- Treasurers see all dues in their club
--- Members see only their own dues records
-create policy "Members can view their own dues records"
-  on public.dues_records for select
-  using (
-    member_id = auth.uid()
-    or exists (
-      select 1 from public.club_members
-      where club_id = dues_records.club_id
-        and user_id = auth.uid()
-        and role in ('owner', 'treasurer', 'collector')
-    )
-  );
+drop policy if exists "Users can delete own custom categories" on public.categories;
+create policy "Users can delete own custom categories" on public.categories for delete to authenticated using (auth.uid() = user_id and is_system = false);
 
-create policy "Anyone can submit a dues record for an active campaign"
-  on public.dues_records for insert
-  with check (true);
+-- TRANSACTIONS
+drop policy if exists "Users can view own transactions" on public.transactions;
+create policy "Users can view own transactions" on public.transactions for select to authenticated using (auth.uid() = user_id);
 
-create policy "Treasurers can verify or update dues records"
-  on public.dues_records for update
-  to authenticated
-  using (
-    exists (
-      select 1 from public.club_members
-      where club_id = dues_records.club_id
-        and user_id = auth.uid()
-        and role in ('owner', 'treasurer', 'collector')
-    )
-  );
+drop policy if exists "Users can insert own transactions" on public.transactions;
+create policy "Users can insert own transactions" on public.transactions for insert to authenticated with check (auth.uid() = user_id);
 
--- Expenses: Viewable by members, editable only by treasurers/owners
-create policy "Club members can view expenses"
-  on public.expenses for select
-  to authenticated
-  using (
-    exists (
-      select 1 from public.club_members
-      where club_id = expenses.club_id
-        and user_id = auth.uid()
-    )
-  );
+drop policy if exists "Users can update own transactions" on public.transactions;
+create policy "Users can update own transactions" on public.transactions for update to authenticated using (auth.uid() = user_id);
 
-create policy "Treasurers and owners can manage expenses"
-  on public.expenses for all
-  to authenticated
-  using (
-    exists (
-      select 1 from public.club_members
-      where club_id = expenses.club_id
-        and user_id = auth.uid()
-        and role in ('owner', 'treasurer')
-    )
-  );
+drop policy if exists "Users can delete own transactions" on public.transactions;
+create policy "Users can delete own transactions" on public.transactions for delete to authenticated using (auth.uid() = user_id);
 
--- Trigger: Automatically create public.profiles entry on Supabase auth.users signup
-create or replace function public.handle_new_user()
+-- BUDGETS
+drop policy if exists "Users can view own budgets" on public.budgets;
+create policy "Users can view own budgets" on public.budgets for select to authenticated using (auth.uid() = user_id);
+
+drop policy if exists "Users can insert own budgets" on public.budgets;
+create policy "Users can insert own budgets" on public.budgets for insert to authenticated with check (auth.uid() = user_id);
+
+drop policy if exists "Users can update own budgets" on public.budgets;
+create policy "Users can update own budgets" on public.budgets for update to authenticated using (auth.uid() = user_id);
+
+drop policy if exists "Users can delete own budgets" on public.budgets;
+create policy "Users can delete own budgets" on public.budgets for delete to authenticated using (auth.uid() = user_id);
+
+-- STORAGE BUCKET FOR RECEIPTS
+insert into storage.buckets (id, name, public) values ('receipts', 'receipts', false) on conflict (id) do nothing;
+
+drop policy if exists "Users can upload own receipts" on storage.objects;
+create policy "Users can upload own receipts" on storage.objects for insert to authenticated with check (
+  bucket_id = 'receipts' and (storage.foldername(name))[1] = auth.uid()::text
+);
+
+drop policy if exists "Users can view own receipts" on storage.objects;
+create policy "Users can view own receipts" on storage.objects for select to authenticated using (
+  bucket_id = 'receipts' and (storage.foldername(name))[1] = auth.uid()::text
+);
+
+drop policy if exists "Users can delete own receipts" on storage.objects;
+create policy "Users can delete own receipts" on storage.objects for delete to authenticated using (
+  bucket_id = 'receipts' and (storage.foldername(name))[1] = auth.uid()::text
+);
+
+-- GOOGLE AUTH TRIGGER
+create or replace function public.handle_new_google_user()
 returns trigger as $$
 begin
-  insert into public.profiles (id, full_name, avatar_url)
+  insert into public.profiles (id, email, full_name, avatar_url, preferred_currency, is_onboarded)
   values (
     new.id,
-    coalesce(new.raw_user_meta_data->>'full_name', 'Club Member'),
-    new.raw_user_meta_data->>'avatar_url'
-  );
+    new.email,
+    coalesce(new.raw_user_meta_data->>'full_name', new.raw_user_meta_data->>'name', split_part(new.email, '@', 1)),
+    new.raw_user_meta_data->>'avatar_url',
+    'USD',
+    false
+  )
+  on conflict (id) do update set
+    email = excluded.email,
+    avatar_url = coalesce(excluded.avatar_url, public.profiles.avatar_url);
   return new;
 end;
 $$ language plpgsql security definer;
@@ -239,4 +154,21 @@ $$ language plpgsql security definer;
 drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created
   after insert on auth.users
-  for each row execute procedure public.handle_new_user();
+  for each row execute procedure public.handle_new_google_user();
+
+-- DEFAULT CATEGORIES
+insert into public.categories (name, type, icon, color, is_system) values
+  ('Food & Dining', 'expense', 'Utensils', '#F59E0B', true),
+  ('Groceries', 'expense', 'ShoppingCart', '#10B981', true),
+  ('Housing & Rent', 'expense', 'Home', '#6366F1', true),
+  ('Utilities & Bills', 'expense', 'Zap', '#06B6D4', true),
+  ('Transportation', 'expense', 'Car', '#EC4899', true),
+  ('Entertainment', 'expense', 'Film', '#8B5CF6', true),
+  ('Health & Fitness', 'expense', 'Activity', '#EF4444', true),
+  ('Shopping', 'expense', 'ShoppingBag', '#F97316', true),
+  ('Salary', 'income', 'Briefcase', '#059669', true),
+  ('Freelance / Side Gig', 'income', 'Laptop', '#14B8A6', true),
+  ('Investments / Dividends', 'income', 'TrendingUp', '#3B82F6', true),
+  ('Other Expense', 'expense', 'MoreHorizontal', '#64748B', true),
+  ('Other Income', 'income', 'ArrowDownLeft', '#059669', true)
+on conflict do nothing;
