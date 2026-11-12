@@ -6,6 +6,8 @@ import { Navbar } from '@/components/layout/Navbar';
 import { NavigationTabs, type FinanceTabKey } from '@/components/layout/NavigationTabs';
 import { FinanceDashboard } from '@/features/dashboard/FinanceDashboard';
 import { TransactionManager } from '@/features/transactions/TransactionManager';
+import { BudgetManager } from '@/features/budgets/BudgetManager';
+import { ReportsManager } from '@/features/reports/ReportsManager';
 import { ShieldCheck, Loader2 } from 'lucide-react';
 
 export function App() {
@@ -42,10 +44,14 @@ export function App() {
   return (
     <div className="min-h-screen bg-background text-slate-800 flex flex-col font-sans">
       {/* Top Navbar */}
-      <Navbar onOpenAddTransaction={() => setActiveTab('transactions')} />
+      <div className="no-print">
+        <Navbar onOpenAddTransaction={() => setActiveTab('transactions')} />
+      </div>
 
       {/* Navigation Tabs */}
-      <NavigationTabs activeTab={activeTab} onTabChange={setActiveTab} />
+      <div className="no-print">
+        <NavigationTabs activeTab={activeTab} onTabChange={setActiveTab} />
+      </div>
 
       {/* Main Workspace Container */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-8 py-8 space-y-6">
@@ -58,13 +64,7 @@ export function App() {
 
         {activeTab === 'transactions' && <TransactionManager />}
 
-        {/* Fallback for subsequent phases (budgets, analytics, reports) */}
-        {activeTab === 'budgets' && (
-          <FinanceDashboard
-            onNavigateToTransactions={() => setActiveTab('transactions')}
-            onOpenAddTransaction={() => setActiveTab('transactions')}
-          />
-        )}
+        {activeTab === 'budgets' && <BudgetManager />}
 
         {activeTab === 'analytics' && (
           <FinanceDashboard
@@ -73,13 +73,11 @@ export function App() {
           />
         )}
 
-        {activeTab === 'reports' && (
-          <TransactionManager />
-        )}
+        {activeTab === 'reports' && <ReportsManager />}
       </main>
 
       {/* Footer */}
-      <footer className="mt-auto border-t border-slate-200/80 bg-white py-6">
+      <footer className="mt-auto border-t border-slate-200/80 bg-white py-6 no-print">
         <div className="max-w-7xl mx-auto px-4 sm:px-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
           <div className="flex items-center gap-2">
             <span className="font-extrabold text-slate-900 tracking-tight">DuesDock</span>
