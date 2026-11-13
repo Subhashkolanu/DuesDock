@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '@/features/auth/AuthContext';
 import { budgetService } from '@/services/budgetService';
 import { transactionService } from '@/services/transactionService';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
+import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Modal } from '@/components/ui/Modal';
@@ -11,7 +11,6 @@ import { formatCurrency, CURRENCY_SYMBOLS, getCurrentMonthKey } from '@/lib/util
 import type { Budget, Category, Transaction, CurrencyCode } from '@/types/database.types';
 import {
   PieChart,
-  Calendar,
   Plus,
   Edit2,
   Trash2,
@@ -21,9 +20,6 @@ import {
   Loader2,
   ChevronLeft,
   ChevronRight,
-  TrendingDown,
-  PiggyBank,
-  Sparkles,
 } from 'lucide-react';
 
 export const BudgetManager: React.FC = () => {
@@ -213,31 +209,31 @@ export const BudgetManager: React.FC = () => {
       {/* Top Header & Month Navigator */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black text-slate-900 tracking-tight">
+          <h1 className="font-heading font-bold text-2xl text-[#17212B] dark:text-[#F5F7FA] tracking-tight">
             Budgets & Spending Limits
           </h1>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Set monthly category spending caps, prevent budget overruns, and track savings cushions.
+          <p className="text-xs text-[#667085] dark:text-[#9AA6B2] mt-0.5">
+            Configure monthly category limits, prevent overruns, and monitor savings
           </p>
         </div>
 
         {/* Month Selector Controls */}
-        <div className="flex items-center gap-2 bg-white border border-slate-200 rounded-xl p-1 shadow-2xs">
+        <div className="flex items-center gap-1 p-1 bg-[#F1F4F6] dark:bg-[#202830] rounded-xl border border-[#E5E9EF] dark:border-[#303943]">
           <button
             onClick={handlePrevMonth}
-            className="p-1.5 text-slate-500 hover:text-slate-800 hover:bg-slate-50 rounded-lg transition-colors"
+            className="p-1.5 rounded-lg text-[#667085] dark:text-[#9AA6B2] hover:text-[#17212B] dark:hover:text-[#F5F7FA] hover:bg-[#FFFFFF] dark:hover:bg-[#171D23] transition-colors cursor-pointer"
             title="Previous Month"
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
 
-          <span className="text-xs font-bold text-slate-800 px-3 min-w-[130px] text-center">
+          <span className="font-medium text-xs text-[#17212B] dark:text-[#F5F7FA] px-3 min-w-[140px] text-center">
             {formatMonthDisplay(selectedMonth)}
           </span>
 
           <button
             onClick={handleNextMonth}
-            className="p-1.5 text-slate-500 hover:text-slate-800 hover:bg-slate-50 rounded-lg transition-colors"
+            className="p-1.5 rounded-lg text-[#667085] dark:text-[#9AA6B2] hover:text-[#17212B] dark:hover:text-[#F5F7FA] hover:bg-[#FFFFFF] dark:hover:bg-[#171D23] transition-colors cursor-pointer"
             title="Next Month"
           >
             <ChevronRight className="w-4 h-4" />
@@ -246,31 +242,31 @@ export const BudgetManager: React.FC = () => {
       </div>
 
       {errorMessage && (
-        <div className="p-3.5 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-800 flex items-start gap-2.5">
-          <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
-          <div className="flex-1">
-            <span className="font-bold block">Notice</span>
+        <div className="p-4 bg-[#DC5252]/10 border border-[#DC5252]/20 rounded-xl text-xs text-[#DC5252] dark:text-[#FF6666] flex items-start gap-3">
+          <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
+          <div>
+            <span className="font-semibold block">Notice</span>
             <span>{errorMessage}</span>
           </div>
         </div>
       )}
 
       {/* 1. OVERALL MONTHLY BUDGET CARD */}
-      <Card className="p-6 bg-gradient-to-br from-white to-slate-50/50 border-slate-200 shadow-card">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+      <Card className="p-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#E5E9EF] dark:border-[#303943]">
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-emerald-800 bg-emerald-100/70 px-2.5 py-0.5 rounded-full">
-                Overall Spending Cap
+              <span className="text-[11px] font-semibold text-[#008F62] dark:text-[#00C78A] bg-[#008F62]/10 dark:bg-[#00C78A]/15 px-2.5 py-0.5 rounded-full">
+                Overall Spending Ceiling
               </span>
               <BudgetStatusBadge percentage={overallPercentUsed} />
             </div>
-            <h2 className="text-lg font-black text-slate-900 mt-2">
-              {formatMonthDisplay(selectedMonth)} Budget
+            <h2 className="font-heading font-semibold text-lg text-[#17212B] dark:text-[#F5F7FA] tracking-tight mt-2">
+              {formatMonthDisplay(selectedMonth)} Overall Target
             </h2>
-            <p className="text-xs text-slate-500 mt-0.5">
+            <p className="text-xs text-[#667085] dark:text-[#9AA6B2] mt-0.5">
               Across all categories: {formatCurrency(totalSpentInMonth, currency)} spent of{' '}
-              {formatCurrency(overallTarget, currency)} target
+              {formatCurrency(overallTarget, currency)} ceiling
             </p>
           </div>
 
@@ -283,19 +279,21 @@ export const BudgetManager: React.FC = () => {
             }}
             leftIcon={<Edit2 className="w-3.5 h-3.5" />}
           >
-            Edit Overall Target
+            Edit Target
           </Button>
         </div>
 
         {/* Progress Bar & Warning State */}
-        <div className="pt-4 space-y-2">
-          <div className="flex justify-between items-center text-xs font-semibold">
-            <span className="text-slate-600">
-              {Math.round(overallPercentUsed)}% Utilized
+        <div className="pt-4 space-y-3">
+          <div className="flex justify-between items-center text-xs font-medium">
+            <span className="text-[#667085] dark:text-[#9AA6B2]">
+              Utilization: {Math.round(overallPercentUsed)}%
             </span>
             <span
-              className={`font-mono font-bold ${
-                overallRemaining >= 0 ? 'text-emerald-700' : 'text-rose-600'
+              className={`font-mono font-semibold ${
+                overallRemaining >= 0
+                  ? 'text-[#008F62] dark:text-[#00C78A]'
+                  : 'text-[#DC5252] dark:text-[#FF6666]'
               }`}
             >
               {overallRemaining >= 0
@@ -304,34 +302,35 @@ export const BudgetManager: React.FC = () => {
             </span>
           </div>
 
-          <div className="w-full bg-slate-200 rounded-full h-3 overflow-hidden">
+          {/* Subtle Progress Bar */}
+          <div className="w-full bg-[#F1F4F6] dark:bg-[#202830] rounded-full h-2.5 overflow-hidden">
             <div
-              className={`h-3 rounded-full transition-all duration-500 ${
+              className={`h-full rounded-full transition-all duration-300 ${
                 overallPercentUsed >= 100
-                  ? 'bg-rose-600'
+                  ? 'bg-[#DC5252] dark:bg-[#FF6666]'
                   : overallPercentUsed >= 80
-                  ? 'bg-amber-500'
-                  : 'bg-emerald-600'
+                  ? 'bg-[#D99A27] dark:bg-[#F0B94B]'
+                  : 'bg-[#008F62] dark:bg-[#00C78A]'
               }`}
-              style={{ width: `${Math.min(100, overallPercentUsed)}%` }}
+              style={{ width: `${Math.min(100, Math.max(0, overallPercentUsed))}%` }}
             />
           </div>
 
           {overallPercentUsed >= 100 ? (
-            <p className="text-xs text-rose-700 font-medium flex items-center gap-1.5 pt-1">
-              <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0" />
-              <span>Budget exceeded! You have surpassed your planned spending ceiling for this month.</span>
-            </p>
+            <div className="p-3 rounded-xl border border-[#DC5252]/20 bg-[#DC5252]/10 text-xs text-[#DC5252] dark:text-[#FF6666] flex items-center gap-2">
+              <AlertTriangle className="w-4 h-4 shrink-0" />
+              <span>Budget exceeded: Outflows have exceeded your planned monthly ceiling.</span>
+            </div>
           ) : overallPercentUsed >= 80 ? (
-            <p className="text-xs text-amber-700 font-medium flex items-center gap-1.5 pt-1">
-              <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
-              <span>Warning: You have used over 80% of your monthly budget.</span>
-            </p>
+            <div className="p-3 rounded-xl border border-[#D99A27]/20 bg-[#D99A27]/10 text-xs text-[#D99A27] dark:text-[#F0B94B] flex items-center gap-2">
+              <AlertTriangle className="w-4 h-4 shrink-0" />
+              <span>Warning: Over 80% of your designated monthly budget has been consumed.</span>
+            </div>
           ) : (
-            <p className="text-xs text-emerald-700 font-medium flex items-center gap-1.5 pt-1">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-              <span>On track. Spending is within your designated monthly target.</span>
-            </p>
+            <div className="p-3 rounded-xl border border-[#008F62]/20 bg-[#008F62]/10 text-xs text-[#008F62] dark:text-[#00C78A] flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 shrink-0" />
+              <span>On track: Spending is healthy and well within your planned ceiling.</span>
+            </div>
           )}
         </div>
       </Card>
@@ -339,12 +338,12 @@ export const BudgetManager: React.FC = () => {
       {/* 2. CATEGORY BUDGETS HEADER & ADD BUTTON */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-2">
         <div>
-          <h2 className="text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2">
-            <PieChart className="w-5 h-5 text-emerald-600" />
+          <h2 className="font-heading font-semibold text-lg text-[#17212B] dark:text-[#F5F7FA] flex items-center gap-2">
+            <PieChart className="w-4 h-4 text-[#008F62] dark:text-[#00C78A]" />
             Category-Specific Budgets
           </h2>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Individual spending limits per expense category for {formatMonthDisplay(selectedMonth)}.
+          <p className="text-xs text-[#667085] dark:text-[#9AA6B2] mt-0.5">
+            Individual spending limits per category for {formatMonthDisplay(selectedMonth)}
           </p>
         </div>
 
@@ -360,39 +359,39 @@ export const BudgetManager: React.FC = () => {
 
       {/* Category Budgets Grid */}
       {isLoading ? (
-        <div className="p-12 text-center text-xs text-slate-400 flex items-center justify-center gap-2">
-          <Loader2 className="w-5 h-5 animate-spin text-emerald-600" />
-          <span>Loading monthly category budgets...</span>
+        <div className="p-12 text-center text-xs text-[#667085] dark:text-[#9AA6B2] flex items-center justify-center gap-2">
+          <Loader2 className="w-5 h-5 animate-spin text-[#008F62] dark:text-[#00C78A]" />
+          <span>Loading category budgets...</span>
         </div>
       ) : budgets.length === 0 ? (
-        /* Empty State */
-        <Card className="p-10 text-center space-y-3 bg-white border-dashed border-2 border-slate-200">
-          <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto mb-2">
+        <Card className="p-10 text-center space-y-3 border border-dashed border-[#E5E9EF] dark:border-[#303943]">
+          <div className="w-12 h-12 rounded-2xl bg-[#008F62]/10 dark:bg-[#00C78A]/15 text-[#008F62] dark:text-[#00C78A] flex items-center justify-center mx-auto">
             <PieChart className="w-6 h-6" />
           </div>
-          <h3 className="text-base font-bold text-slate-900">
+          <h3 className="font-heading font-semibold text-base text-[#17212B] dark:text-[#F5F7FA]">
             No Category Budgets for {formatMonthDisplay(selectedMonth)}
           </h3>
-          <p className="text-xs text-slate-500 max-w-sm mx-auto">
+          <p className="text-xs text-[#667085] dark:text-[#9AA6B2] max-w-sm mx-auto">
             Set dedicated limits for Groceries, Dining, Rent, or Entertainment to track specific expenditure caps.
           </p>
-          <Button
-            variant="primary"
-            size="sm"
-            onClick={handleOpenNewBudget}
-            leftIcon={<Plus className="w-4 h-4" />}
-          >
-            Create Category Budget
-          </Button>
+          <div className="pt-2">
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={handleOpenNewBudget}
+              leftIcon={<Plus className="w-4 h-4" />}
+            >
+              Create Category Budget
+            </Button>
+          </div>
         </Card>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {budgets.map((b) => {
             const category = categories.find((c) => c.id === b.category_id);
             const catName = category?.name || 'Uncategorized';
-            const catColor = category?.color || '#059669';
+            const catColor = category?.color || '#008F62';
 
-            // Calculate spent in this category for this month
             const spentInCategory = monthExpenseTransactions
               .filter((t) => t.category_id === b.category_id)
               .reduce((sum, t) => sum + Number(t.amount), 0);
@@ -406,40 +405,50 @@ export const BudgetManager: React.FC = () => {
                   <div className="flex items-start justify-between gap-2 mb-3">
                     <div className="flex items-center gap-2">
                       <span
-                        className="w-3 h-3 rounded-full shrink-0"
+                        className="w-2.5 h-2.5 rounded-full shrink-0"
                         style={{ backgroundColor: catColor }}
                       />
-                      <h3 className="font-bold text-slate-900 text-sm">{catName}</h3>
+                      <h3 className="font-semibold text-sm text-[#17212B] dark:text-[#F5F7FA] truncate">
+                        {catName}
+                      </h3>
                     </div>
                     <BudgetStatusBadge percentage={percentUsed} />
                   </div>
 
-                  <div className="space-y-1 mb-4">
-                    <div className="text-xl font-mono font-black text-slate-900">
+                  <div className="space-y-0.5 mb-4">
+                    <div className="text-2xl font-mono font-bold text-[#17212B] dark:text-[#F5F7FA]">
                       {formatCurrency(spentInCategory, currency)}
                     </div>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-[#667085] dark:text-[#9AA6B2]">
                       of {formatCurrency(b.budget_limit, currency)} limit
                     </p>
                   </div>
 
-                  {/* Progress Bar */}
+                  {/* Subtle Progress Bar */}
                   <div className="space-y-1.5 mb-4">
-                    <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                    <div className="w-full bg-[#F1F4F6] dark:bg-[#202830] rounded-full h-2 overflow-hidden">
                       <div
-                        className={`h-2 rounded-full transition-all duration-500 ${
+                        className={`h-full rounded-full transition-all duration-300 ${
                           percentUsed >= 100
-                            ? 'bg-rose-600'
+                            ? 'bg-[#DC5252] dark:bg-[#FF6666]'
                             : percentUsed >= 80
-                            ? 'bg-amber-500'
-                            : 'bg-emerald-600'
+                            ? 'bg-[#D99A27] dark:bg-[#F0B94B]'
+                            : 'bg-[#008F62] dark:bg-[#00C78A]'
                         }`}
-                        style={{ width: `${Math.min(100, percentUsed)}%` }}
+                        style={{ width: `${Math.min(100, Math.max(0, percentUsed))}%` }}
                       />
                     </div>
-                    <div className="flex justify-between text-[11px] font-semibold text-slate-500">
-                      <span>{Math.round(percentUsed)}% spent</span>
-                      <span className={remaining >= 0 ? 'text-emerald-700' : 'text-rose-600 font-bold'}>
+                    <div className="flex justify-between text-[11px] font-medium">
+                      <span className="text-[#667085] dark:text-[#9AA6B2]">
+                        {Math.round(percentUsed)}% used
+                      </span>
+                      <span
+                        className={
+                          remaining >= 0
+                            ? 'text-[#008F62] dark:text-[#00C78A]'
+                            : 'text-[#DC5252] dark:text-[#FF6666] font-semibold'
+                        }
+                      >
                         {remaining >= 0
                           ? `${formatCurrency(remaining, currency)} left`
                           : `Over by ${formatCurrency(Math.abs(remaining), currency)}`}
@@ -449,17 +458,17 @@ export const BudgetManager: React.FC = () => {
                 </div>
 
                 {/* Actions */}
-                <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100 text-xs">
+                <div className="flex items-center justify-end gap-1.5 pt-3 border-t border-[#E5E9EF] dark:border-[#303943]">
                   <button
                     onClick={() => handleOpenEdit(b)}
-                    className="p-1.5 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-md transition-colors"
+                    className="p-1.5 rounded-lg text-[#667085] dark:text-[#9AA6B2] hover:text-[#008F62] dark:hover:text-[#00C78A] hover:bg-[#F1F4F6] dark:hover:bg-[#202830] transition-colors"
                     title="Edit Limit"
                   >
                     <Edit2 className="w-3.5 h-3.5" />
                   </button>
                   <button
                     onClick={() => setDeletingBudget(b)}
-                    className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-md transition-colors"
+                    className="p-1.5 rounded-lg text-[#667085] dark:text-[#9AA6B2] hover:text-[#DC5252] dark:hover:text-[#FF6666] hover:bg-[#DC5252]/10 transition-colors"
                     title="Delete Budget"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
@@ -484,14 +493,14 @@ export const BudgetManager: React.FC = () => {
       >
         <form onSubmit={handleSaveCategoryBudget} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">
-              Select Expense Category
+            <label className="block text-xs font-medium text-[#17212B] dark:text-[#F5F7FA] mb-1.5">
+              Expense Category
             </label>
             <select
               value={modalCategoryId}
               onChange={(e) => setModalCategoryId(e.target.value)}
               disabled={Boolean(editingBudget)}
-              className="w-full h-10 rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-800 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 disabled:bg-slate-100"
+              className="w-full h-10 rounded-lg border border-[#E5E9EF] dark:border-[#303943] bg-[#FFFFFF] dark:bg-[#101418] px-3 py-2 text-xs font-medium text-[#17212B] dark:text-[#F5F7FA] focus:outline-none focus:border-[#008F62] dark:focus:border-[#00C78A] disabled:opacity-50"
               required
             >
               {expenseCategories.map((c) => (
@@ -501,8 +510,8 @@ export const BudgetManager: React.FC = () => {
               ))}
             </select>
             {editingBudget && (
-              <p className="text-[11px] text-slate-400 mt-1">
-                Category cannot be changed while editing. Create a new budget for other categories.
+              <p className="text-[11px] text-[#667085] dark:text-[#9AA6B2] mt-1">
+                Category cannot be altered during edit. Delete and re-create to change category.
               </p>
             )}
           </div>
@@ -516,14 +525,14 @@ export const BudgetManager: React.FC = () => {
             value={modalBudgetLimit}
             onChange={(e) => setModalBudgetLimit(e.target.value)}
             leftElement={
-              <span className="font-bold text-slate-500 font-mono">
+              <span className="font-semibold text-[#667085] dark:text-[#9AA6B2] font-mono text-sm">
                 {CURRENCY_SYMBOLS[currency]}
               </span>
             }
             required
           />
 
-          <div className="flex justify-end gap-2 pt-3 border-t border-slate-100">
+          <div className="flex justify-end gap-3 pt-3 border-t border-[#E5E9EF] dark:border-[#303943]">
             <Button
               variant="outline"
               size="sm"
@@ -548,8 +557,8 @@ export const BudgetManager: React.FC = () => {
       <Modal
         isOpen={isOverallModalOpen}
         onClose={() => setIsOverallModalOpen(false)}
-        title="Edit Overall Monthly Spending Target"
-        description="Defines your baseline target ceiling across all expenses."
+        title="Monthly Spending Target"
+        description="Defines baseline target ceiling across all monthly outflows."
         maxWidth="sm"
       >
         <form onSubmit={handleSaveOverallTarget} className="space-y-4">
@@ -561,14 +570,14 @@ export const BudgetManager: React.FC = () => {
             value={overallLimitInput}
             onChange={(e) => setOverallLimitInput(e.target.value)}
             leftElement={
-              <span className="font-bold text-slate-500 font-mono">
+              <span className="font-semibold text-[#667085] dark:text-[#9AA6B2] font-mono text-sm">
                 {CURRENCY_SYMBOLS[currency]}
               </span>
             }
             required
           />
 
-          <div className="flex justify-end gap-2 pt-3 border-t border-slate-100">
+          <div className="flex justify-end gap-3 pt-3 border-t border-[#E5E9EF] dark:border-[#303943]">
             <Button
               variant="outline"
               size="sm"
@@ -599,14 +608,14 @@ export const BudgetManager: React.FC = () => {
           maxWidth="sm"
         >
           <div className="space-y-4">
-            <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-800 flex items-start gap-2">
-              <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+            <div className="p-4 bg-[#DC5252]/10 border border-[#DC5252]/20 rounded-xl text-xs text-[#DC5252] dark:text-[#FF6666] flex items-start gap-3">
+              <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5" />
               <span>
-                Removing this budget will not delete any transactions, but you will no longer receive spending threshold warnings for this category in {formatMonthDisplay(selectedMonth)}.
+                Removing this budget will not delete any transactions, but you will no longer receive spending threshold alerts for this category in {formatMonthDisplay(selectedMonth)}.
               </span>
             </div>
 
-            <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
+            <div className="flex justify-end gap-3 pt-3 border-t border-[#E5E9EF] dark:border-[#303943]">
               <Button
                 variant="outline"
                 size="sm"

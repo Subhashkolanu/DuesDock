@@ -13,9 +13,7 @@ import type { Transaction, Category, TransactionType, PaymentMethod } from '@/ty
 import {
   Search,
   Plus,
-  Filter,
   ArrowUpDown,
-  Calendar,
   Paperclip,
   Trash2,
   Edit2,
@@ -74,7 +72,7 @@ export const TransactionManager: React.FC = () => {
     loadData();
   }, [user]);
 
-  // Financial Calculations (Calculated dynamically using the user's preferred currency)
+  // Financial Calculations
   const totalIncome = useMemo(() => {
     return transactions
       .filter((t) => t.type === 'income')
@@ -89,54 +87,53 @@ export const TransactionManager: React.FC = () => {
 
   const netCashFlow = totalIncome - totalExpenses;
 
-  // Filtered & Sorted Transactions
+  // Filter & Sort Logic
   const filteredTransactions = useMemo(() => {
     return transactions
       .filter((t) => {
-        // Search filter (merchant, notes, category name)
-        const cat = categories.find((c) => c.id === t.category_id);
-        const searchTarget = `${t.merchant || ''} ${t.notes || ''} ${cat?.name || ''}`.toLowerCase();
-        if (search && !searchTarget.includes(search.toLowerCase())) {
-          return false;
+        // Search filter
+        if (search.trim()) {
+          const query = search.toLowerCase();
+          const matchMerchant = t.merchant?.toLowerCase().includes(query);
+          const matchNotes = t.notes?.toLowerCase().includes(query);
+          const cat = categories.find((c) => c.id === t.category_id);
+          const matchCat = cat?.name.toLowerCase().includes(query);
+          if (!matchMerchant && !matchNotes && !matchCat) return false;
         }
 
         // Type filter
-        if (typeFilter !== 'all' && t.type !== typeFilter) {
-          return false;
-        }
+        if (typeFilter !== 'all' && t.type !== typeFilter) return false;
 
         // Category filter
-        if (categoryFilter !== 'all' && t.category_id !== categoryFilter) {
-          return false;
+        if (categoryFilter !== 'all' && t.category_id !== categoryFilter) return false;
+
+        // Date filter
+        const txDate = new Date(t.transaction_date);
+        const now = new Date();
+
+        if (dateFilter === 'this_month') {
+          return (
+            txDate.getFullYear() === now.getFullYear() &&
+            txDate.getMonth() === now.getMonth()
+          );
         }
 
-        // Date range filter
-        if (dateFilter !== 'all') {
-          const txDate = new Date(t.transaction_date);
-          const now = new Date();
+        if (dateFilter === 'last_month') {
+          const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+          return (
+            txDate.getFullYear() === lastMonth.getFullYear() &&
+            txDate.getMonth() === lastMonth.getMonth()
+          );
+        }
 
-          if (dateFilter === 'this_month') {
-            if (
-              txDate.getFullYear() !== now.getFullYear() ||
-              txDate.getMonth() !== now.getMonth()
-            ) {
-              return false;
-            }
-          } else if (dateFilter === 'last_month') {
-            const lastMonthDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-            if (
-              txDate.getFullYear() !== lastMonthDate.getFullYear() ||
-              txDate.getMonth() !== lastMonthDate.getMonth()
-            ) {
-              return false;
-            }
-          } else if (dateFilter === 'last_30_days') {
-            const thirtyDaysAgo = new Date();
-            thirtyDaysAgo.setDate(now.getDate() - 30);
-            if (txDate < thirtyDaysAgo) return false;
-          } else if (dateFilter === 'this_year') {
-            if (txDate.getFullYear() !== now.getFullYear()) return false;
-          }
+        if (dateFilter === 'last_30_days') {
+          const thirtyDaysAgo = new Date();
+          thirtyDaysAgo.setDate(now.getDate() - 30);
+          return txDate >= thirtyDaysAgo;
+        }
+
+        if (dateFilter === 'this_year') {
+          return txDate.getFullYear() === now.getFullYear();
         }
 
         return true;
@@ -158,6 +155,7 @@ export const TransactionManager: React.FC = () => {
       });
   }, [transactions, categories, search, typeFilter, categoryFilter, dateFilter, sortBy]);
 
+  // Handlers
   const handleDeleteConfirm = async (id: string) => {
     if (!user) return;
     try {
@@ -185,17 +183,17 @@ export const TransactionManager: React.FC = () => {
       {/* Header & Primary CTA */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black text-slate-900 tracking-tight">
-            Transactions & Cash Flow
+          <h1 className="font-heading font-bold text-2xl text-[#17212B] dark:text-[#F5F7FA] tracking-tight">
+            Transactions & Ledgers
           </h1>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Record, categorize, and audit all personal income deposits and expenses.
+          <p className="text-xs text-[#667085] dark:text-[#9AA6B2] mt-0.5">
+            Record, categorize, and audit all personal income deposits and expenditures
           </p>
         </div>
 
         <Button
           variant="primary"
-          size="sm"
+          size="md"
           onClick={() => {
             setEditingTransaction(null);
             setIsAddModalOpen(true);
@@ -208,46 +206,52 @@ export const TransactionManager: React.FC = () => {
 
       {/* Cash Flow Summary Metrics */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Card className="p-4 border-emerald-100 bg-emerald-50/40">
-          <div className="flex items-center justify-between text-xs font-semibold text-emerald-800">
-            <span>Total Income</span>
-            <TrendingUp className="w-4 h-4 text-emerald-600" />
+        <Card className="p-5">
+          <div className="flex items-center justify-between text-xs font-medium text-[#667085] dark:text-[#9AA6B2]">
+            <span>Total Inflow (Income)</span>
+            <div className="p-2 rounded-lg bg-[#008F62]/10 dark:bg-[#00C78A]/15 text-[#008F62] dark:text-[#00C78A]">
+              <TrendingUp className="w-4 h-4" />
+            </div>
           </div>
-          <div className="text-2xl font-black text-emerald-900 mt-2 font-mono">
+          <div className="text-2xl sm:text-3xl font-mono font-bold text-[#008F62] dark:text-[#00C78A] mt-3">
             {formatCurrency(totalIncome, currency)}
           </div>
-          <p className="text-[11px] text-emerald-700 mt-1">
-            {transactions.filter((t) => t.type === 'income').length} deposits recorded
+          <p className="text-xs text-[#667085] dark:text-[#9AA6B2] mt-1">
+            {transactions.filter((t) => t.type === 'income').length} deposits logged
           </p>
         </Card>
 
-        <Card className="p-4 border-rose-100 bg-rose-50/40">
-          <div className="flex items-center justify-between text-xs font-semibold text-rose-800">
-            <span>Total Expenses</span>
-            <TrendingDown className="w-4 h-4 text-rose-600" />
+        <Card className="p-5">
+          <div className="flex items-center justify-between text-xs font-medium text-[#667085] dark:text-[#9AA6B2]">
+            <span>Total Outflow (Expenses)</span>
+            <div className="p-2 rounded-lg bg-[#DC5252]/10 dark:bg-[#FF6666]/15 text-[#DC5252] dark:text-[#FF6666]">
+              <TrendingDown className="w-4 h-4" />
+            </div>
           </div>
-          <div className="text-2xl font-black text-rose-900 mt-2 font-mono">
+          <div className="text-2xl sm:text-3xl font-mono font-bold text-[#DC5252] dark:text-[#FF6666] mt-3">
             {formatCurrency(totalExpenses, currency)}
           </div>
-          <p className="text-[11px] text-rose-700 mt-1">
+          <p className="text-xs text-[#667085] dark:text-[#9AA6B2] mt-1">
             {transactions.filter((t) => t.type === 'expense').length} payments made
           </p>
         </Card>
 
-        <Card className="p-4 border-slate-200 bg-white">
-          <div className="flex items-center justify-between text-xs font-semibold text-slate-600">
+        <Card className="p-5">
+          <div className="flex items-center justify-between text-xs font-medium text-[#667085] dark:text-[#9AA6B2]">
             <span>Net Cash Flow</span>
-            <Wallet className="w-4 h-4 text-emerald-600" />
+            <div className="p-2 rounded-lg bg-[#008F62]/10 dark:bg-[#00C78A]/15 text-[#008F62] dark:text-[#00C78A]">
+              <Wallet className="w-4 h-4" />
+            </div>
           </div>
           <div
-            className={`text-2xl font-black mt-2 font-mono ${
-              netCashFlow >= 0 ? 'text-emerald-700' : 'text-rose-600'
+            className={`text-2xl sm:text-3xl font-mono font-bold mt-3 ${
+              netCashFlow >= 0 ? 'text-[#008F62] dark:text-[#00C78A]' : 'text-[#DC5252] dark:text-[#FF6666]'
             }`}
           >
             {formatCurrency(netCashFlow, currency)}
           </div>
-          <p className="text-[11px] text-slate-500 mt-1">
-            {netCashFlow >= 0 ? 'Positive savings cushion' : 'Expenditure exceeds income'}
+          <p className="text-xs text-[#667085] dark:text-[#9AA6B2] mt-1">
+            {netCashFlow >= 0 ? 'Surplus savings cushion' : 'Expenditure exceeds income'}
           </p>
         </Card>
       </div>
@@ -270,7 +274,7 @@ export const TransactionManager: React.FC = () => {
             <select
               value={typeFilter}
               onChange={(e) => setTypeFilter(e.target.value as any)}
-              className="w-full h-10 rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-700 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+              className="w-full h-10 rounded-lg border border-[#E5E9EF] dark:border-[#303943] bg-[#FFFFFF] dark:bg-[#101418] px-3 py-2 text-xs font-medium text-[#17212B] dark:text-[#F5F7FA] focus:border-[#008F62] dark:focus:border-[#00C78A] focus:outline-none"
             >
               <option value="all">All Types</option>
               <option value="expense">Expenses Only</option>
@@ -283,7 +287,7 @@ export const TransactionManager: React.FC = () => {
             <select
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
-              className="w-full h-10 rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-700 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+              className="w-full h-10 rounded-lg border border-[#E5E9EF] dark:border-[#303943] bg-[#FFFFFF] dark:bg-[#101418] px-3 py-2 text-xs font-medium text-[#17212B] dark:text-[#F5F7FA] focus:border-[#008F62] dark:focus:border-[#00C78A] focus:outline-none"
             >
               <option value="all">All Categories</option>
               {categories.map((c) => (
@@ -299,7 +303,7 @@ export const TransactionManager: React.FC = () => {
             <select
               value={dateFilter}
               onChange={(e) => setDateFilter(e.target.value as any)}
-              className="w-full h-10 rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-700 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+              className="w-full h-10 rounded-lg border border-[#E5E9EF] dark:border-[#303943] bg-[#FFFFFF] dark:bg-[#101418] px-3 py-2 text-xs font-medium text-[#17212B] dark:text-[#F5F7FA] focus:border-[#008F62] dark:focus:border-[#00C78A] focus:outline-none"
             >
               <option value="all">All Dates</option>
               <option value="this_month">This Month</option>
@@ -311,31 +315,31 @@ export const TransactionManager: React.FC = () => {
         </div>
 
         {/* Sub-toolbar: Active Filter Tags & Sorting */}
-        <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-100 text-xs">
-          <div className="flex items-center gap-2 text-slate-500 font-medium">
+        <div className="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-[#E5E9EF] dark:border-[#303943] text-xs">
+          <div className="flex items-center gap-2 text-[#667085] dark:text-[#9AA6B2]">
             <span>
-              Showing {filteredTransactions.length} of {transactions.length} records
+              Showing <strong className="text-[#17212B] dark:text-[#F5F7FA] font-semibold">{filteredTransactions.length}</strong> of {transactions.length} items
             </span>
             {(search || typeFilter !== 'all' || categoryFilter !== 'all' || dateFilter !== 'all') && (
               <button
                 onClick={handleResetFilters}
-                className="text-emerald-700 hover:underline inline-flex items-center gap-1 font-semibold"
+                className="text-[#DC5252] dark:text-[#FF6666] hover:underline inline-flex items-center gap-1 font-medium cursor-pointer ml-2"
               >
-                <X className="w-3.5 h-3.5" /> Reset Filters
+                <X className="w-3.5 h-3.5" /> Reset filters
               </button>
             )}
           </div>
 
-          <div className="flex items-center gap-1.5 text-slate-600">
-            <ArrowUpDown className="w-3.5 h-3.5 text-slate-400" />
-            <span className="text-[11px] font-semibold text-slate-500">Sort:</span>
+          <div className="flex items-center gap-1.5 text-[#17212B] dark:text-[#F5F7FA]">
+            <ArrowUpDown className="w-3.5 h-3.5 text-[#008F62] dark:text-[#00C78A]" />
+            <span className="text-xs text-[#667085] dark:text-[#9AA6B2]">Sort:</span>
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as any)}
-              className="h-8 rounded-md border border-slate-200 bg-white px-2 py-1 text-xs font-medium text-slate-700 focus:border-emerald-500 focus:outline-none"
+              className="h-8 rounded-lg border border-[#E5E9EF] dark:border-[#303943] bg-[#FFFFFF] dark:bg-[#101418] px-2 py-1 text-xs font-medium text-[#17212B] dark:text-[#F5F7FA] focus:outline-none"
             >
-              <option value="date_desc">Date: Newest to Oldest</option>
-              <option value="date_asc">Date: Oldest to Newest</option>
+              <option value="date_desc">Date: Newest</option>
+              <option value="date_asc">Date: Oldest</option>
               <option value="amount_desc">Amount: High to Low</option>
               <option value="amount_asc">Amount: Low to High</option>
             </select>
@@ -343,305 +347,260 @@ export const TransactionManager: React.FC = () => {
         </div>
       </Card>
 
-      {/* Main Transactions Table & Card View */}
-      <Card>
-        {isLoading ? (
-          <div className="p-12 text-center text-xs text-slate-400 flex items-center justify-center gap-2">
-            <Loader2 className="w-5 h-5 animate-spin text-emerald-600" />
-            <span>Loading transactions...</span>
+      {/* Transaction Records List */}
+      {isLoading ? (
+        <div className="p-16 text-center text-xs text-[#667085] dark:text-[#9AA6B2] flex items-center justify-center gap-2">
+          <Loader2 className="w-5 h-5 animate-spin text-[#008F62] dark:text-[#00C78A]" />
+          <span>Loading transactions...</span>
+        </div>
+      ) : filteredTransactions.length === 0 ? (
+        <Card className="p-12 text-center space-y-3 border border-dashed border-[#E5E9EF] dark:border-[#303943]">
+          <div className="w-12 h-12 rounded-xl bg-[#008F62]/10 dark:bg-[#00C78A]/15 text-[#008F62] dark:text-[#00C78A] flex items-center justify-center mx-auto">
+            <Receipt className="w-6 h-6" />
           </div>
-        ) : fetchError ? (
-          <div className="p-8 text-center text-xs text-rose-600">
-            <p className="font-semibold">{fetchError}</p>
-            <Button variant="outline" size="sm" onClick={loadData} className="mt-3">
-              Retry
-            </Button>
-          </div>
-        ) : transactions.length === 0 ? (
-          /* Clean Empty State: User has 0 total transactions */
-          <div className="p-12 text-center space-y-3">
-            <div className="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto mb-2">
-              <Receipt className="w-7 h-7" />
-            </div>
-            <h3 className="text-base font-bold text-slate-900">
-              No Transactions Recorded Yet
-            </h3>
-            <p className="text-xs text-slate-500 max-w-sm mx-auto">
-              Your financial ledger is completely empty. Record your first salary deposit, grocery run, or subscription.
-            </p>
+          <h3 className="font-heading font-semibold text-base text-[#17212B] dark:text-[#F5F7FA]">
+            No Transactions Match Your Filters
+          </h3>
+          <p className="text-xs text-[#667085] dark:text-[#9AA6B2] max-w-sm mx-auto">
+            Try adjusting your search criteria, clearing active filters, or adding a new transaction.
+          </p>
+          <div className="pt-2">
             <Button
-              variant="primary"
+              variant="outline"
               size="sm"
-              onClick={() => {
-                setEditingTransaction(null);
-                setIsAddModalOpen(true);
-              }}
-              leftIcon={<Plus className="w-4 h-4" />}
+              onClick={handleResetFilters}
             >
-              Add First Transaction
+              Reset Filters
             </Button>
           </div>
-        ) : filteredTransactions.length === 0 ? (
-          /* Filter Empty State: Results filtered out */
-          <div className="p-10 text-center space-y-2">
-            <p className="text-sm font-semibold text-slate-700">
-              No transactions match your search or filter criteria.
-            </p>
-            <p className="text-xs text-slate-400">
-              Try adjusting your date range, type, or search query.
-            </p>
-            <Button variant="outline" size="sm" onClick={handleResetFilters} className="mt-2">
-              Clear All Filters
-            </Button>
-          </div>
-        ) : (
-          <div>
-            {/* Desktop Table View */}
-            <div className="hidden md:block overflow-x-auto">
-              <table className="w-full text-left border-collapse text-xs">
-                <thead>
-                  <tr className="border-b border-slate-200/80 bg-slate-50 text-[11px] font-bold text-slate-600 uppercase tracking-wider">
-                    <th className="py-3 px-4">Date</th>
-                    <th className="py-3 px-4">Merchant / Description</th>
-                    <th className="py-3 px-4">Category</th>
-                    <th className="py-3 px-4">Method</th>
-                    <th className="py-3 px-4 text-right">Amount</th>
-                    <th className="py-3 px-4 text-center">Receipt</th>
-                    <th className="py-3 px-4 text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {filteredTransactions.map((tx) => {
-                    const category = categories.find((c) => c.id === tx.category_id);
-                    const isIncome = tx.type === 'income';
+        </Card>
+      ) : (
+        <Card className="overflow-hidden">
+          {/* Desktop Table View */}
+          <div className="overflow-x-auto hidden md:block">
+            <table className="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr className="border-b border-[#E5E9EF] dark:border-[#303943] bg-[#F7F8FA] dark:bg-[#101418] text-[11px] font-semibold text-[#667085] dark:text-[#9AA6B2]">
+                  <th className="py-3 px-6">Date</th>
+                  <th className="py-3 px-6">Type</th>
+                  <th className="py-3 px-6">Merchant / Description</th>
+                  <th className="py-3 px-6">Category</th>
+                  <th className="py-3 px-6">Method</th>
+                  <th className="py-3 px-6 text-right">Amount</th>
+                  <th className="py-3 px-6 text-center">Receipt</th>
+                  <th className="py-3 px-6 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#E5E9EF] dark:divide-[#303943]">
+                {filteredTransactions.map((tx) => {
+                  const category = categories.find((c) => c.id === tx.category_id);
+                  const isIncome = tx.type === 'income';
 
-                    return (
-                      <tr
-                        key={tx.id}
-                        className="hover:bg-slate-50/80 transition-colors group cursor-pointer"
-                        onClick={() => setViewingTransaction(tx)}
-                      >
-                        <td className="py-3 px-4 text-slate-600 font-medium whitespace-nowrap">
-                          {new Date(tx.transaction_date).toLocaleDateString('en-US', {
-                            month: 'short',
-                            day: 'numeric',
-                            year: 'numeric',
-                          })}
-                        </td>
+                  return (
+                    <tr
+                      key={tx.id}
+                      className="hover:bg-[#F1F4F6]/60 dark:hover:bg-[#202830]/60 transition-colors"
+                    >
+                      <td className="py-3.5 px-6 font-mono text-[#667085] dark:text-[#9AA6B2] whitespace-nowrap">
+                        {tx.transaction_date}
+                      </td>
 
-                        <td className="py-3 px-4">
-                          <div className="font-bold text-slate-900">
-                            {tx.merchant || (isIncome ? 'Income Deposit' : 'Expense Payment')}
+                      <td className="py-3.5 px-6 whitespace-nowrap">
+                        <TransactionTypeBadge type={tx.type} />
+                      </td>
+
+                      <td className="py-3.5 px-6 font-medium text-[#17212B] dark:text-[#F5F7FA]">
+                        <div>{tx.merchant || (isIncome ? 'Income Deposit' : 'Expense Payment')}</div>
+                        {tx.notes && (
+                          <div className="text-[11px] text-[#667085] dark:text-[#9AA6B2] truncate max-w-xs font-normal">
+                            {tx.notes}
                           </div>
-                          {tx.notes && (
-                            <div className="text-[11px] text-slate-500 truncate max-w-xs">
-                              {tx.notes}
-                            </div>
-                          )}
-                        </td>
+                        )}
+                      </td>
 
-                        <td className="py-3 px-4 whitespace-nowrap">
-                          {category ? (
+                      <td className="py-3.5 px-6 whitespace-nowrap">
+                        {category ? (
+                          <span className="inline-flex items-center gap-1.5 text-xs text-[#17212B] dark:text-[#F5F7FA]">
                             <span
-                              className="inline-flex items-center gap-1.5 text-xs font-semibold px-2 py-0.5 rounded-full border"
-                              style={{
-                                backgroundColor: `${category.color}15`,
-                                color: category.color,
-                                borderColor: `${category.color}30`,
-                              }}
-                            >
-                              <span
-                                className="w-1.5 h-1.5 rounded-full"
-                                style={{ backgroundColor: category.color }}
-                              />
-                              {category.name}
-                            </span>
-                          ) : (
-                            <span className="text-slate-400 italic">Uncategorized</span>
-                          )}
-                        </td>
-
-                        <td className="py-3 px-4 whitespace-nowrap">
-                          <PaymentMethodBadge method={tx.payment_method} />
-                        </td>
-
-                        <td className="py-3 px-4 text-right font-mono font-bold whitespace-nowrap text-sm">
-                          <span className={isIncome ? 'text-emerald-700' : 'text-slate-900'}>
-                            {isIncome ? '+' : '-'} {formatCurrency(tx.amount, currency)}
-                          </span>
-                        </td>
-
-                        <td className="py-3 px-4 text-center whitespace-nowrap">
-                          {tx.receipt_path ? (
-                            <span
-                              className="inline-flex items-center text-emerald-600 bg-emerald-50 p-1 rounded-md"
-                              title="Receipt Attached"
-                            >
-                              <Paperclip className="w-3.5 h-3.5" />
-                            </span>
-                          ) : (
-                            <span className="text-slate-300">—</span>
-                          )}
-                        </td>
-
-                        <td className="py-3 px-4 text-right whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
-                          <div className="flex items-center justify-end gap-1">
-                            <button
-                              onClick={() => setViewingTransaction(tx)}
-                              className="p-1 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded"
-                              title="View Details"
-                            >
-                              <Eye className="w-4 h-4" />
-                            </button>
-                            <button
-                              onClick={() => {
-                                setEditingTransaction(tx);
-                                setIsAddModalOpen(true);
-                              }}
-                              className="p-1 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded"
-                              title="Edit"
-                            >
-                              <Edit2 className="w-4 h-4" />
-                            </button>
-                            <button
-                              onClick={() => setDeletingTransaction(tx)}
-                              className="p-1 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded"
-                              title="Delete"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-
-            {/* Mobile Card View */}
-            <div className="md:hidden divide-y divide-slate-100">
-              {filteredTransactions.map((tx) => {
-                const category = categories.find((c) => c.id === tx.category_id);
-                const isIncome = tx.type === 'income';
-
-                return (
-                  <div
-                    key={tx.id}
-                    className="p-4 space-y-2 hover:bg-slate-50 active:bg-slate-100 transition-colors"
-                    onClick={() => setViewingTransaction(tx)}
-                  >
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <div className="font-bold text-sm text-slate-900">
-                          {tx.merchant || (isIncome ? 'Income Deposit' : 'Expense Payment')}
-                        </div>
-                        <div className="text-[11px] text-slate-500">
-                          {new Date(tx.transaction_date).toLocaleDateString()}
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <span
-                          className={`font-mono font-bold text-sm ${
-                            isIncome ? 'text-emerald-700' : 'text-slate-900'
-                          }`}
-                        >
-                          {isIncome ? '+' : '-'} {formatCurrency(tx.amount, currency)}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center justify-between text-xs pt-1">
-                      <div className="flex items-center gap-1.5 flex-wrap">
-                        {category && (
-                          <span
-                            className="inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full border"
-                            style={{
-                              backgroundColor: `${category.color}15`,
-                              color: category.color,
-                              borderColor: `${category.color}30`,
-                            }}
-                          >
-                            <span
-                              className="w-1.5 h-1.5 rounded-full"
+                              className="w-2 h-2 rounded-full shrink-0"
                               style={{ backgroundColor: category.color }}
                             />
                             {category.name}
                           </span>
+                        ) : (
+                          <span className="text-[#667085] dark:text-[#9AA6B2] italic">Uncategorized</span>
                         )}
-                        <PaymentMethodBadge method={tx.payment_method} />
-                        {tx.receipt_path && (
-                          <span className="text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded text-[10px] font-bold inline-flex items-center gap-0.5">
-                            <Paperclip className="w-3 h-3" /> Receipt
-                          </span>
-                        )}
-                      </div>
+                      </td>
 
-                      <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
-                        <button
-                          onClick={() => {
-                            setEditingTransaction(tx);
-                            setIsAddModalOpen(true);
-                          }}
-                          className="p-1 text-slate-400 hover:text-slate-700 rounded"
-                        >
-                          <Edit2 className="w-3.5 h-3.5" />
-                        </button>
-                        <button
-                          onClick={() => setDeletingTransaction(tx)}
-                          className="p-1 text-slate-400 hover:text-rose-600 rounded"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
+                      <td className="py-3.5 px-6 whitespace-nowrap">
+                        <PaymentMethodBadge method={tx.payment_method} />
+                      </td>
+
+                      <td className="py-3.5 px-6 text-right font-mono font-semibold whitespace-nowrap text-sm">
+                        <span className={isIncome ? 'text-[#008F62] dark:text-[#00C78A]' : 'text-[#17212B] dark:text-[#F5F7FA]'}>
+                          {isIncome ? '+' : '-'} {formatCurrency(tx.amount, currency)}
+                        </span>
+                      </td>
+
+                      <td className="py-3.5 px-6 text-center whitespace-nowrap">
+                        {tx.receipt_path ? (
+                          <button
+                            onClick={() => setViewingTransaction(tx)}
+                            className="inline-flex items-center text-[#008F62] dark:text-[#00C78A] hover:opacity-80 p-1 rounded-md"
+                            title="View Attached Receipt"
+                          >
+                            <Paperclip className="w-4 h-4" />
+                          </button>
+                        ) : (
+                          <span className="text-[#667085]/40 dark:text-[#9AA6B2]/40">—</span>
+                        )}
+                      </td>
+
+                      <td className="py-3.5 px-6 text-right whitespace-nowrap">
+                        <div className="flex items-center justify-end gap-1">
+                          <button
+                            onClick={() => setViewingTransaction(tx)}
+                            className="p-1.5 rounded-lg text-[#667085] dark:text-[#9AA6B2] hover:text-[#17212B] dark:hover:text-[#F5F7FA] hover:bg-[#F1F4F6] dark:hover:bg-[#202830] transition-colors"
+                            title="Audit Record Details"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => {
+                              setEditingTransaction(tx);
+                              setIsAddModalOpen(true);
+                            }}
+                            className="p-1.5 rounded-lg text-[#667085] dark:text-[#9AA6B2] hover:text-[#008F62] dark:hover:text-[#00C78A] hover:bg-[#F1F4F6] dark:hover:bg-[#202830] transition-colors"
+                            title="Edit Transaction"
+                          >
+                            <Edit2 className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => setDeletingTransaction(tx)}
+                            className="p-1.5 rounded-lg text-[#667085] dark:text-[#9AA6B2] hover:text-[#DC5252] dark:hover:text-[#FF6666] hover:bg-[#DC5252]/10 transition-colors"
+                            title="Delete Transaction"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Mobile Stacked Card View */}
+          <div className="md:hidden divide-y divide-[#E5E9EF] dark:divide-[#303943]">
+            {filteredTransactions.map((tx) => {
+              const category = categories.find((c) => c.id === tx.category_id);
+              const isIncome = tx.type === 'income';
+
+              return (
+                <div key={tx.id} className="p-4 space-y-2">
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <div className="font-semibold text-sm text-[#17212B] dark:text-[#F5F7FA]">
+                        {tx.merchant || (isIncome ? 'Income Deposit' : 'Expense Payment')}
+                      </div>
+                      <div className="flex items-center gap-2 mt-1 text-xs text-[#667085] dark:text-[#9AA6B2]">
+                        <span className="font-mono">{tx.transaction_date}</span>
+                        <span>•</span>
+                        <span>{category?.name || 'Uncategorized'}</span>
                       </div>
                     </div>
+                    <div className="text-right">
+                      <div className={`font-mono font-bold text-base ${isIncome ? 'text-[#008F62] dark:text-[#00C78A]' : 'text-[#17212B] dark:text-[#F5F7FA]'}`}>
+                        {isIncome ? '+' : '-'} {formatCurrency(tx.amount, currency)}
+                      </div>
+                      <TransactionTypeBadge type={tx.type} className="mt-1" />
+                    </div>
                   </div>
-                );
-              })}
-            </div>
+
+                  <div className="flex items-center justify-between pt-2 border-t border-[#E5E9EF]/60 dark:border-[#303943]/60 text-xs">
+                    <PaymentMethodBadge method={tx.payment_method} />
+
+                    <div className="flex items-center gap-1">
+                      {tx.receipt_path && (
+                        <button
+                          onClick={() => setViewingTransaction(tx)}
+                          className="p-1.5 rounded-md text-[#008F62] dark:text-[#00C78A]"
+                        >
+                          <Paperclip className="w-4 h-4" />
+                        </button>
+                      )}
+                      <button
+                        onClick={() => {
+                          setEditingTransaction(tx);
+                          setIsAddModalOpen(true);
+                        }}
+                        className="p-1.5 rounded-md text-[#667085] dark:text-[#9AA6B2]"
+                      >
+                        <Edit2 className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => setDeletingTransaction(tx)}
+                        className="p-1.5 rounded-md text-[#DC5252] dark:text-[#FF6666]"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
-        )}
-      </Card>
+        </Card>
+      )}
 
-      {/* Modals */}
-      {user && (
-        <>
-          <TransactionModal
-            isOpen={isAddModalOpen}
-            onClose={() => {
-              setIsAddModalOpen(false);
-              setEditingTransaction(null);
-            }}
-            userId={user.id}
-            currency={currency}
-            categories={categories}
-            editingTransaction={editingTransaction}
-            onTransactionSaved={loadData}
-            onCategoryAdded={(newCat) => setCategories((prev) => [...prev, newCat])}
-          />
+      {/* Transaction Add / Edit Modal */}
+      {isAddModalOpen && (
+        <TransactionModal
+          isOpen={isAddModalOpen}
+          onClose={() => {
+            setIsAddModalOpen(false);
+            setEditingTransaction(null);
+          }}
+          userId={user?.id || ''}
+          currency={currency}
+          categories={categories}
+          editingTransaction={editingTransaction}
+          onTransactionSaved={loadData}
+          onCategoryAdded={(newCat) => setCategories((prev) => [...prev, newCat])}
+        />
+      )}
 
-          <TransactionDetailsModal
-            isOpen={Boolean(viewingTransaction)}
-            onClose={() => setViewingTransaction(null)}
-            transaction={viewingTransaction}
-            currency={currency}
-            categories={categories}
-            onEdit={(tx) => {
-              setEditingTransaction(tx);
-              setIsAddModalOpen(true);
-            }}
-            onDelete={(tx) => setDeletingTransaction(tx)}
-          />
+      {/* Transaction Detail View Modal */}
+      {viewingTransaction && (
+        <TransactionDetailsModal
+          isOpen={Boolean(viewingTransaction)}
+          onClose={() => setViewingTransaction(null)}
+          transaction={viewingTransaction}
+          currency={currency}
+          categories={categories}
+          onEdit={(tx) => {
+            setViewingTransaction(null);
+            setEditingTransaction(tx);
+            setIsAddModalOpen(true);
+          }}
+          onDelete={(tx) => {
+            setViewingTransaction(null);
+            setDeletingTransaction(tx);
+          }}
+        />
+      )}
 
-          <DeleteConfirmDialog
-            isOpen={Boolean(deletingTransaction)}
-            onClose={() => setDeletingTransaction(null)}
-            transaction={deletingTransaction}
-            currency={currency}
-            onConfirmDelete={handleDeleteConfirm}
-            isDeleting={isDeleting}
-          />
-        </>
+      {/* Delete Confirmation Dialog */}
+      {deletingTransaction && (
+        <DeleteConfirmDialog
+          isOpen={Boolean(deletingTransaction)}
+          onClose={() => setDeletingTransaction(null)}
+          transaction={deletingTransaction}
+          currency={currency}
+          onConfirmDelete={handleDeleteConfirm}
+          isDeleting={isDeleting}
+        />
       )}
     </div>
   );

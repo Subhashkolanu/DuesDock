@@ -1,29 +1,48 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { useAuth } from '@/features/auth/AuthContext';
-import { LoginPage } from '@/features/auth/LoginPage';
-import { OnboardingWizard } from '@/features/onboarding/OnboardingWizard';
-import { Navbar } from '@/components/layout/Navbar';
-import { NavigationTabs, type FinanceTabKey } from '@/components/layout/NavigationTabs';
-import { FinanceDashboard } from '@/features/dashboard/FinanceDashboard';
-import { TransactionManager } from '@/features/transactions/TransactionManager';
-import { BudgetManager } from '@/features/budgets/BudgetManager';
-import { ReportsManager } from '@/features/reports/ReportsManager';
+import { Navbar, type FinanceTabKey } from '@/components/layout/Navbar';
+import { Logo } from '@/components/common/Logo';
+import { transactionService } from '@/services/transactionService';
+import type { Category, CurrencyCode } from '@/types/database.types';
 import { ShieldCheck, Loader2 } from 'lucide-react';
+
+// Lazy-loaded routes for optimal bundle code-splitting
+const LoginPage = lazy(() => import('@/features/auth/LoginPage').then(m => ({ default: m.LoginPage })));
+const OnboardingWizard = lazy(() => import('@/features/onboarding/OnboardingWizard').then(m => ({ default: m.OnboardingWizard })));
+const FinanceDashboard = lazy(() => import('@/features/dashboard/FinanceDashboard').then(m => ({ default: m.FinanceDashboard })));
+const TransactionManager = lazy(() => import('@/features/transactions/TransactionManager').then(m => ({ default: m.TransactionManager })));
+const BudgetManager = lazy(() => import('@/features/budgets/BudgetManager').then(m => ({ default: m.BudgetManager })));
+const AnalyticsManager = lazy(() => import('@/features/analytics/AnalyticsManager').then(m => ({ default: m.AnalyticsManager })));
+const ReportsManager = lazy(() => import('@/features/reports/ReportsManager').then(m => ({ default: m.ReportsManager })));
+const TransactionModal = lazy(() => import('@/features/transactions/TransactionModal').then(m => ({ default: m.TransactionModal })));
 
 export function App() {
   const { user, profile, isLoading } = useAuth();
   const [activeTab, setActiveTab] = useState<FinanceTabKey>('dashboard');
+  const [isGlobalAddOpen, setIsGlobalAddOpen] = useState(false);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const currency: CurrencyCode = profile?.preferred_currency || 'USD';
+
+  // Load categories for global Add Transaction modal
+  useEffect(() => {
+    if (user) {
+      transactionService.getCategories(user.id).then(setCategories).catch(() => {});
+    }
+  }, [user]);
 
   // Loading state
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
-        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-600 to-emerald-800 flex items-center justify-center text-white font-extrabold text-xl shadow-emerald mb-4 animate-pulse">
-          DD
-        </div>
-        <div className="flex items-center gap-2 text-sm font-semibold text-slate-600">
-          <Loader2 className="w-4 h-4 animate-spin text-emerald-600" />
-          <span>Loading your financial workspace...</span>
+      <div className="min-h-screen bg-[#F7F8FA] dark:bg-[#101418] flex flex-col items-center justify-center p-4 transition-colors">
+        <div className="bg-[#FFFFFF] dark:bg-[#171D23] border border-[#E5E9EF] dark:border-[#303943] rounded-2xl p-8 fintech-card-shadow flex flex-col items-center max-w-sm w-full text-center">
+          <Logo size="xl" showText={false} className="mb-4" />
+          <h2 className="font-heading font-semibold text-lg text-[#17212B] dark:text-[#F5F7FA] mb-2">
+            DuesDock
+          </h2>
+          <div className="flex items-center gap-2 text-xs font-medium text-[#667085] dark:text-[#9AA6B2]">
+            <Loader2 className="w-4 h-4 animate-spin text-[#008F62] dark:text-[#00C78A]" />
+            <span>Loading your financial workspace...</span>
+          </div>
         </div>
       </div>
     );
@@ -31,68 +50,98 @@ export function App() {
 
   // Google-Only Authentication requirement: Unauthenticated users are presented with Google Sign-In
   if (!user) {
-    return <LoginPage />;
+    return (
+      <Suspense fallback={<LoadingFallback />}>
+        <LoginPage />
+      </Suspense>
+    );
   }
 
   // First-time user onboarding requirement:
-  // If user is authenticated but has not completed onboarding, display the Onboarding Wizard
   // Returning users (profile.is_onboarded === true) skip this completely
   if (profile && !profile.is_onboarded) {
-    return <OnboardingWizard />;
+    return (
+      <Suspense fallback={<LoadingFallback />}>
+        <OnboardingWizard />
+      </Suspense>
+    );
   }
 
   return (
-    <div className="min-h-screen bg-background text-slate-800 flex flex-col font-sans">
-      {/* Top Navbar */}
+    <div className="min-h-screen bg-[#F7F8FA] dark:bg-[#101418] text-[#17212B] dark:text-[#F5F7FA] flex flex-col font-sans transition-colors selection:bg-[#008F62] selection:text-white dark:selection:bg-[#00C78A] dark:selection:text-[#101418]">
+      {/* Unified Top Navigation */}
       <div className="no-print">
-        <Navbar onOpenAddTransaction={() => setActiveTab('transactions')} />
-      </div>
-
-      {/* Navigation Tabs */}
-      <div className="no-print">
-        <NavigationTabs activeTab={activeTab} onTabChange={setActiveTab} />
+        <Navbar
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+          onOpenAddTransaction={() => setIsGlobalAddOpen(true)}
+        />
       </div>
 
       {/* Main Workspace Container */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-8 py-8 space-y-6">
-        {activeTab === 'dashboard' && (
-          <FinanceDashboard
-            onNavigateToTransactions={() => setActiveTab('transactions')}
-            onOpenAddTransaction={() => setActiveTab('transactions')}
-          />
-        )}
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+        <Suspense fallback={<LoadingFallback />}>
+          {activeTab === 'dashboard' && (
+            <FinanceDashboard
+              onNavigateToTransactions={() => setActiveTab('transactions')}
+              onOpenAddTransaction={() => setIsGlobalAddOpen(true)}
+            />
+          )}
 
-        {activeTab === 'transactions' && <TransactionManager />}
+          {activeTab === 'transactions' && <TransactionManager />}
 
-        {activeTab === 'budgets' && <BudgetManager />}
+          {activeTab === 'budgets' && <BudgetManager />}
 
-        {activeTab === 'analytics' && (
-          <FinanceDashboard
-            onNavigateToTransactions={() => setActiveTab('transactions')}
-            onOpenAddTransaction={() => setActiveTab('transactions')}
-          />
-        )}
+          {activeTab === 'analytics' && <AnalyticsManager />}
 
-        {activeTab === 'reports' && <ReportsManager />}
+          {activeTab === 'reports' && <ReportsManager />}
+        </Suspense>
       </main>
 
-      {/* Footer */}
-      <footer className="mt-auto border-t border-slate-200/80 bg-white py-6 no-print">
-        <div className="max-w-7xl mx-auto px-4 sm:px-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
+      {/* Global Add Transaction Modal */}
+      {isGlobalAddOpen && user && (
+        <Suspense fallback={null}>
+          <TransactionModal
+            isOpen={isGlobalAddOpen}
+            onClose={() => setIsGlobalAddOpen(false)}
+            userId={user.id}
+            currency={currency}
+            categories={categories}
+            onTransactionSaved={() => {
+              // Trigger refresh by updating state or event
+              window.dispatchEvent(new Event('duesdock_transaction_saved'));
+            }}
+            onCategoryAdded={(newCat) => setCategories(prev => [...prev, newCat])}
+          />
+        </Suspense>
+      )}
+
+      {/* Premium Fintech Footer */}
+      <footer className="mt-auto border-t border-[#E5E9EF] dark:border-[#303943] bg-[#FFFFFF] dark:bg-[#171D23] py-6 no-print transition-colors">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[#667085] dark:text-[#9AA6B2]">
           <div className="flex items-center gap-2">
-            <span className="font-extrabold text-slate-900 tracking-tight">DuesDock</span>
+            <span className="font-heading font-bold text-[#17212B] dark:text-[#F5F7FA]">
+              DuesDock
+            </span>
             <span>•</span>
-            <span>Personal Finance & Expense Tracker</span>
+            <span>Personal Finance & Wealth Management</span>
           </div>
-          <div className="flex items-center gap-1.5 text-slate-400">
-            <span>Modern Emerald Theme</span>
-            <span>•</span>
-            <span className="text-emerald-700 font-semibold flex items-center gap-1">
+          <div className="flex items-center gap-2">
+            <span className="text-[#008F62] dark:text-[#00C78A] font-medium flex items-center gap-1.5">
               <ShieldCheck className="w-3.5 h-3.5" /> Google OAuth + Supabase RLS
             </span>
           </div>
         </div>
       </footer>
+    </div>
+  );
+}
+
+function LoadingFallback() {
+  return (
+    <div className="p-16 flex items-center justify-center gap-2 text-xs text-[#667085] dark:text-[#9AA6B2]">
+      <Loader2 className="w-5 h-5 animate-spin text-[#008F62] dark:text-[#00C78A]" />
+      <span>Loading content...</span>
     </div>
   );
 }

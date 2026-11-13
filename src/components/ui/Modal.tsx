@@ -47,33 +47,37 @@ export const Modal: React.FC<ModalProps> = ({
       <div className="flex min-h-screen items-center justify-center p-4 text-center">
         {/* Backdrop */}
         <div
-          className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity"
+          className="fixed inset-0 bg-black/45 backdrop-blur-xs transition-opacity"
           onClick={onClose}
         />
 
         {/* Dialog panel */}
         <div
           className={cn(
-            'relative w-full transform rounded-2xl bg-white p-6 text-left shadow-2xl transition-all',
+            'relative w-full transform rounded-2xl bg-[#FFFFFF] dark:bg-[#171D23] p-6 text-left border border-[#E5E9EF] dark:border-[#303943] fintech-modal-shadow transition-all',
             maxWidths[maxWidth]
           )}
         >
-          <div className="flex items-start justify-between pb-4 border-b border-slate-100">
+          <div className="flex items-start justify-between pb-4 border-b border-[#E5E9EF] dark:border-[#303943]">
             <div>
-              <h3 className="text-lg font-bold text-slate-900 leading-6">{title}</h3>
+              <h3 className="font-heading font-semibold text-lg text-[#17212B] dark:text-[#F5F7FA] leading-tight">
+                {title}
+              </h3>
               {description && (
-                <p className="mt-1 text-xs text-slate-500">{description}</p>
+                <p className="mt-1 text-xs text-[#667085] dark:text-[#9AA6B2]">
+                  {description}
+                </p>
               )}
             </div>
             <button
               onClick={onClose}
-              className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors"
+              className="rounded-lg p-1.5 text-[#667085] dark:text-[#9AA6B2] hover:text-[#17212B] dark:hover:text-[#F5F7FA] hover:bg-[#F1F4F6] dark:hover:bg-[#202830] transition-colors"
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4" />
             </button>
           </div>
 
-          <div className="mt-4">{children}</div>
+          <div className="mt-5">{children}</div>
         </div>
       </div>
     </div>

@@ -1,16 +1,12 @@
 import React, { useState } from 'react';
 import { useAuth } from './AuthContext';
 import { Card } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
+import { Logo } from '@/components/common/Logo';
+import { ThemeToggle } from '@/components/common/ThemeToggle';
 import {
   ShieldCheck,
-  Lock,
-  PieChart,
-  FileSpreadsheet,
   AlertCircle,
-  Receipt,
-  Sparkles,
-  ArrowRight,
+  CheckCircle2,
 } from 'lucide-react';
 
 export const LoginPage: React.FC = () => {
@@ -30,54 +26,61 @@ export const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 font-sans">
+    <div className="min-h-screen bg-[#F7F8FA] dark:bg-[#101418] text-[#17212B] dark:text-[#F5F7FA] flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 font-sans transition-colors relative selection:bg-[#008F62] selection:text-white dark:selection:bg-[#00C78A] dark:selection:text-[#101418]">
+      {/* Top Floating Theme Toggle */}
+      <div className="absolute top-5 right-5 sm:top-8 sm:right-8">
+        <ThemeToggle showLabel />
+      </div>
+
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
-        {/* App Logo */}
-        <div className="mx-auto w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-600 to-emerald-800 flex items-center justify-center text-white font-extrabold text-2xl shadow-emerald shadow-md mb-4">
-          DD
+        {/* Brand Header */}
+        <div className="flex justify-center mb-4">
+          <Logo size="xl" showText={false} />
         </div>
-        <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">
-          DuesDock
+        <h1 className="font-heading font-bold text-3xl sm:text-4xl text-[#17212B] dark:text-[#F5F7FA] tracking-tight">
+          Dues<span className="text-[#008F62] dark:text-[#00C78A]">Dock</span>
         </h1>
-        <p className="mt-1.5 text-sm text-slate-600 font-medium">
-          Personal Finance & Intelligent Expense Tracker
+        <p className="mt-2 text-sm text-[#667085] dark:text-[#9AA6B2]">
+          Track Every Expense. Understand Every Rupee.
         </p>
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <Card className="p-8 shadow-card border-slate-200">
+        <Card className="p-7 sm:p-8 border border-[#E5E9EF] dark:border-[#303943] fintech-card-shadow bg-[#FFFFFF] dark:bg-[#171D23] rounded-2xl">
           {!isConfigured && (
-            <div className="mb-6 p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs flex items-start gap-3">
-              <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+            <div className="mb-6 p-4 rounded-xl bg-[#D99A27]/10 border border-[#D99A27]/20 text-[#17212B] dark:text-[#F5F7FA] text-xs flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-[#D99A27] dark:text-[#F0B94B] shrink-0 mt-0.5" />
               <div>
-                <span className="font-bold block">Supabase Setup Notice</span>
+                <span className="font-semibold block mb-1">
+                  Supabase Setup Notice
+                </span>
                 To enable live Google OAuth authentication, configure{' '}
-                <code className="bg-amber-100 px-1 py-0.5 rounded text-[11px] font-mono">
+                <code className="bg-[#F1F4F6] dark:bg-[#202830] px-1.5 py-0.5 rounded text-[11px] font-mono">
                   VITE_SUPABASE_URL
                 </code>{' '}
                 and{' '}
-                <code className="bg-amber-100 px-1 py-0.5 rounded text-[11px] font-mono">
+                <code className="bg-[#F1F4F6] dark:bg-[#202830] px-1.5 py-0.5 rounded text-[11px] font-mono">
                   VITE_SUPABASE_ANON_KEY
                 </code>{' '}
-                in your <code className="font-mono">.env</code> file, and enable Google in your Supabase Auth Providers.
+                in your <code className="font-mono">.env</code> file.
               </div>
             </div>
           )}
 
           {(errorMessage || authError) && (
-            <div className="mb-6 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
+            <div className="mb-6 p-3 rounded-xl bg-[#DC5252]/10 border border-[#DC5252]/20 text-[#DC5252] dark:text-[#FF6666] text-xs font-medium flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{errorMessage || authError}</span>
             </div>
           )}
 
-          <div className="space-y-4">
+          <div className="space-y-6">
             <div className="text-center">
-              <h2 className="text-lg font-bold text-slate-900">
-                Sign in to your account
+              <h2 className="font-heading font-semibold text-lg text-[#17212B] dark:text-[#F5F7FA]">
+                Welcome Back
               </h2>
-              <p className="text-xs text-slate-500 mt-1">
-                Authenticate securely using your Google account. Zero passwords to remember.
+              <p className="text-xs text-[#667085] dark:text-[#9AA6B2] mt-1">
+                Sign in securely to your personal wealth management workspace
               </p>
             </div>
 
@@ -86,10 +89,10 @@ export const LoginPage: React.FC = () => {
               onClick={handleGoogleSignIn}
               disabled={isSubmitting}
               type="button"
-              className="w-full flex items-center justify-center gap-3 bg-white hover:bg-slate-50 text-slate-700 font-semibold text-sm px-4 py-3 rounded-xl border border-slate-300 shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:opacity-60 disabled:cursor-not-allowed hover:border-slate-400 active:scale-[0.99]"
+              className="w-full flex items-center justify-center gap-3 bg-[#FFFFFF] dark:bg-[#202830] hover:bg-[#F7F8FA] dark:hover:bg-[#28323C] text-[#17212B] dark:text-[#F5F7FA] font-medium text-sm px-4 py-3 rounded-xl border border-[#E5E9EF] dark:border-[#303943] shadow-xs hover:shadow transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-[#008F62]/20 dark:focus:ring-[#00C78A]/20 disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
             >
               {/* Official Google Icon SVG */}
-              <svg className="w-5 h-5" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24">
                 <path
                   fill="#4285F4"
                   d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -110,27 +113,28 @@ export const LoginPage: React.FC = () => {
               <span>{isSubmitting ? 'Connecting to Google...' : 'Continue with Google'}</span>
             </button>
 
-            <div className="pt-4 border-t border-slate-100 space-y-2.5 text-xs text-slate-500">
+            {/* Feature Highlights */}
+            <div className="pt-4 border-t border-[#E5E9EF] dark:border-[#303943] space-y-2 text-xs text-[#667085] dark:text-[#9AA6B2]">
               <div className="flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
-                <span>Isolated data with PostgreSQL Row Level Security (RLS)</span>
+                <CheckCircle2 className="w-4 h-4 text-[#008F62] dark:text-[#00C78A] shrink-0" />
+                <span>Private & isolated with PostgreSQL Row Level Security</span>
               </div>
               <div className="flex items-center gap-2">
-                <PieChart className="w-4 h-4 text-emerald-600 shrink-0" />
-                <span>Custom category budgets, income vs expense tracking</span>
+                <CheckCircle2 className="w-4 h-4 text-[#008F62] dark:text-[#00C78A] shrink-0" />
+                <span>Multi-currency tracking: INR, USD, EUR, GBP, CAD, AUD</span>
               </div>
               <div className="flex items-center gap-2">
-                <Receipt className="w-4 h-4 text-emerald-600 shrink-0" />
-                <span>Encrypted private receipt storage & PDF export</span>
+                <CheckCircle2 className="w-4 h-4 text-[#008F62] dark:text-[#00C78A] shrink-0" />
+                <span>Audit-ready CSV ledgers & printable statements</span>
               </div>
             </div>
           </div>
         </Card>
 
-        {/* Security Assurance Banner */}
-        <div className="mt-6 text-center text-xs text-slate-400 flex items-center justify-center gap-1.5">
-          <Lock className="w-3.5 h-3.5 text-emerald-600" />
-          <span>Protected with 256-bit SSL encryption & Google OAuth 2.0</span>
+        {/* Security badge footer */}
+        <div className="mt-6 text-center text-xs text-[#667085] dark:text-[#9AA6B2] flex items-center justify-center gap-1.5">
+          <ShieldCheck className="w-4 h-4 text-[#008F62] dark:text-[#00C78A]" />
+          <span>Encrypted Supabase OAuth • Strictly No Secret Keys In Client</span>
         </div>
       </div>
     </div>

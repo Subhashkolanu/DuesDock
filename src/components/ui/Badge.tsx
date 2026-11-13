@@ -15,31 +15,37 @@ export const Badge: React.FC<BadgeProps> = ({
   ...props
 }) => {
   const variants = {
-    emerald: 'bg-emerald-50 text-emerald-700 border-emerald-200/80',
-    amber: 'bg-amber-50 text-amber-700 border-amber-200/80',
-    rose: 'bg-rose-50 text-rose-700 border-rose-200/80',
-    slate: 'bg-slate-100 text-slate-700 border-slate-200',
-    sky: 'bg-sky-50 text-sky-700 border-sky-200/80',
-    purple: 'bg-purple-50 text-purple-700 border-purple-200/80',
+    emerald:
+      'bg-[#008F62]/10 dark:bg-[#00C78A]/15 text-[#008F62] dark:text-[#00C78A] border border-[#008F62]/20 dark:border-[#00C78A]/30',
+    amber:
+      'bg-[#D99A27]/10 dark:bg-[#F0B94B]/15 text-[#D99A27] dark:text-[#F0B94B] border border-[#D99A27]/20 dark:border-[#F0B94B]/30',
+    rose:
+      'bg-[#DC5252]/10 dark:bg-[#FF6666]/15 text-[#DC5252] dark:text-[#FF6666] border border-[#DC5252]/20 dark:border-[#FF6666]/30',
+    slate:
+      'bg-[#F1F4F6] dark:bg-[#202830] text-[#667085] dark:text-[#9AA6B2] border border-[#E5E9EF] dark:border-[#303943]',
+    sky:
+      'bg-[#0284C7]/10 dark:bg-[#38BDF8]/15 text-[#0284C7] dark:text-[#38BDF8] border border-[#0284C7]/20 dark:border-[#38BDF8]/30',
+    purple:
+      'bg-[#7E22CE]/10 dark:bg-[#C084FC]/15 text-[#7E22CE] dark:text-[#C084FC] border border-[#7E22CE]/20 dark:border-[#C084FC]/30',
   };
 
   const sizes = {
     sm: 'text-[11px] px-2 py-0.5',
-    md: 'text-xs font-medium px-2.5 py-1',
+    md: 'text-xs px-2.5 py-0.5',
   };
 
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1.5 rounded-full border',
+        'inline-flex items-center gap-1.5 rounded-full font-medium select-none',
         variants[variant],
         sizes[size],
         className
       )}
       {...props}
     >
-      <span className="w-1.5 h-1.5 rounded-full bg-current opacity-70" />
-      {children}
+      <span className="w-1.5 h-1.5 rounded-full bg-current shrink-0" />
+      <span>{children}</span>
     </span>
   );
 };
@@ -49,9 +55,9 @@ export const TransactionTypeBadge: React.FC<{ type: TransactionType; className?:
   className,
 }) => {
   if (type === 'income') {
-    return <Badge variant="emerald" className={className}>Income</Badge>;
+    return <Badge variant="emerald" className={className}>+ Income</Badge>;
   }
-  return <Badge variant="rose" className={className}>Expense</Badge>;
+  return <Badge variant="rose" className={className}>- Expense</Badge>;
 };
 
 export const PaymentMethodBadge: React.FC<{ method: PaymentMethod; className?: string }> = ({
@@ -63,7 +69,7 @@ export const PaymentMethodBadge: React.FC<{ method: PaymentMethod; className?: s
     debit_card: { label: 'Debit Card', variant: 'sky' },
     cash: { label: 'Cash', variant: 'slate' },
     bank_transfer: { label: 'Bank Transfer', variant: 'slate' },
-    upi: { label: 'UPI', variant: 'emerald' },
+    upi: { label: 'UPI / Mobile', variant: 'emerald' },
     other: { label: 'Other', variant: 'slate' },
   };
 

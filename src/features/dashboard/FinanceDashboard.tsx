@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '@/features/auth/AuthContext';
+import { useTheme } from '@/context/ThemeContext';
 import { transactionService } from '@/services/transactionService';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
+import { Card, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { StatCard } from '@/components/common/StatCard';
-import { TransactionTypeBadge, PaymentMethodBadge } from '@/components/ui/Badge';
+import { PaymentMethodBadge } from '@/components/ui/Badge';
 import { formatCurrency, CURRENCY_SYMBOLS } from '@/lib/utils';
 import type { Transaction, Category, CurrencyCode } from '@/types/database.types';
 import {
@@ -13,15 +14,13 @@ import {
   Wallet,
   PiggyBank,
   PieChart as PieIcon,
-  Calendar,
   ArrowUpRight,
   Plus,
   Receipt,
   Loader2,
-  AlertCircle,
-  Tag,
   Clock,
-  Sparkles,
+  BarChart3,
+  AlertTriangle,
 } from 'lucide-react';
 import {
   ResponsiveContainer,
@@ -49,6 +48,7 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
   onOpenAddTransaction,
 }) => {
   const { user, profile } = useAuth();
+  const { isDark } = useTheme();
   const currency: CurrencyCode = profile?.preferred_currency || 'USD';
   const monthlyBudgetTarget = profile?.monthly_budget_target || 0;
 
@@ -133,7 +133,7 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
 
   const netCashFlow = periodIncome - periodExpenses;
 
-  // Monthly Budget calculations (compared against monthly target)
+  // Monthly Budget calculations
   const budgetRemaining = monthlyBudgetTarget - periodExpenses;
   const budgetUsagePercent =
     monthlyBudgetTarget > 0 ? (periodExpenses / monthlyBudgetTarget) * 100 : 0;
@@ -148,7 +148,7 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
         const cat = categories.find((c) => c.id === t.category_id);
         const catId = t.category_id || 'uncategorized';
         const catName = cat?.name || 'Uncategorized';
-        const catColor = cat?.color || '#94A3B8';
+        const catColor = cat?.color || '#008F62';
 
         if (!map.has(catId)) {
           map.set(catId, { categoryId: catId, name: catName, color: catColor, total: 0 });
@@ -168,27 +168,28 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
 
   const highestSpendingCategory = categorySpendingBreakdown[0] || null;
 
-  // Monthly Comparison Chart Data (Income vs Expense over past months)
+  // Monthly Comparison Chart Data (Past 6 Months)
   const chartData = useMemo(() => {
-    // Generate buckets for past 6 months
     const buckets: { monthKey: string; label: string; Income: number; Expenses: number }[] = [];
     const now = new Date();
 
     for (let i = 5; i >= 0; i--) {
       const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-      const monthKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const key = `${year}-${month}`;
       const label = d.toLocaleDateString('en-US', { month: 'short' });
-      buckets.push({ monthKey, label, Income: 0, Expenses: 0 });
+      buckets.push({ monthKey: key, label, Income: 0, Expenses: 0 });
     }
 
-    transactions.forEach((t) => {
-      const txMonthKey = t.transaction_date.slice(0, 7);
+    transactions.forEach((tx) => {
+      const txMonthKey = tx.transaction_date.substring(0, 7);
       const bucket = buckets.find((b) => b.monthKey === txMonthKey);
       if (bucket) {
-        if (t.type === 'income') {
-          bucket.Income += Number(t.amount);
+        if (tx.type === 'income') {
+          bucket.Income += Number(tx.amount);
         } else {
-          bucket.Expenses += Number(t.amount);
+          bucket.Expenses += Number(tx.amount);
         }
       }
     });
@@ -218,27 +219,27 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
 
   return (
     <div className="space-y-6">
-      {/* Top Bar: Title & Filter Segment */}
+      {/* Top Bar: Title & Period Switcher */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black text-slate-900 tracking-tight">
-            Financial Overview & Analytics
+          <h1 className="font-heading font-bold text-2xl text-[#17212B] dark:text-[#F5F7FA] tracking-tight">
+            Financial Dashboard
           </h1>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Real-time cash flow, category distributions, and monthly comparisons.
+          <p className="text-xs text-[#667085] dark:text-[#9AA6B2] mt-0.5">
+            Real-time overview of your cash flow, expenditure, and savings
           </p>
         </div>
 
-        {/* Dashboard Period Filter */}
-        <div className="flex items-center gap-1.5 p-1 bg-white border border-slate-200 rounded-xl shadow-2xs">
+        {/* Period Selector Pills */}
+        <div className="flex items-center gap-1 p-1 bg-[#F1F4F6] dark:bg-[#202830] rounded-xl border border-[#E5E9EF] dark:border-[#303943] text-xs">
           {(['this_month', 'last_month', 'last_3_months', 'this_year'] as DashboardPeriodFilter[]).map((p) => (
             <button
               key={p}
               onClick={() => setPeriod(p)}
-              className={`text-xs font-semibold px-3 py-1.5 rounded-lg transition-all ${
+              className={`px-3 py-1.5 rounded-lg font-medium transition-all cursor-pointer ${
                 period === p
-                  ? 'bg-emerald-600 text-white shadow-emerald shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                  ? 'bg-[#FFFFFF] dark:bg-[#171D23] text-[#008F62] dark:text-[#00C78A] shadow-xs font-semibold'
+                  : 'text-[#667085] dark:text-[#9AA6B2] hover:text-[#17212B] dark:hover:text-[#F5F7FA]'
               }`}
             >
               {formatPeriodLabel(p)}
@@ -248,12 +249,12 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
       </div>
 
       {isLoading ? (
-        <div className="p-16 text-center text-xs text-slate-400 flex items-center justify-center gap-2">
-          <Loader2 className="w-5 h-5 animate-spin text-emerald-600" />
-          <span>Calculating financial indicators...</span>
+        <div className="p-16 text-center text-xs text-[#667085] dark:text-[#9AA6B2] flex items-center justify-center gap-2">
+          <Loader2 className="w-5 h-5 animate-spin text-[#008F62] dark:text-[#00C78A]" />
+          <span>Loading financial overview...</span>
         </div>
       ) : fetchError ? (
-        <div className="p-8 text-center text-xs text-rose-600 bg-rose-50 border border-rose-200 rounded-2xl">
+        <div className="p-8 text-center text-xs text-[#DC5252] dark:text-[#FF6666] bg-[#DC5252]/10 border border-[#DC5252]/20 rounded-xl">
           <p className="font-semibold">{fetchError}</p>
           <Button variant="outline" size="sm" onClick={loadData} className="mt-3">
             Retry
@@ -261,30 +262,35 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
         </div>
       ) : (
         <>
-          {/* 1. FINANCIAL SUMMARY CARDS */}
+          {/* 1. FINANCIAL SUMMARY METRIC CARDS (Net balance receives strongest emphasis) */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <StatCard
-              title={`Income (${formatPeriodLabel(period)})`}
+              prominent
+              title="Net Cash Flow"
+              value={formatCurrency(netCashFlow, currency)}
+              subtitle={netCashFlow >= 0 ? 'Surplus savings cushion' : 'Deficit expenditure alert'}
+              icon={<Wallet className="w-5 h-5" />}
+              color={netCashFlow >= 0 ? 'emerald' : 'rose'}
+              trend={{
+                value: netCashFlow >= 0 ? 'Surplus' : 'Deficit',
+                isPositive: netCashFlow >= 0,
+              }}
+            />
+
+            <StatCard
+              title={`Total Inflow (${formatPeriodLabel(period)})`}
               value={formatCurrency(periodIncome, currency)}
-              subtitle={`${filteredTransactions.filter((t) => t.type === 'income').length} deposits`}
+              subtitle={`${filteredTransactions.filter((t) => t.type === 'income').length} deposits recorded`}
               icon={<TrendingUp className="w-5 h-5" />}
               color="emerald"
             />
 
             <StatCard
-              title={`Expenses (${formatPeriodLabel(period)})`}
+              title={`Total Outflow (${formatPeriodLabel(period)})`}
               value={formatCurrency(periodExpenses, currency)}
-              subtitle={`${filteredTransactions.filter((t) => t.type === 'expense').length} payments`}
+              subtitle={`${filteredTransactions.filter((t) => t.type === 'expense').length} payments made`}
               icon={<TrendingDown className="w-5 h-5" />}
               color="rose"
-            />
-
-            <StatCard
-              title="Net Cash Flow"
-              value={formatCurrency(netCashFlow, currency)}
-              subtitle={netCashFlow >= 0 ? 'Surplus savings' : 'Deficit spending'}
-              icon={<Wallet className="w-5 h-5" />}
-              color={netCashFlow >= 0 ? 'emerald' : 'rose'}
             />
 
             <StatCard
@@ -292,37 +298,87 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
               value={
                 monthlyBudgetTarget > 0
                   ? formatCurrency(budgetRemaining, currency)
-                  : 'No Budget Set'
+                  : 'No Target Set'
               }
               subtitle={
                 monthlyBudgetTarget > 0
-                  ? `${Math.round(budgetUsagePercent)}% of target used`
-                  : 'Configure in settings'
+                  ? `${Math.round(budgetUsagePercent)}% of target limit used`
+                  : 'Configure in Budgets'
               }
               icon={<PiggyBank className="w-5 h-5" />}
               color={budgetRemaining >= 0 ? 'emerald' : 'rose'}
             />
           </div>
 
+          {/* Budget Utilization Overview Banner (if budget target set) */}
+          {monthlyBudgetTarget > 0 && (
+            <div className="p-4 rounded-xl border border-[#E5E9EF] dark:border-[#303943] bg-[#FFFFFF] dark:bg-[#171D23] fintech-card-shadow flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-semibold text-[#17212B] dark:text-[#F5F7FA]">
+                    Monthly Budget Progress
+                  </span>
+                  <span
+                    className={`text-xs font-bold px-2 py-0.5 rounded-full ${
+                      budgetUsagePercent >= 100
+                        ? 'bg-[#DC5252]/10 text-[#DC5252] dark:text-[#FF6666]'
+                        : budgetUsagePercent >= 80
+                        ? 'bg-[#D99A27]/10 text-[#D99A27] dark:text-[#F0B94B]'
+                        : 'bg-[#008F62]/10 text-[#008F62] dark:text-[#00C78A]'
+                    }`}
+                  >
+                    {Math.round(budgetUsagePercent)}% Utilized
+                  </span>
+                </div>
+                <p className="text-xs text-[#667085] dark:text-[#9AA6B2]">
+                  {formatCurrency(periodExpenses, currency)} spent of {formatCurrency(monthlyBudgetTarget, currency)} ceiling
+                </p>
+              </div>
+
+              {/* Progress bar */}
+              <div className="w-full sm:w-72 space-y-1">
+                <div className="w-full bg-[#F1F4F6] dark:bg-[#202830] rounded-full h-2 overflow-hidden">
+                  <div
+                    className={`h-full rounded-full transition-all duration-300 ${
+                      budgetUsagePercent >= 100
+                        ? 'bg-[#DC5252] dark:bg-[#FF6666]'
+                        : budgetUsagePercent >= 80
+                        ? 'bg-[#D99A27] dark:bg-[#F0B94B]'
+                        : 'bg-[#008F62] dark:bg-[#00C78A]'
+                    }`}
+                    style={{ width: `${Math.min(100, Math.max(0, budgetUsagePercent))}%` }}
+                  />
+                </div>
+                {budgetUsagePercent >= 100 && (
+                  <p className="text-[11px] text-[#DC5252] dark:text-[#FF6666] font-medium flex items-center gap-1">
+                    <AlertTriangle className="w-3 h-3" /> Budget ceiling exceeded
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* Clean Empty Account State: When user has 0 total transactions */}
           {transactions.length === 0 ? (
-            <Card className="p-10 text-center space-y-3 bg-white border-dashed border-2 border-slate-200">
-              <div className="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto mb-2">
-                <Receipt className="w-7 h-7" />
+            <Card className="p-12 text-center space-y-4 border border-dashed border-[#E5E9EF] dark:border-[#303943]">
+              <div className="w-12 h-12 rounded-2xl bg-[#008F62]/10 dark:bg-[#00C78A]/15 text-[#008F62] dark:text-[#00C78A] flex items-center justify-center mx-auto mb-2">
+                <Receipt className="w-6 h-6" />
               </div>
-              <h3 className="text-base font-bold text-slate-900">
-                Welcome to DuesDock Personal Finance
-              </h3>
-              <p className="text-xs text-slate-500 max-w-sm mx-auto">
-                No financial transactions have been recorded yet. Click below to add your first income deposit or daily expense to generate charts.
-              </p>
+              <div>
+                <h3 className="font-heading font-semibold text-lg text-[#17212B] dark:text-[#F5F7FA]">
+                  No Transactions Recorded Yet
+                </h3>
+                <p className="text-xs text-[#667085] dark:text-[#9AA6B2] max-w-md mx-auto mt-1">
+                  Record your first income deposit or daily expense to generate real-time financial charts and category breakdowns.
+                </p>
+              </div>
               <Button
                 variant="primary"
-                size="sm"
+                size="md"
                 onClick={onOpenAddTransaction}
                 leftIcon={<Plus className="w-4 h-4" />}
               >
-                Add Your First Transaction
+                Record First Transaction
               </Button>
             </Card>
           ) : (
@@ -331,46 +387,50 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Monthly Income vs Expense Chart (2 Cols) */}
                 <Card className="lg:col-span-2 p-6 flex flex-col justify-between">
-                  <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center justify-between pb-4 border-b border-[#E5E9EF] dark:border-[#303943]">
                     <div>
-                      <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                        <TrendingUp className="w-4 h-4 text-emerald-600" />
-                        Income vs. Expenses Trend
+                      <h2 className="font-heading font-semibold text-base text-[#17212B] dark:text-[#F5F7FA] flex items-center gap-2">
+                        <BarChart3 className="w-4 h-4 text-[#008F62] dark:text-[#00C78A]" />
+                        Income vs. Expenses
                       </h2>
-                      <p className="text-xs text-slate-500 mt-0.5">
-                        6-month comparative cash flow breakdown in {currency}
+                      <p className="text-xs text-[#667085] dark:text-[#9AA6B2] mt-0.5">
+                        Past 6 months comparison in {currency}
                       </p>
                     </div>
                   </div>
 
-                  <div className="h-72 w-full pt-2">
+                  <div className="h-72 w-full pt-4">
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart
                         data={chartData}
                         margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
                       >
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F1F5F9" />
+                        <CartesianGrid
+                          strokeDasharray="3 3"
+                          vertical={false}
+                          stroke={isDark ? '#303943' : '#E5E9EF'}
+                        />
                         <XAxis
                           dataKey="label"
-                          tick={{ fill: '#64748B', fontSize: 11 }}
-                          axisLine={{ stroke: '#E2E8F0' }}
+                          tick={{ fill: isDark ? '#9AA6B2' : '#667085', fontSize: 11 }}
+                          axisLine={{ stroke: isDark ? '#303943' : '#E5E9EF' }}
                           tickLine={false}
                         />
                         <YAxis
-                          tick={{ fill: '#64748B', fontSize: 11 }}
-                          axisLine={false}
+                          tick={{ fill: isDark ? '#9AA6B2' : '#667085', fontSize: 11 }}
+                          axisLine={{ stroke: isDark ? '#303943' : '#E5E9EF' }}
                           tickLine={false}
                           tickFormatter={(v) => `${CURRENCY_SYMBOLS[currency]}${v >= 1000 ? (v / 1000).toFixed(0) + 'k' : v}`}
                         />
                         <Tooltip
                           formatter={(value: any) => [formatCurrency(Number(value), currency), '']}
                           contentStyle={{
-                            backgroundColor: '#0F172A',
-                            borderRadius: '12px',
-                            border: 'none',
-                            color: '#FFFFFF',
+                            backgroundColor: isDark ? '#171D23' : '#FFFFFF',
+                            borderRadius: '8px',
+                            border: `1px solid ${isDark ? '#303943' : '#E5E9EF'}`,
+                            color: isDark ? '#F5F7FA' : '#17212B',
                             fontSize: '12px',
-                            boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+                            boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)',
                           }}
                         />
                         <Legend
@@ -379,35 +439,35 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
                         />
                         <Bar
                           dataKey="Income"
-                          fill="#059669"
-                          radius={[6, 6, 0, 0]}
-                          maxBarSize={36}
+                          fill={isDark ? '#00C78A' : '#008F62'}
+                          radius={[4, 4, 0, 0]}
+                          maxBarSize={32}
                         />
                         <Bar
                           dataKey="Expenses"
-                          fill="#E11D48"
-                          radius={[6, 6, 0, 0]}
-                          maxBarSize={36}
+                          fill={isDark ? '#FF6666' : '#DC5252'}
+                          radius={[4, 4, 0, 0]}
+                          maxBarSize={32}
                         />
                       </BarChart>
                     </ResponsiveContainer>
                   </div>
                 </Card>
 
-                {/* Category Analytics & Donut (1 Col) */}
+                {/* Category Analytics (1 Col) */}
                 <Card className="p-6 flex flex-col justify-between">
-                  <div>
-                    <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                      <PieIcon className="w-4 h-4 text-emerald-600" />
+                  <div className="pb-4 border-b border-[#E5E9EF] dark:border-[#303943]">
+                    <h2 className="font-heading font-semibold text-base text-[#17212B] dark:text-[#F5F7FA] flex items-center gap-2">
+                      <PieIcon className="w-4 h-4 text-[#008F62] dark:text-[#00C78A]" />
                       Spending by Category
                     </h2>
-                    <p className="text-xs text-slate-500 mt-0.5">
-                      Expense breakdown for {formatPeriodLabel(period)}
+                    <p className="text-xs text-[#667085] dark:text-[#9AA6B2] mt-0.5">
+                      Distribution for {formatPeriodLabel(period)}
                     </p>
                   </div>
 
                   {categorySpendingBreakdown.length === 0 ? (
-                    <div className="py-12 text-center text-xs text-slate-400">
+                    <div className="py-16 text-center text-xs text-[#667085] dark:text-[#9AA6B2]">
                       No expense transactions logged for this period.
                     </div>
                   ) : (
@@ -423,8 +483,10 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
                               cx="50%"
                               cy="50%"
                               innerRadius={48}
-                              outerRadius={68}
+                              outerRadius={72}
                               paddingAngle={3}
+                              stroke={isDark ? '#171D23' : '#FFFFFF'}
+                              strokeWidth={2}
                             >
                               {categorySpendingBreakdown.map((entry, index) => (
                                 <Cell key={`cell-${index}`} fill={entry.color} />
@@ -433,10 +495,10 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
                             <Tooltip
                               formatter={(value: any) => [formatCurrency(Number(value), currency), '']}
                               contentStyle={{
-                                backgroundColor: '#0F172A',
-                                borderRadius: '10px',
-                                border: 'none',
-                                color: '#FFFFFF',
+                                backgroundColor: isDark ? '#171D23' : '#FFFFFF',
+                                borderRadius: '8px',
+                                border: `1px solid ${isDark ? '#303943' : '#E5E9EF'}`,
+                                color: isDark ? '#F5F7FA' : '#17212B',
                                 fontSize: '11px',
                               }}
                             />
@@ -444,39 +506,42 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
                         </ResponsiveContainer>
                       </div>
 
-                      {/* Highest Spending Category Callout */}
+                      {/* Top Spending Category Callout */}
                       {highestSpendingCategory && (
-                        <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs mb-3 flex items-center justify-between">
+                        <div className="p-3 rounded-xl bg-[#F7F8FA] dark:bg-[#101418] border border-[#E5E9EF] dark:border-[#303943] text-xs mb-3 flex items-center justify-between">
                           <div>
-                            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
-                              Top Expense Category
+                            <span className="text-[10px] font-medium text-[#667085] dark:text-[#9AA6B2] block">
+                              Top Spending Category
                             </span>
-                            <span className="font-bold text-slate-900">
+                            <span className="font-semibold text-[#17212B] dark:text-[#F5F7FA]">
                               {highestSpendingCategory.name}
                             </span>
                           </div>
-                          <span className="font-mono font-bold text-rose-600">
+                          <span className="font-mono font-bold text-[#DC5252] dark:text-[#FF6666]">
                             {formatCurrency(highestSpendingCategory.total, currency)} ({Math.round(highestSpendingCategory.percentage)}%)
                           </span>
                         </div>
                       )}
 
-                      {/* Top Category List */}
+                      {/* Top Category List with Progress Bars */}
                       <div className="space-y-2 max-h-36 overflow-y-auto pr-1">
                         {categorySpendingBreakdown.slice(0, 4).map((cat) => (
                           <div key={cat.categoryId} className="text-xs space-y-1">
-                            <div className="flex justify-between items-center text-slate-700">
+                            <div className="flex justify-between items-center text-[#17212B] dark:text-[#F5F7FA]">
                               <span className="flex items-center gap-1.5 font-medium truncate max-w-[140px]">
-                                <span className="w-2 h-2 rounded-full" style={{ backgroundColor: cat.color }} />
+                                <span
+                                  className="w-2 h-2 rounded-full"
+                                  style={{ backgroundColor: cat.color }}
+                                />
                                 {cat.name}
                               </span>
                               <span className="font-mono font-semibold">
                                 {formatCurrency(cat.total, currency)}
                               </span>
                             </div>
-                            <div className="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
+                            <div className="w-full bg-[#F1F4F6] dark:bg-[#202830] rounded-full h-1.5 overflow-hidden">
                               <div
-                                className="h-1.5 rounded-full"
+                                className="h-full rounded-full transition-all duration-300"
                                 style={{
                                   width: `${cat.percentage}%`,
                                   backgroundColor: cat.color,
@@ -491,41 +556,41 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
                 </Card>
               </div>
 
-              {/* 4. RECENT TRANSACTIONS (Latest 5) */}
+              {/* 4. RECENT TRANSACTIONS LEDGER (Latest 5) */}
               <Card>
                 <CardHeader>
                   <div>
                     <CardTitle className="flex items-center gap-2">
-                      <Clock className="w-4 h-4 text-emerald-600" />
+                      <Clock className="w-4 h-4 text-[#008F62] dark:text-[#00C78A]" />
                       Recent Transactions
                     </CardTitle>
-                    <p className="text-xs text-slate-500 mt-0.5">
-                      Your latest 5 financial activities
+                    <p className="text-xs text-[#667085] dark:text-[#9AA6B2] mt-0.5">
+                      Your latest 5 financial movements
                     </p>
                   </div>
 
                   <Button
-                    variant="soft"
+                    variant="ghost"
                     size="sm"
                     onClick={onNavigateToTransactions}
                     rightIcon={<ArrowUpRight className="w-3.5 h-3.5" />}
                   >
-                    View All Transactions
+                    View All
                   </Button>
                 </CardHeader>
 
                 <div className="overflow-x-auto">
                   <table className="w-full text-left border-collapse text-xs">
                     <thead>
-                      <tr className="border-b border-slate-200/80 bg-slate-50 text-[11px] font-bold text-slate-600 uppercase tracking-wider">
-                        <th className="py-3 px-4">Date</th>
-                        <th className="py-3 px-4">Merchant / Description</th>
-                        <th className="py-3 px-4">Category</th>
-                        <th className="py-3 px-4">Method</th>
-                        <th className="py-3 px-4 text-right">Amount</th>
+                      <tr className="border-b border-[#E5E9EF] dark:border-[#303943] bg-[#F7F8FA] dark:bg-[#101418] text-[11px] font-semibold text-[#667085] dark:text-[#9AA6B2]">
+                        <th className="py-3 px-6">Date</th>
+                        <th className="py-3 px-6">Merchant / Description</th>
+                        <th className="py-3 px-6">Category</th>
+                        <th className="py-3 px-6">Method</th>
+                        <th className="py-3 px-6 text-right">Amount</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100">
+                    <tbody className="divide-y divide-[#E5E9EF] dark:divide-[#303943]">
                       {recentTransactions.map((tx) => {
                         const category = categories.find((c) => c.id === tx.category_id);
                         const isIncome = tx.type === 'income';
@@ -533,47 +598,40 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
                         return (
                           <tr
                             key={tx.id}
-                            className="hover:bg-slate-50/80 transition-colors cursor-pointer"
+                            className="hover:bg-[#F1F4F6]/60 dark:hover:bg-[#202830]/60 transition-colors cursor-pointer"
                             onClick={onNavigateToTransactions}
                           >
-                            <td className="py-3 px-4 text-slate-600 font-medium whitespace-nowrap">
+                            <td className="py-3.5 px-6 text-[#667085] dark:text-[#9AA6B2] whitespace-nowrap">
                               {new Date(tx.transaction_date).toLocaleDateString('en-US', {
                                 month: 'short',
                                 day: 'numeric',
                               })}
                             </td>
 
-                            <td className="py-3 px-4 font-bold text-slate-900">
+                            <td className="py-3.5 px-6 font-medium text-[#17212B] dark:text-[#F5F7FA]">
                               {tx.merchant || (isIncome ? 'Income Deposit' : 'Expense Payment')}
                             </td>
 
-                            <td className="py-3 px-4 whitespace-nowrap">
+                            <td className="py-3.5 px-6 whitespace-nowrap">
                               {category ? (
-                                <span
-                                  className="inline-flex items-center gap-1.5 text-xs font-semibold px-2 py-0.5 rounded-full border"
-                                  style={{
-                                    backgroundColor: `${category.color}15`,
-                                    color: category.color,
-                                    borderColor: `${category.color}30`,
-                                  }}
-                                >
+                                <span className="inline-flex items-center gap-1.5 text-xs text-[#17212B] dark:text-[#F5F7FA]">
                                   <span
-                                    className="w-1.5 h-1.5 rounded-full"
+                                    className="w-2 h-2 rounded-full shrink-0"
                                     style={{ backgroundColor: category.color }}
                                   />
                                   {category.name}
                                 </span>
                               ) : (
-                                <span className="text-slate-400 italic">Uncategorized</span>
+                                <span className="text-[#667085] dark:text-[#9AA6B2] italic">Uncategorized</span>
                               )}
                             </td>
 
-                            <td className="py-3 px-4 whitespace-nowrap">
+                            <td className="py-3.5 px-6 whitespace-nowrap">
                               <PaymentMethodBadge method={tx.payment_method} />
                             </td>
 
-                            <td className="py-3 px-4 text-right font-mono font-bold whitespace-nowrap text-sm">
-                              <span className={isIncome ? 'text-emerald-700' : 'text-slate-900'}>
+                            <td className="py-3.5 px-6 text-right font-mono font-semibold whitespace-nowrap text-sm">
+                              <span className={isIncome ? 'text-[#008F62] dark:text-[#00C78A]' : 'text-[#17212B] dark:text-[#F5F7FA]'}>
                                 {isIncome ? '+' : '-'} {formatCurrency(tx.amount, currency)}
                               </span>
                             </td>

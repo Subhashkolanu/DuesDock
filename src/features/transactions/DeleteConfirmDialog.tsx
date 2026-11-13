@@ -33,24 +33,35 @@ export const DeleteConfirmDialog: React.FC<DeleteConfirmDialogProps> = ({
       maxWidth="sm"
     >
       <div className="space-y-4">
-        <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-800 flex items-start gap-2.5">
-          <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+        <div className="p-4 bg-[#DC5252]/10 border border-[#DC5252]/20 rounded-xl text-xs text-[#DC5252] dark:text-[#FF6666] flex items-start gap-3">
+          <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5" />
           <div>
             <span>Are you sure you want to permanently delete this transaction for </span>
-            <span className="font-bold text-rose-950 font-mono">
+            <strong className="font-semibold font-mono">
               {formatCurrency(transaction.amount, currency)}
-            </span>
+            </strong>
             <span>?</span>
           </div>
         </div>
 
-        <div className="text-xs text-slate-500 bg-slate-50 p-2.5 rounded-lg border border-slate-200">
-          <div><span className="font-semibold">Type:</span> {transaction.type.toUpperCase()}</div>
-          <div><span className="font-semibold">Date:</span> {transaction.transaction_date}</div>
-          {transaction.merchant && <div><span className="font-semibold">Merchant:</span> {transaction.merchant}</div>}
+        <div className="text-xs text-[#17212B] dark:text-[#F5F7FA] bg-[#F7F8FA] dark:bg-[#101418] p-3.5 rounded-xl border border-[#E5E9EF] dark:border-[#303943] space-y-1 font-mono">
+          <div>
+            <span className="text-[#667085] dark:text-[#9AA6B2]">Type:</span>{' '}
+            <span className="font-semibold capitalize">{transaction.type}</span>
+          </div>
+          <div>
+            <span className="text-[#667085] dark:text-[#9AA6B2]">Date:</span>{' '}
+            <span>{transaction.transaction_date}</span>
+          </div>
+          {transaction.merchant && (
+            <div>
+              <span className="text-[#667085] dark:text-[#9AA6B2]">Merchant:</span>{' '}
+              <span>{transaction.merchant}</span>
+            </div>
+          )}
         </div>
 
-        <div className="flex justify-end gap-2 pt-2 border-t border-slate-100">
+        <div className="flex justify-end gap-3 pt-3 border-t border-[#E5E9EF] dark:border-[#303943]">
           <Button variant="outline" size="sm" onClick={onClose} disabled={isDeleting}>
             Cancel
           </Button>

@@ -13,7 +13,6 @@ import {
   AlertCircle,
   FileText,
   Plus,
-  Loader2,
 } from 'lucide-react';
 
 export interface TransactionModalProps {
@@ -197,25 +196,25 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         {errorMessage && (
-          <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-800 flex items-start gap-2">
-            <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+          <div className="p-3 bg-[#DC5252]/10 border border-[#DC5252]/20 rounded-xl text-xs text-[#DC5252] dark:text-[#FF6666] flex items-start gap-2">
+            <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
             <span>{errorMessage}</span>
           </div>
         )}
 
         {/* Transaction Type Segment Control */}
         <div>
-          <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+          <label className="block text-xs font-medium text-[#17212B] dark:text-[#F5F7FA] mb-1.5">
             Transaction Type
           </label>
-          <div className="grid grid-cols-2 gap-2 p-1 bg-slate-100 rounded-xl">
+          <div className="grid grid-cols-2 gap-2 p-1 bg-[#F1F4F6] dark:bg-[#202830] rounded-xl border border-[#E5E9EF] dark:border-[#303943]">
             <button
               type="button"
               onClick={() => setType('expense')}
-              className={`flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-xs font-bold transition-all ${
+              className={`flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-semibold transition-all ${
                 type === 'expense'
-                  ? 'bg-white text-rose-600 shadow-sm'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-[#FFFFFF] dark:bg-[#171D23] text-[#DC5252] dark:text-[#FF6666] shadow-xs'
+                  : 'text-[#667085] dark:text-[#9AA6B2] hover:text-[#17212B] dark:hover:text-[#F5F7FA]'
               }`}
             >
               <TrendingDown className="w-4 h-4" />
@@ -224,10 +223,10 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
             <button
               type="button"
               onClick={() => setType('income')}
-              className={`flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-xs font-bold transition-all ${
+              className={`flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-semibold transition-all ${
                 type === 'income'
-                  ? 'bg-white text-emerald-600 shadow-sm'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-[#FFFFFF] dark:bg-[#171D23] text-[#008F62] dark:text-[#00C78A] shadow-xs'
+                  : 'text-[#667085] dark:text-[#9AA6B2] hover:text-[#17212B] dark:hover:text-[#F5F7FA]'
               }`}
             >
               <TrendingUp className="w-4 h-4" />
@@ -247,7 +246,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
             leftElement={
-              <span className="font-bold text-slate-500 font-mono">
+              <span className="font-semibold text-[#667085] dark:text-[#9AA6B2] font-mono text-sm">
                 {CURRENCY_SYMBOLS[currency]}
               </span>
             }
@@ -265,32 +264,32 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
 
         {/* Category Selector with Custom Category Creator */}
         <div>
-          <div className="flex items-center justify-between mb-1">
-            <label className="block text-xs font-semibold text-slate-700">
+          <div className="flex items-center justify-between mb-1.5">
+            <label className="block text-xs font-medium text-[#17212B] dark:text-[#F5F7FA]">
               Category
             </label>
             <button
               type="button"
               onClick={() => setIsAddingCustomCat(!isAddingCustomCat)}
-              className="text-[11px] text-emerald-600 hover:text-emerald-700 font-semibold inline-flex items-center gap-1"
+              className="text-xs font-medium text-[#008F62] dark:text-[#00C78A] hover:underline inline-flex items-center gap-1"
             >
-              <Plus className="w-3 h-3" />
-              {isAddingCustomCat ? 'Cancel Custom' : 'New Custom Category'}
+              <Plus className="w-3.5 h-3.5" />
+              {isAddingCustomCat ? 'Cancel custom' : 'New category'}
             </button>
           </div>
 
           {isAddingCustomCat ? (
-            <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-2 mb-2">
-              <span className="text-[11px] font-bold text-slate-700 block">
-                Create New {type === 'income' ? 'Income' : 'Expense'} Category
+            <div className="p-3 bg-[#F7F8FA] dark:bg-[#101418] border border-[#E5E9EF] dark:border-[#303943] rounded-xl space-y-2 mb-2">
+              <span className="text-xs font-medium text-[#17212B] dark:text-[#F5F7FA] block">
+                Create new {type === 'income' ? 'income' : 'expense'} category
               </span>
               <div className="flex gap-2">
                 <input
                   type="text"
-                  placeholder="e.g. Gym Membership, Side Hustle..."
+                  placeholder="e.g. Gym, Subscriptions, Freelance..."
                   value={newCatName}
                   onChange={(e) => setNewCatName(e.target.value)}
-                  className="flex-1 rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs text-slate-900 focus:outline-none focus:border-emerald-500"
+                  className="flex-1 rounded-lg border border-[#E5E9EF] dark:border-[#303943] bg-[#FFFFFF] dark:bg-[#171D23] px-3 py-1.5 text-xs text-[#17212B] dark:text-[#F5F7FA] focus:outline-none focus:border-[#008F62] dark:focus:border-[#00C78A]"
                 />
                 <Button
                   variant="primary"
@@ -308,7 +307,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
             <select
               value={categoryId}
               onChange={(e) => setCategoryId(e.target.value)}
-              className="w-full h-10 rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-medium text-slate-800 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+              className="w-full h-10 rounded-lg border border-[#E5E9EF] dark:border-[#303943] bg-[#FFFFFF] dark:bg-[#101418] px-3 py-2 text-xs font-medium text-[#17212B] dark:text-[#F5F7FA] focus:outline-none focus:border-[#008F62] dark:focus:border-[#00C78A]"
               required
             >
               {availableCategories.length === 0 ? (
@@ -327,13 +326,13 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
         {/* Payment Method & Merchant */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1">
+            <label className="block text-xs font-medium text-[#17212B] dark:text-[#F5F7FA] mb-1.5">
               Payment Method
             </label>
             <select
               value={paymentMethod}
               onChange={(e) => setPaymentMethod(e.target.value as PaymentMethod)}
-              className="w-full h-10 rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-medium text-slate-800 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+              className="w-full h-10 rounded-lg border border-[#E5E9EF] dark:border-[#303943] bg-[#FFFFFF] dark:bg-[#101418] px-3 py-2 text-xs font-medium text-[#17212B] dark:text-[#F5F7FA] focus:outline-none focus:border-[#008F62] dark:focus:border-[#00C78A]"
             >
               <option value="debit_card">Debit Card</option>
               <option value="credit_card">Credit Card</option>
@@ -346,7 +345,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
 
           <Input
             label="Merchant / Payee (Optional)"
-            placeholder="e.g. Trader Joe's, Google, Netflix"
+            placeholder="e.g. Trader Joe's, Netflix, Google"
             value={merchant}
             onChange={(e) => setMerchant(e.target.value)}
           />
@@ -354,57 +353,57 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
 
         {/* Notes */}
         <div>
-          <label className="block text-xs font-semibold text-slate-700 mb-1">
-            Description & Notes (Optional)
+          <label className="block text-xs font-medium text-[#17212B] dark:text-[#F5F7FA] mb-1.5">
+            Notes & Description (Optional)
           </label>
           <textarea
             rows={2}
-            placeholder="Add memo, invoice number, or description..."
+            placeholder="Add memo, invoice reference, or payment note..."
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            className="w-full rounded-lg border border-slate-300 p-2.5 text-xs text-slate-900 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+            className="w-full rounded-lg border border-[#E5E9EF] dark:border-[#303943] bg-[#FFFFFF] dark:bg-[#101418] p-3 text-xs text-[#17212B] dark:text-[#F5F7FA] placeholder:text-[#667085]/60 dark:placeholder:text-[#9AA6B2]/60 focus:outline-none focus:border-[#008F62] dark:focus:border-[#00C78A]"
           />
         </div>
 
         {/* Receipt Attachment (JPG, PNG, PDF < 5MB) */}
         <div>
-          <label className="block text-xs font-semibold text-slate-700 mb-1">
-            Receipt Attachment (JPG, PNG, or PDF under 5MB)
+          <label className="block text-xs font-medium text-[#17212B] dark:text-[#F5F7FA] mb-1.5">
+            Receipt Attachment (JPG, PNG, PDF &lt; 5MB)
           </label>
           {receiptFile ? (
-            <div className="flex items-center justify-between p-2.5 bg-emerald-50 border border-emerald-200 rounded-lg text-xs text-emerald-800">
+            <div className="flex items-center justify-between p-3 bg-[#008F62]/10 border border-[#008F62]/20 rounded-xl text-xs text-[#008F62] dark:text-[#00C78A]">
               <div className="flex items-center gap-2 truncate">
-                <FileText className="w-4 h-4 text-emerald-600 shrink-0" />
+                <FileText className="w-4 h-4 shrink-0" />
                 <span className="truncate font-medium">{receiptFile.name}</span>
-                <span className="text-[11px] text-emerald-600">
+                <span className="text-[11px] opacity-75">
                   ({(receiptFile.size / 1024).toFixed(0)} KB)
                 </span>
               </div>
               <button
                 type="button"
                 onClick={() => setReceiptFile(null)}
-                className="text-slate-400 hover:text-rose-600 ml-2"
+                className="text-[#DC5252] dark:text-[#FF6666] hover:opacity-80 ml-2"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
           ) : existingReceiptPath ? (
-            <div className="flex items-center justify-between p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-700">
+            <div className="flex items-center justify-between p-3 bg-[#F1F4F6] dark:bg-[#202830] border border-[#E5E9EF] dark:border-[#303943] rounded-xl text-xs text-[#17212B] dark:text-[#F5F7FA]">
               <div className="flex items-center gap-2 truncate">
-                <FileText className="w-4 h-4 text-emerald-600 shrink-0" />
-                <span className="truncate">Attached Receipt on File</span>
+                <FileText className="w-4 h-4 text-[#008F62] dark:text-[#00C78A] shrink-0" />
+                <span className="truncate font-medium">Receipt on file</span>
               </div>
               <button
                 type="button"
                 onClick={() => setExistingReceiptPath(null)}
-                className="text-slate-400 hover:text-rose-600 text-[11px] font-semibold"
+                className="text-[#DC5252] dark:text-[#FF6666] font-medium text-xs hover:underline"
               >
                 Remove
               </button>
             </div>
           ) : (
-            <label className="flex items-center justify-center gap-2 border border-dashed border-slate-300 rounded-lg p-3 text-xs text-slate-500 hover:bg-slate-50 hover:border-emerald-500 cursor-pointer transition-colors">
-              <Paperclip className="w-4 h-4 text-slate-400" />
+            <label className="flex items-center justify-center gap-2 border border-dashed border-[#E5E9EF] dark:border-[#303943] rounded-xl p-4 text-xs font-medium text-[#667085] dark:text-[#9AA6B2] hover:text-[#17212B] dark:hover:text-[#F5F7FA] hover:border-[#008F62] dark:hover:border-[#00C78A] cursor-pointer transition-colors bg-[#FFFFFF] dark:bg-[#171D23]">
+              <Paperclip className="w-4 h-4" />
               <span>Click to attach receipt (JPG, PNG, PDF)</span>
               <input
                 type="file"
@@ -417,7 +416,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
         </div>
 
         {/* Modal Actions */}
-        <div className="flex justify-end gap-2 pt-3 border-t border-slate-100">
+        <div className="flex justify-end gap-3 pt-4 border-t border-[#E5E9EF] dark:border-[#303943]">
           <Button variant="outline" size="sm" type="button" onClick={onClose} disabled={isLoading}>
             Cancel
           </Button>

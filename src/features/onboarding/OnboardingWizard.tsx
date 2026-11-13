@@ -3,6 +3,8 @@ import { useAuth } from '@/features/auth/AuthContext';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
+import { Logo } from '@/components/common/Logo';
+import { ThemeToggle } from '@/components/common/ThemeToggle';
 import { CURRENCY_SYMBOLS, formatCurrency } from '@/lib/utils';
 import { DEFAULT_CATEGORIES } from '@/lib/categories';
 import type { CurrencyCode } from '@/types/database.types';
@@ -65,7 +67,7 @@ export const OnboardingWizard: React.FC = () => {
         name: customCategoryName.trim(),
         type: customCategoryType,
         icon: 'Tag',
-        color: customCategoryType === 'income' ? '#059669' : '#EC4899',
+        color: customCategoryType === 'income' ? '#008F62' : '#DC5252',
         is_system: false,
       },
     ]);
@@ -74,7 +76,7 @@ export const OnboardingWizard: React.FC = () => {
 
   const handleFinishOnboarding = async () => {
     if (!isBudgetValid) {
-      setErrorMessage('Please provide a valid monthly budget target (e.g. 1000 or greater).');
+      setErrorMessage('Please enter a valid monthly budget target.');
       return;
     }
 
@@ -83,23 +85,22 @@ export const OnboardingWizard: React.FC = () => {
       setErrorMessage(null);
 
       // Save onboarding preferences to Supabase
-      // Only sets is_onboarded = true upon successful database update
       await completeOnboarding(selectedCurrency, parsedBudget);
 
       // Trigger celebratory confetti upon successful completion
       try {
         confetti({
-          particleCount: 90,
-          spread: 70,
+          particleCount: 80,
+          spread: 60,
           origin: { y: 0.6 },
-          colors: ['#059669', '#10B981', '#34D399', '#6EE7B7'],
+          colors: ['#008F62', '#00C78A', '#17212B', '#FFFFFF'],
         });
       } catch {
-        // Safe fallback if canvas is not present
+        // Safe fallback
       }
     } catch (err: any) {
       setErrorMessage(
-        err.message || 'Failed to save your preferences to the database. Please try again.'
+        err.message || 'Failed to save your preferences. Please try again.'
       );
       setIsSaving(false);
     }
@@ -117,39 +118,55 @@ export const OnboardingWizard: React.FC = () => {
   const activePresets = budgetPresets[selectedCurrency] || budgetPresets.USD;
 
   return (
-    <div className="min-h-screen bg-background flex flex-col justify-center py-10 px-4 sm:px-6 lg:px-8 font-sans">
+    <div className="min-h-screen bg-[#F7F8FA] dark:bg-[#101418] text-[#17212B] dark:text-[#F5F7FA] flex flex-col justify-center py-10 px-4 sm:px-6 lg:px-8 font-sans transition-colors relative selection:bg-[#008F62] selection:text-white dark:selection:bg-[#00C78A] dark:selection:text-[#101418]">
+      {/* Floating Theme Toggle */}
+      <div className="absolute top-5 right-5 sm:top-8 sm:right-8">
+        <ThemeToggle showLabel />
+      </div>
+
       <div className="sm:mx-auto sm:w-full sm:max-w-xl">
         {/* Header */}
         <div className="text-center mb-6">
-          <div className="mx-auto w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-600 to-emerald-800 flex items-center justify-center text-white font-extrabold text-xl shadow-emerald mb-3">
-            DD
+          <div className="flex justify-center mb-3">
+            <Logo size="lg" showText={false} />
           </div>
-          <span className="text-xs font-bold uppercase tracking-wider text-emerald-800 bg-emerald-100/70 border border-emerald-200 px-3 py-1 rounded-full">
-            Step {step} of 3 • Quick Setup
-          </span>
-          <h1 className="mt-3 text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+
+          {/* Stepper Progress */}
+          <div className="inline-flex items-center gap-1.5 p-1 bg-[#F1F4F6] dark:bg-[#202830] border border-[#E5E9EF] dark:border-[#303943] rounded-full mb-3 text-xs">
+            {[
+              { num: 1, label: 'Currency' },
+              { num: 2, label: 'Budget Target' },
+              { num: 3, label: 'Categories' },
+            ].map((s) => (
+              <span
+                key={s.num}
+                className={`px-3 py-1 rounded-full font-medium transition-colors ${
+                  step === s.num
+                    ? 'bg-[#008F62] dark:bg-[#00C78A] text-white dark:text-[#101418] font-semibold shadow-xs'
+                    : step > s.num
+                    ? 'text-[#008F62] dark:text-[#00C78A]'
+                    : 'text-[#667085] dark:text-[#9AA6B2]'
+                }`}
+              >
+                {s.num}. {s.label}
+              </span>
+            ))}
+          </div>
+
+          <h1 className="font-heading font-bold text-2xl sm:text-3xl text-[#17212B] dark:text-[#F5F7FA] tracking-tight">
             Personalize Your DuesDock Workspace
           </h1>
-          <p className="mt-1 text-xs text-slate-500">
-            Welcome, <span className="font-semibold text-slate-700">{profile?.full_name || user?.email}</span>. Let's customize your financial preferences.
+          <p className="mt-1 text-xs text-[#667085] dark:text-[#9AA6B2]">
+            Signed in as <strong className="text-[#17212B] dark:text-[#F5F7FA]">{profile?.full_name || user?.email}</strong>
           </p>
         </div>
 
-        {/* Progress Bar */}
-        <div className="w-full bg-slate-200 h-1.5 rounded-full mb-6 overflow-hidden">
-          <div
-            className="bg-emerald-600 h-1.5 rounded-full transition-all duration-300"
-            style={{ width: `${(step / 3) * 100}%` }}
-          />
-        </div>
-
         {/* Card Panel */}
-        <Card className="p-6 sm:p-8 shadow-card border-slate-200">
+        <Card className="p-6 sm:p-8 border border-[#E5E9EF] dark:border-[#303943] fintech-card-shadow bg-[#FFFFFF] dark:bg-[#171D23] rounded-2xl">
           {errorMessage && (
-            <div className="mb-6 p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-start gap-2.5">
-              <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+            <div className="mb-6 p-3.5 rounded-xl bg-[#DC5252]/10 border border-[#DC5252]/20 text-[#DC5252] dark:text-[#FF6666] text-xs font-medium flex items-start gap-2.5">
+              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
               <div className="flex-1">
-                <span className="font-bold block">Save Error</span>
                 <span>{errorMessage}</span>
               </div>
             </div>
@@ -159,12 +176,12 @@ export const OnboardingWizard: React.FC = () => {
           {step === 1 && (
             <div className="space-y-5">
               <div>
-                <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                  <Wallet className="w-5 h-5 text-emerald-600" />
-                  Select Your Base Currency
+                <h2 className="font-heading font-semibold text-base text-[#17212B] dark:text-[#F5F7FA] flex items-center gap-2">
+                  <Wallet className="w-5 h-5 text-[#008F62] dark:text-[#00C78A]" />
+                  Select Primary Currency
                 </h2>
-                <p className="text-xs text-slate-500 mt-1">
-                  All transactions, charts, and budget reports will be displayed in this currency.
+                <p className="text-xs text-[#667085] dark:text-[#9AA6B2] mt-1">
+                  All transaction ledgers, analytics, and reports will use this monetary unit.
                 </p>
               </div>
 
@@ -176,24 +193,24 @@ export const OnboardingWizard: React.FC = () => {
                       key={c.code}
                       type="button"
                       onClick={() => setSelectedCurrency(c.code)}
-                      className={`p-3.5 rounded-xl border text-left transition-all relative ${
+                      className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
                         isSelected
-                          ? 'border-emerald-600 bg-emerald-50/70 shadow-sm ring-2 ring-emerald-500/20'
-                          : 'border-slate-200 hover:border-slate-300 bg-white'
+                          ? 'border-[#008F62] dark:border-[#00C78A] bg-[#008F62]/5 dark:bg-[#00C78A]/10 ring-1 ring-[#008F62] dark:ring-[#00C78A]'
+                          : 'border-[#E5E9EF] dark:border-[#303943] bg-[#FFFFFF] dark:bg-[#202830] hover:border-[#008F62]/50'
                       }`}
                     >
                       <div className="flex items-center justify-between mb-1">
-                        <span className="font-mono text-base font-extrabold text-slate-900">
+                        <span className="font-mono text-xl font-bold text-[#17212B] dark:text-[#F5F7FA]">
                           {c.symbol}
                         </span>
                         {isSelected && (
-                          <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                          <CheckCircle2 className="w-4 h-4 text-[#008F62] dark:text-[#00C78A]" />
                         )}
                       </div>
-                      <div className="font-bold text-xs text-slate-900">
+                      <div className="font-semibold text-xs text-[#17212B] dark:text-[#F5F7FA]">
                         {c.code}
                       </div>
-                      <div className="text-[11px] text-slate-500 truncate">
+                      <div className="text-[11px] text-[#667085] dark:text-[#9AA6B2] truncate">
                         {c.name}
                       </div>
                     </button>
@@ -201,7 +218,7 @@ export const OnboardingWizard: React.FC = () => {
                 })}
               </div>
 
-              <div className="pt-4 border-t border-slate-100 flex justify-end">
+              <div className="pt-4 border-t border-[#E5E9EF] dark:border-[#303943] flex justify-end">
                 <Button
                   variant="primary"
                   size="md"
@@ -218,18 +235,18 @@ export const OnboardingWizard: React.FC = () => {
           {step === 2 && (
             <div className="space-y-5">
               <div>
-                <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                  <PieChart className="w-5 h-5 text-emerald-600" />
-                  Set Monthly Spending Target
+                <h2 className="font-heading font-semibold text-base text-[#17212B] dark:text-[#F5F7FA] flex items-center gap-2">
+                  <PieChart className="w-5 h-5 text-[#008F62] dark:text-[#00C78A]" />
+                  Monthly Spending Ceiling
                 </h2>
-                <p className="text-xs text-slate-500 mt-1">
-                  Define your target spending ceiling. DuesDock alerts you when your category spending nears this limit.
+                <p className="text-xs text-[#667085] dark:text-[#9AA6B2] mt-1">
+                  Define your aggregate monthly expenditure ceiling. DuesDock warns you automatically at 80% and 100% capacity.
                 </p>
               </div>
 
-              <div className="space-y-3">
+              <div className="space-y-4">
                 <Input
-                  label="Monthly Target Budget"
+                  label={`Monthly Target Budget (${CURRENCY_SYMBOLS[selectedCurrency]})`}
                   type="number"
                   min="0"
                   step="10"
@@ -237,18 +254,18 @@ export const OnboardingWizard: React.FC = () => {
                   value={budgetTarget}
                   onChange={(e) => setBudgetTarget(e.target.value)}
                   leftElement={
-                    <span className="font-bold text-slate-600 font-mono">
+                    <span className="font-mono font-bold text-[#17212B] dark:text-[#F5F7FA] text-sm">
                       {CURRENCY_SYMBOLS[selectedCurrency]}
                     </span>
                   }
-                  helperText="You can adjust this anytime in your Budgets & Categories settings."
-                  error={!isBudgetValid ? 'Please enter a valid positive number' : undefined}
+                  helperText="You can adjust this anytime in Budgets & Limits."
+                  error={!isBudgetValid ? 'Enter a valid positive number' : undefined}
                 />
 
-                {/* Quick Preset Pills */}
+                {/* Quick Presets */}
                 <div>
-                  <span className="text-[11px] font-semibold text-slate-500 block mb-1.5">
-                    Quick Presets for {selectedCurrency}:
+                  <span className="text-xs font-medium text-[#667085] dark:text-[#9AA6B2] block mb-2">
+                    Quick presets for {selectedCurrency}:
                   </span>
                   <div className="flex flex-wrap gap-2">
                     {activePresets.map((val) => (
@@ -256,10 +273,10 @@ export const OnboardingWizard: React.FC = () => {
                         key={val}
                         type="button"
                         onClick={() => setBudgetTarget(String(val))}
-                        className={`text-xs px-3 py-1.5 rounded-lg border font-medium transition-colors ${
+                        className={`text-xs px-3 py-1.5 rounded-lg border font-mono transition-colors cursor-pointer ${
                           budgetTarget === String(val)
-                            ? 'bg-emerald-600 text-white border-emerald-600'
-                            : 'bg-slate-50 text-slate-700 border-slate-200 hover:border-slate-300'
+                            ? 'bg-[#008F62] dark:bg-[#00C78A] text-white dark:text-[#101418] border-transparent font-semibold shadow-xs'
+                            : 'bg-[#F1F4F6] dark:bg-[#202830] text-[#17212B] dark:text-[#F5F7FA] border-[#E5E9EF] dark:border-[#303943] hover:bg-[#E5E9EF] dark:hover:bg-[#28323C]'
                         }`}
                       >
                         {formatCurrency(val, selectedCurrency)}
@@ -269,7 +286,7 @@ export const OnboardingWizard: React.FC = () => {
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
+              <div className="pt-4 border-t border-[#E5E9EF] dark:border-[#303943] flex items-center justify-between">
                 <Button
                   variant="outline"
                   size="md"
@@ -295,92 +312,96 @@ export const OnboardingWizard: React.FC = () => {
           {step === 3 && (
             <div className="space-y-5">
               <div>
-                <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                  <Tag className="w-5 h-5 text-emerald-600" />
-                  Review Starter Categories
+                <h2 className="font-heading font-semibold text-base text-[#17212B] dark:text-[#F5F7FA] flex items-center gap-2">
+                  <Tag className="w-5 h-5 text-[#008F62] dark:text-[#00C78A]" />
+                  Review Expense Categories
                 </h2>
-                <p className="text-xs text-slate-500 mt-1">
-                  We've configured smart default categories for you. You can also add custom categories.
+                <p className="text-xs text-[#667085] dark:text-[#9AA6B2] mt-1">
+                  Default categories are prepared. You can add custom categories now or anytime later.
                 </p>
               </div>
 
-              {/* Category Badges Preview */}
-              <div className="max-h-48 overflow-y-auto p-3 rounded-xl bg-slate-50 border border-slate-200/80 space-y-2">
-                <div className="flex flex-wrap gap-1.5">
+              {/* Category Badges Preview - Fixed High Contrast Chips without clipping */}
+              <div className="max-h-48 overflow-y-auto p-3.5 rounded-xl bg-[#F7F8FA] dark:bg-[#101418] border border-[#E5E9EF] dark:border-[#303943]">
+                <div className="flex flex-wrap gap-2">
                   {userCategories.map((cat, i) => (
-                    <span
+                    <div
                       key={i}
-                      className="inline-flex items-center gap-1.5 text-xs bg-white border border-slate-200 text-slate-700 px-2.5 py-1 rounded-lg font-medium shadow-2xs"
+                      className="inline-flex items-center gap-2 px-2.5 py-1.5 rounded-lg border border-[#E5E9EF] dark:border-[#303943] bg-[#FFFFFF] dark:bg-[#171D23] shadow-xs"
                     >
                       <span
-                        className="w-2 h-2 rounded-full"
+                        className="w-2.5 h-2.5 rounded-full shrink-0"
                         style={{ backgroundColor: cat.color }}
                       />
-                      <span>{cat.name}</span>
-                      <span className="text-[10px] text-slate-400 font-mono">
-                        ({cat.type})
+                      <span className="text-xs font-medium text-[#17212B] dark:text-[#F5F7FA]">
+                        {cat.name}
                       </span>
-                    </span>
+                      <span className="text-[10px] capitalize px-1.5 py-0.2 rounded-full bg-[#F1F4F6] dark:bg-[#202830] text-[#667085] dark:text-[#9AA6B2]">
+                        {cat.type}
+                      </span>
+                    </div>
                   ))}
                 </div>
               </div>
 
-              {/* Add Quick Custom Category */}
-              <div className="p-3 bg-emerald-50/50 border border-emerald-100 rounded-xl space-y-2">
-                <span className="text-xs font-bold text-slate-800">
+              {/* Add Custom Category Inline */}
+              <div className="p-3.5 bg-[#F7F8FA] dark:bg-[#202830] border border-[#E5E9EF] dark:border-[#303943] rounded-xl space-y-2">
+                <span className="text-xs font-medium text-[#17212B] dark:text-[#F5F7FA] block">
                   Add Custom Category (Optional)
                 </span>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-col sm:flex-row">
                   <input
                     type="text"
-                    placeholder="e.g. Pet Care, SaaS Subscriptions..."
+                    placeholder="e.g. Gym, Subscriptions, Freelance..."
                     value={customCategoryName}
                     onChange={(e) => setCustomCategoryName(e.target.value)}
-                    className="flex-1 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs text-slate-900 placeholder:text-slate-400 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                    className="w-full sm:flex-1 rounded-lg border border-[#E5E9EF] dark:border-[#303943] bg-[#FFFFFF] dark:bg-[#101418] px-3 py-1.5 text-xs text-[#17212B] dark:text-[#F5F7FA] focus:outline-none focus:border-[#008F62] dark:focus:border-[#00C78A]"
                   />
-                  <select
-                    value={customCategoryType}
-                    onChange={(e) => setCustomCategoryType(e.target.value as 'expense' | 'income')}
-                    className="rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-xs text-slate-700 focus:border-emerald-500 focus:outline-none"
-                  >
-                    <option value="expense">Expense</option>
-                    <option value="income">Income</option>
-                  </select>
-                  <Button
-                    variant="soft"
-                    size="sm"
-                    onClick={handleAddCustomCategory}
-                    disabled={!customCategoryName.trim()}
-                    leftIcon={<Plus className="w-3.5 h-3.5" />}
-                  >
-                    Add
-                  </Button>
+                  <div className="flex gap-2 w-full sm:w-auto">
+                    <select
+                      value={customCategoryType}
+                      onChange={(e) => setCustomCategoryType(e.target.value as 'expense' | 'income')}
+                      className="rounded-lg border border-[#E5E9EF] dark:border-[#303943] bg-[#FFFFFF] dark:bg-[#101418] px-2.5 py-1.5 text-xs text-[#17212B] dark:text-[#F5F7FA] focus:outline-none"
+                    >
+                      <option value="expense">Expense</option>
+                      <option value="income">Income</option>
+                    </select>
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={handleAddCustomCategory}
+                      disabled={!customCategoryName.trim()}
+                      leftIcon={<Plus className="w-3.5 h-3.5" />}
+                    >
+                      Add
+                    </Button>
+                  </div>
                 </div>
               </div>
 
               {/* Summary Overview */}
-              <div className="p-3.5 rounded-xl bg-slate-900 text-white text-xs space-y-1.5">
-                <div className="flex justify-between">
-                  <span className="text-slate-400">Selected Currency:</span>
-                  <span className="font-bold text-emerald-400">
+              <div className="p-4 rounded-xl bg-[#F1F4F6] dark:bg-[#202830] text-xs space-y-2 border border-[#E5E9EF] dark:border-[#303943]">
+                <div className="flex justify-between items-center">
+                  <span className="text-[#667085] dark:text-[#9AA6B2]">Base Currency:</span>
+                  <span className="font-semibold text-[#008F62] dark:text-[#00C78A]">
                     {selectedCurrency} ({CURRENCY_SYMBOLS[selectedCurrency]})
                   </span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-400">Monthly Target Budget:</span>
-                  <span className="font-bold text-white">
+                <div className="flex justify-between items-center">
+                  <span className="text-[#667085] dark:text-[#9AA6B2]">Monthly Target:</span>
+                  <span className="font-semibold font-mono text-[#17212B] dark:text-[#F5F7FA]">
                     {formatCurrency(parsedBudget, selectedCurrency)}
                   </span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-400">Data Isolation:</span>
-                  <span className="font-semibold text-emerald-400 flex items-center gap-1">
+                <div className="flex justify-between items-center">
+                  <span className="text-[#667085] dark:text-[#9AA6B2]">Security:</span>
+                  <span className="font-medium text-[#008F62] dark:text-[#00C78A] flex items-center gap-1">
                     <ShieldCheck className="w-3.5 h-3.5" /> PostgreSQL RLS Active
                   </span>
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
+              <div className="pt-4 border-t border-[#E5E9EF] dark:border-[#303943] flex items-center justify-between">
                 <Button
                   variant="outline"
                   size="md"
@@ -397,7 +418,7 @@ export const OnboardingWizard: React.FC = () => {
                   onClick={handleFinishOnboarding}
                   leftIcon={<Sparkles className="w-4 h-4" />}
                 >
-                  Complete Setup & Launch Dashboard
+                  Complete Setup
                 </Button>
               </div>
             </div>
