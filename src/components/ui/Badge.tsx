@@ -1,6 +1,6 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
-import type { TransactionType, PaymentMethod } from '@/types/database.types';
+import type { TransactionType, PaymentMethod, PaymentDirection, PaymentStatus } from '@/types/database.types';
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
   variant?: 'emerald' | 'amber' | 'rose' | 'slate' | 'sky' | 'purple';
@@ -88,4 +88,33 @@ export const BudgetStatusBadge: React.FC<{ percentage: number; className?: strin
     return <Badge variant="amber" size="sm" className={className}>Near Limit ({Math.round(percentage)}%)</Badge>;
   }
   return <Badge variant="emerald" size="sm" className={className}>On Track ({Math.round(percentage)}%)</Badge>;
+};
+
+export const PaymentDirectionBadge: React.FC<{ direction: PaymentDirection; className?: string }> = ({
+  direction,
+  className,
+}) => {
+  if (direction === 'receivable') {
+    return <Badge variant="emerald" size="sm" className={className}>Receivable (In)</Badge>;
+  }
+  return <Badge variant="rose" size="sm" className={className}>Payable (Out)</Badge>;
+};
+
+export const PaymentStatusBadge: React.FC<{ status: PaymentStatus; className?: string }> = ({
+  status,
+  className,
+}) => {
+  switch (status) {
+    case 'paid':
+      return <Badge variant="emerald" size="sm" className={className}>Paid</Badge>;
+    case 'partially_paid':
+      return <Badge variant="amber" size="sm" className={className}>Partially Paid</Badge>;
+    case 'overdue':
+      return <Badge variant="rose" size="sm" className={className}>Overdue</Badge>;
+    case 'cancelled':
+      return <Badge variant="slate" size="sm" className={className}>Cancelled</Badge>;
+    case 'pending':
+    default:
+      return <Badge variant="sky" size="sm" className={className}>Pending</Badge>;
+  }
 };

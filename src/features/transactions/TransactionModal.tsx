@@ -3,7 +3,7 @@ import { Modal } from '@/components/ui/Modal';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { transactionService } from '@/services/transactionService';
-import { CURRENCY_SYMBOLS } from '@/lib/utils';
+import { CURRENCY_SYMBOLS, notifyTransactionUpdated } from '@/lib/utils';
 import type { Transaction, Category, TransactionType, PaymentMethod, CurrencyCode } from '@/types/database.types';
 import {
   TrendingDown,
@@ -136,6 +136,8 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isLoading) return; // Prevent accidental duplicate submissions
+
     const numAmount = parseFloat(amount);
 
     if (isNaN(numAmount) || numAmount <= 0) {
@@ -178,6 +180,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
       }
 
       onTransactionSaved();
+      notifyTransactionUpdated();
       onClose();
     } catch (err: any) {
       setErrorMessage(err.message || 'Failed to save transaction');

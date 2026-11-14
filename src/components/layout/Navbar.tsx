@@ -3,6 +3,7 @@ import { useAuth } from '@/features/auth/AuthContext';
 import { Button } from '@/components/ui/Button';
 import { Logo } from '@/components/common/Logo';
 import { ThemeToggle } from '@/components/common/ThemeToggle';
+import { NotificationBell } from '@/components/common/NotificationBell';
 import { CURRENCY_SYMBOLS } from '@/lib/utils';
 import type { CurrencyCode } from '@/types/database.types';
 import {
@@ -18,9 +19,20 @@ import {
   X,
   Wallet,
   Check,
+  Clock,
+  Settings,
+  Code2,
 } from 'lucide-react';
 
-export type FinanceTabKey = 'dashboard' | 'transactions' | 'budgets' | 'analytics' | 'reports';
+export type FinanceTabKey =
+  | 'dashboard'
+  | 'transactions'
+  | 'payments'
+  | 'budgets'
+  | 'analytics'
+  | 'reports'
+  | 'settings'
+  | 'developers';
 
 export interface NavbarProps {
   activeTab: FinanceTabKey;
@@ -80,9 +92,11 @@ export const Navbar: React.FC<NavbarProps> = ({
   const navItems: Array<{ id: FinanceTabKey; label: string; icon: React.ReactNode }> = [
     { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-4 h-4" /> },
     { id: 'transactions', label: 'Transactions', icon: <Receipt className="w-4 h-4" /> },
-    { id: 'budgets', label: 'Budgets & Limits', icon: <PieChart className="w-4 h-4" /> },
+    { id: 'payments', label: 'Payments & Dues', icon: <Clock className="w-4 h-4" /> },
+    { id: 'budgets', label: 'Budgets', icon: <PieChart className="w-4 h-4" /> },
     { id: 'analytics', label: 'Analytics', icon: <BarChart3 className="w-4 h-4" /> },
-    { id: 'reports', label: 'Reports & Export', icon: <FileSpreadsheet className="w-4 h-4" /> },
+    { id: 'reports', label: 'Reports', icon: <FileSpreadsheet className="w-4 h-4" /> },
+    { id: 'developers', label: 'About', icon: <Code2 className="w-4 h-4" /> },
   ];
 
   return (
@@ -153,6 +167,9 @@ export const Navbar: React.FC<NavbarProps> = ({
               )}
             </div>
 
+            {/* Notification Reminders */}
+            <NotificationBell onNavigateTab={onTabChange} />
+
             {/* Theme Toggle */}
             <ThemeToggle />
 
@@ -190,7 +207,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               </button>
 
               {isProfileMenuOpen && (
-                <div className="absolute right-0 mt-1.5 w-56 rounded-xl bg-[#FFFFFF] dark:bg-[#171D23] border border-[#E5E9EF] dark:border-[#303943] shadow-lg p-2 z-50 animate-in fade-in zoom-in-95">
+                <div className="absolute right-0 mt-1.5 w-56 rounded-xl bg-[#FFFFFF] dark:bg-[#171D23] border border-[#E5E9EF] dark:border-[#303943] shadow-lg p-2 z-50 animate-in fade-in zoom-in-95 space-y-1">
                   <div className="px-3 py-2 border-b border-[#E5E9EF] dark:border-[#303943] mb-1">
                     <p className="text-sm font-semibold text-[#17212B] dark:text-[#F5F7FA] truncate">
                       {profile?.full_name || 'Personal Account'}
@@ -200,12 +217,34 @@ export const Navbar: React.FC<NavbarProps> = ({
                     </p>
                   </div>
                   <button
-                    onClick={() => signOut()}
-                    className="w-full flex items-center gap-2 px-3 py-2 text-xs font-medium text-[#DC5252] dark:text-[#FF6666] hover:bg-[#DC5252]/10 dark:hover:bg-[#FF6666]/15 rounded-lg transition-colors cursor-pointer"
+                    onClick={() => {
+                      onTabChange('settings');
+                      setIsProfileMenuOpen(false);
+                    }}
+                    className="w-full flex items-center gap-2 px-3 py-2 text-xs font-medium text-[#17212B] dark:text-[#F5F7FA] hover:bg-[#F1F4F6] dark:hover:bg-[#202830] rounded-lg transition-colors cursor-pointer"
                   >
-                    <LogOut className="w-4 h-4" />
-                    <span>Sign Out</span>
+                    <Settings className="w-4 h-4 text-[#667085] dark:text-[#9AA6B2]" />
+                    <span>Account Settings</span>
                   </button>
+                  <button
+                    onClick={() => {
+                      onTabChange('developers');
+                      setIsProfileMenuOpen(false);
+                    }}
+                    className="w-full flex items-center gap-2 px-3 py-2 text-xs font-medium text-[#17212B] dark:text-[#F5F7FA] hover:bg-[#F1F4F6] dark:hover:bg-[#202830] rounded-lg transition-colors cursor-pointer"
+                  >
+                    <Code2 className="w-4 h-4 text-[#667085] dark:text-[#9AA6B2]" />
+                    <span>About DuesDock</span>
+                  </button>
+                  <div className="pt-1 border-t border-[#E5E9EF] dark:border-[#303943]">
+                    <button
+                      onClick={() => signOut()}
+                      className="w-full flex items-center gap-2 px-3 py-2 text-xs font-medium text-[#DC5252] dark:text-[#FF6666] hover:bg-[#DC5252]/10 dark:hover:bg-[#FF6666]/15 rounded-lg transition-colors cursor-pointer"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      <span>Sign Out</span>
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
@@ -273,6 +312,20 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </button>
               );
             })}
+            <button
+              onClick={() => {
+                onTabChange('settings');
+                setIsMobileMenuOpen(false);
+              }}
+              className={`w-full flex items-center gap-3 px-3.5 py-2.5 text-sm font-medium rounded-lg transition-colors cursor-pointer ${
+                activeTab === 'settings'
+                  ? 'bg-[#008F62]/10 dark:bg-[#00C78A]/15 text-[#008F62] dark:text-[#00C78A] font-semibold'
+                  : 'text-[#667085] dark:text-[#9AA6B2] hover:bg-[#F1F4F6] dark:hover:bg-[#202830] text-[#17212B] dark:text-[#F5F7FA]'
+              }`}
+            >
+              <Settings className="w-4 h-4 text-current" />
+              <span>Settings</span>
+            </button>
           </div>
 
           {/* Currency selection on mobile */}

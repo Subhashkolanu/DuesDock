@@ -2,12 +2,13 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '@/features/auth/AuthContext';
 import { useTheme } from '@/context/ThemeContext';
 import { transactionService } from '@/services/transactionService';
+import { paymentService, PAYMENT_UPDATED_EVENT } from '@/services/paymentService';
 import { Card, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { StatCard } from '@/components/common/StatCard';
 import { PaymentMethodBadge } from '@/components/ui/Badge';
-import { formatCurrency, CURRENCY_SYMBOLS } from '@/lib/utils';
-import type { Transaction, Category, CurrencyCode } from '@/types/database.types';
+import { formatCurrency, CURRENCY_SYMBOLS, getCurrentMonthKey, getLastMonthKey, isDateWithinMonths, isDateInCurrentYear, TRANSACTION_UPDATED_EVENT } from '@/lib/utils';
+import type { Transaction, Category, Payment, CurrencyCode } from '@/types/database.types';
 import {
   TrendingUp,
   TrendingDown,
@@ -40,11 +41,13 @@ export type DashboardPeriodFilter = 'this_month' | 'last_month' | 'last_3_months
 
 export interface FinanceDashboardProps {
   onNavigateToTransactions: () => void;
+  onNavigateToPayments?: () => void;
   onOpenAddTransaction: () => void;
 }
 
 export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
   onNavigateToTransactions,
+  onNavigateToPayments,
   onOpenAddTransaction,
 }) => {
   const { user, profile } = useAuth();
@@ -54,6 +57,7 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
 
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [payments, setPayments] = useState<Payment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [fetchError, setFetchError] = useState<string | null>(null);
 
@@ -65,12 +69,14 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
     try {
       setIsLoading(true);
       setFetchError(null);
-      const [cats, txs] = await Promise.all([
+      const [cats, txs, payList] = await Promise.all([
         transactionService.getCategories(user.id),
         transactionService.getTransactions(user.id),
+        paymentService.getPayments(user.id),
       ]);
       setCategories(cats);
       setTransactions(txs);
+      setPayments(payList);
     } catch (err: any) {
       setFetchError(err.message || 'Failed to fetch financial data');
     } finally {
@@ -80,38 +86,41 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
 
   useEffect(() => {
     loadData();
+
+    const handleUpdate = () => {
+      loadData();
+    };
+
+    window.addEventListener(TRANSACTION_UPDATED_EVENT, handleUpdate);
+    window.addEventListener('duesdock_transaction_saved', handleUpdate);
+    window.addEventListener(PAYMENT_UPDATED_EVENT, handleUpdate);
+    return () => {
+      window.removeEventListener(TRANSACTION_UPDATED_EVENT, handleUpdate);
+      window.removeEventListener('duesdock_transaction_saved', handleUpdate);
+      window.removeEventListener(PAYMENT_UPDATED_EVENT, handleUpdate);
+    };
   }, [user]);
 
-  // Filter transactions by selected period
+  // Filter transactions by selected period using robust calendar date logic
   const filteredTransactions = useMemo(() => {
-    const now = new Date();
+    const currentMonthKey = getCurrentMonthKey();
+    const lastMonthKey = getLastMonthKey();
 
     return transactions.filter((t) => {
-      const txDate = new Date(t.transaction_date);
-
       if (period === 'this_month') {
-        return (
-          txDate.getFullYear() === now.getFullYear() &&
-          txDate.getMonth() === now.getMonth()
-        );
+        return t.transaction_date.startsWith(currentMonthKey);
       }
 
       if (period === 'last_month') {
-        const lastMonthDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-        return (
-          txDate.getFullYear() === lastMonthDate.getFullYear() &&
-          txDate.getMonth() === lastMonthDate.getMonth()
-        );
+        return t.transaction_date.startsWith(lastMonthKey);
       }
 
       if (period === 'last_3_months') {
-        const threeMonthsAgo = new Date();
-        threeMonthsAgo.setMonth(now.getMonth() - 3);
-        return txDate >= threeMonthsAgo;
+        return isDateWithinMonths(t.transaction_date, 3);
       }
 
       if (period === 'this_year') {
-        return txDate.getFullYear() === now.getFullYear();
+        return isDateInCurrentYear(t.transaction_date);
       }
 
       return true;
@@ -133,10 +142,49 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
 
   const netCashFlow = periodIncome - periodExpenses;
 
-  // Monthly Budget calculations
-  const budgetRemaining = monthlyBudgetTarget - periodExpenses;
+  // Monthly Budget calculations (always benchmarked against the current month's actual expenses)
+  const currentMonthExpenses = useMemo(() => {
+    const currentMonthKey = getCurrentMonthKey();
+    return transactions
+      .filter((t) => t.type === 'expense' && t.transaction_date.startsWith(currentMonthKey))
+      .reduce((sum, t) => sum + Number(t.amount), 0);
+  }, [transactions]);
+
+  const budgetRemaining = monthlyBudgetTarget - currentMonthExpenses;
   const budgetUsagePercent =
-    monthlyBudgetTarget > 0 ? (periodExpenses / monthlyBudgetTarget) * 100 : 0;
+    monthlyBudgetTarget > 0 ? (currentMonthExpenses / monthlyBudgetTarget) * 100 : 0;
+
+  // Payment Obligations Metrics
+  const paymentMetrics = useMemo(() => {
+    const today = new Date().toISOString().split('T')[0];
+    let outstandingPayable = 0;
+    let outstandingReceivable = 0;
+    let overdueCount = 0;
+    let overdueAmount = 0;
+
+    payments.forEach((p) => {
+      const remaining = Math.max(0, Number(p.total_amount) - Number(p.paid_amount));
+      if (p.direction === 'payable') {
+        outstandingPayable += remaining;
+      } else {
+        outstandingReceivable += remaining;
+      }
+      if (
+        p.status === 'overdue' ||
+        (p.due_date < today && p.status !== 'paid' && p.status !== 'cancelled')
+      ) {
+        overdueCount += 1;
+        overdueAmount += remaining;
+      }
+    });
+
+    return {
+      outstandingPayable,
+      outstandingReceivable,
+      overdueCount,
+      overdueAmount,
+    };
+  }, [payments]);
 
   // Category Analytics Breakdown
   const categorySpendingBreakdown = useMemo(() => {
@@ -197,10 +245,14 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
     return buckets;
   }, [transactions]);
 
-  // Recent 5 Transactions
+  // Recent 5 Transactions (ordered by transaction_date DESC, created_at DESC)
   const recentTransactions = useMemo(() => {
     return [...transactions]
-      .sort((a, b) => new Date(b.transaction_date).getTime() - new Date(a.transaction_date).getTime())
+      .sort((a, b) => {
+        const dateDiff = b.transaction_date.localeCompare(a.transaction_date);
+        if (dateDiff !== 0) return dateDiff;
+        return (b.created_at || '').localeCompare(a.created_at || '');
+      })
       .slice(0, 5);
   }, [transactions]);
 
@@ -331,7 +383,7 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
                   </span>
                 </div>
                 <p className="text-xs text-[#667085] dark:text-[#9AA6B2]">
-                  {formatCurrency(periodExpenses, currency)} spent of {formatCurrency(monthlyBudgetTarget, currency)} ceiling
+                  {formatCurrency(currentMonthExpenses, currency)} spent of {formatCurrency(monthlyBudgetTarget, currency)} ceiling
                 </p>
               </div>
 
@@ -357,6 +409,43 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
               </div>
             </div>
           )}
+
+          {/* Payment Obligations Quick Overview */}
+          <div className="p-4 rounded-xl border border-[#E5E9EF] dark:border-[#303943] bg-[#FFFFFF] dark:bg-[#171D23] fintech-card-shadow flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-semibold text-[#17212B] dark:text-[#F5F7FA]">
+                  Active Payment Obligations
+                </span>
+                {paymentMetrics.overdueCount > 0 ? (
+                  <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-[#DC5252]/10 text-[#DC5252] dark:text-[#FF6666] flex items-center gap-1">
+                    <AlertTriangle className="w-3 h-3" />
+                    <span>{paymentMetrics.overdueCount} Overdue ({formatCurrency(paymentMetrics.overdueAmount, currency)})</span>
+                  </span>
+                ) : (
+                  <span className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-[#008F62]/10 text-[#008F62] dark:text-[#00C78A]">
+                    Deadlines on track
+                  </span>
+                )}
+              </div>
+              <p className="text-xs text-[#667085] dark:text-[#9AA6B2]">
+                Payables: <strong className="text-[#DC5252] dark:text-[#FF6666] font-mono">{formatCurrency(paymentMetrics.outstandingPayable, currency)}</strong>
+                {' • '}
+                Receivables: <strong className="text-[#008F62] dark:text-[#00C78A] font-mono">{formatCurrency(paymentMetrics.outstandingReceivable, currency)}</strong>
+              </p>
+            </div>
+
+            {onNavigateToPayments && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={onNavigateToPayments}
+                rightIcon={<ArrowUpRight className="w-3.5 h-3.5" />}
+              >
+                Track Payments & Dues
+              </Button>
+            )}
+          </div>
 
           {/* Clean Empty Account State: When user has 0 total transactions */}
           {transactions.length === 0 ? (

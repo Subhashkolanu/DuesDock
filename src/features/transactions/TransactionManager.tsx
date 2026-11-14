@@ -5,11 +5,11 @@ import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { TransactionTypeBadge, PaymentMethodBadge } from '@/components/ui/Badge';
-import { formatCurrency, CURRENCY_SYMBOLS } from '@/lib/utils';
+import { formatCurrency, CURRENCY_SYMBOLS, getCurrentMonthKey, getLastMonthKey, isDateWithinDays, isDateInCurrentYear, notifyTransactionUpdated, TRANSACTION_UPDATED_EVENT } from '@/lib/utils';
 import { TransactionModal } from './TransactionModal';
 import { TransactionDetailsModal } from './TransactionDetailsModal';
 import { DeleteConfirmDialog } from './DeleteConfirmDialog';
-import type { Transaction, Category, TransactionType, PaymentMethod } from '@/types/database.types';
+import type { Transaction, Category } from '@/types/database.types';
 import {
   Search,
   Plus,
@@ -70,6 +70,17 @@ export const TransactionManager: React.FC = () => {
 
   useEffect(() => {
     loadData();
+
+    const handleUpdate = () => {
+      loadData();
+    };
+
+    window.addEventListener(TRANSACTION_UPDATED_EVENT, handleUpdate);
+    window.addEventListener('duesdock_transaction_saved', handleUpdate);
+    return () => {
+      window.removeEventListener(TRANSACTION_UPDATED_EVENT, handleUpdate);
+      window.removeEventListener('duesdock_transaction_saved', handleUpdate);
+    };
   }, [user]);
 
   // Financial Calculations
@@ -89,16 +100,21 @@ export const TransactionManager: React.FC = () => {
 
   // Filter & Sort Logic
   const filteredTransactions = useMemo(() => {
+    const currentMonthKey = getCurrentMonthKey();
+    const lastMonthKey = getLastMonthKey();
+
     return transactions
       .filter((t) => {
-        // Search filter
+        // Search filter: checks merchant, notes, category, amount, and payment method
         if (search.trim()) {
-          const query = search.toLowerCase();
+          const query = search.trim().toLowerCase();
           const matchMerchant = t.merchant?.toLowerCase().includes(query);
           const matchNotes = t.notes?.toLowerCase().includes(query);
+          const matchAmount = String(t.amount).includes(query);
+          const matchPayment = t.payment_method?.toLowerCase().replace(/_/g, ' ').includes(query);
           const cat = categories.find((c) => c.id === t.category_id);
           const matchCat = cat?.name.toLowerCase().includes(query);
-          if (!matchMerchant && !matchNotes && !matchCat) return false;
+          if (!matchMerchant && !matchNotes && !matchCat && !matchAmount && !matchPayment) return false;
         }
 
         // Type filter
@@ -107,43 +123,35 @@ export const TransactionManager: React.FC = () => {
         // Category filter
         if (categoryFilter !== 'all' && t.category_id !== categoryFilter) return false;
 
-        // Date filter
-        const txDate = new Date(t.transaction_date);
-        const now = new Date();
-
+        // Date filter using robust calendar calculations (immune to UTC offset shifts)
         if (dateFilter === 'this_month') {
-          return (
-            txDate.getFullYear() === now.getFullYear() &&
-            txDate.getMonth() === now.getMonth()
-          );
+          return t.transaction_date.startsWith(currentMonthKey);
         }
 
         if (dateFilter === 'last_month') {
-          const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-          return (
-            txDate.getFullYear() === lastMonth.getFullYear() &&
-            txDate.getMonth() === lastMonth.getMonth()
-          );
+          return t.transaction_date.startsWith(lastMonthKey);
         }
 
         if (dateFilter === 'last_30_days') {
-          const thirtyDaysAgo = new Date();
-          thirtyDaysAgo.setDate(now.getDate() - 30);
-          return txDate >= thirtyDaysAgo;
+          return isDateWithinDays(t.transaction_date, 30);
         }
 
         if (dateFilter === 'this_year') {
-          return txDate.getFullYear() === now.getFullYear();
+          return isDateInCurrentYear(t.transaction_date);
         }
 
         return true;
       })
       .sort((a, b) => {
         if (sortBy === 'date_desc') {
-          return new Date(b.transaction_date).getTime() - new Date(a.transaction_date).getTime();
+          const dateDiff = b.transaction_date.localeCompare(a.transaction_date);
+          if (dateDiff !== 0) return dateDiff;
+          return (b.created_at || '').localeCompare(a.created_at || '');
         }
         if (sortBy === 'date_asc') {
-          return new Date(a.transaction_date).getTime() - new Date(b.transaction_date).getTime();
+          const dateDiff = a.transaction_date.localeCompare(b.transaction_date);
+          if (dateDiff !== 0) return dateDiff;
+          return (a.created_at || '').localeCompare(b.created_at || '');
         }
         if (sortBy === 'amount_desc') {
           return Number(b.amount) - Number(a.amount);
@@ -157,12 +165,13 @@ export const TransactionManager: React.FC = () => {
 
   // Handlers
   const handleDeleteConfirm = async (id: string) => {
-    if (!user) return;
+    if (!user || isDeleting) return;
     try {
       setIsDeleting(true);
       await transactionService.deleteTransaction(user.id, id);
       setTransactions((prev) => prev.filter((t) => t.id !== id));
       setDeletingTransaction(null);
+      notifyTransactionUpdated();
     } catch (err: any) {
       alert(err.message || 'Failed to delete transaction');
     } finally {
@@ -346,6 +355,16 @@ export const TransactionManager: React.FC = () => {
           </div>
         </div>
       </Card>
+
+      {/* Error Alert */}
+      {fetchError && (
+        <div className="p-4 rounded-xl bg-[#DC5252]/10 border border-[#DC5252]/20 text-xs text-[#DC5252] dark:text-[#FF6666] flex items-center justify-between">
+          <span>{fetchError}</span>
+          <Button variant="outline" size="sm" onClick={loadData}>
+            Retry
+          </Button>
+        </div>
+      )}
 
       {/* Transaction Records List */}
       {isLoading ? (

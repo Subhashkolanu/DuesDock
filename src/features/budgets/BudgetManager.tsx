@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Modal } from '@/components/ui/Modal';
 import { BudgetStatusBadge } from '@/components/ui/Badge';
-import { formatCurrency, CURRENCY_SYMBOLS, getCurrentMonthKey } from '@/lib/utils';
+import { formatCurrency, CURRENCY_SYMBOLS, getCurrentMonthKey, TRANSACTION_UPDATED_EVENT } from '@/lib/utils';
 import type { Budget, Category, Transaction, CurrencyCode } from '@/types/database.types';
 import {
   PieChart,
@@ -76,6 +76,17 @@ export const BudgetManager: React.FC = () => {
 
   useEffect(() => {
     loadData();
+
+    const handleUpdate = () => {
+      loadData();
+    };
+
+    window.addEventListener(TRANSACTION_UPDATED_EVENT, handleUpdate);
+    window.addEventListener('duesdock_transaction_saved', handleUpdate);
+    return () => {
+      window.removeEventListener(TRANSACTION_UPDATED_EVENT, handleUpdate);
+      window.removeEventListener('duesdock_transaction_saved', handleUpdate);
+    };
   }, [user, selectedMonth]);
 
   // Overall Target

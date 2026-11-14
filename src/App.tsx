@@ -3,6 +3,7 @@ import { useAuth } from '@/features/auth/AuthContext';
 import { Navbar, type FinanceTabKey } from '@/components/layout/Navbar';
 import { Logo } from '@/components/common/Logo';
 import { transactionService } from '@/services/transactionService';
+import { notifyTransactionUpdated } from '@/lib/utils';
 import type { Category, CurrencyCode } from '@/types/database.types';
 import { ShieldCheck, Loader2 } from 'lucide-react';
 
@@ -11,9 +12,12 @@ const LoginPage = lazy(() => import('@/features/auth/LoginPage').then(m => ({ de
 const OnboardingWizard = lazy(() => import('@/features/onboarding/OnboardingWizard').then(m => ({ default: m.OnboardingWizard })));
 const FinanceDashboard = lazy(() => import('@/features/dashboard/FinanceDashboard').then(m => ({ default: m.FinanceDashboard })));
 const TransactionManager = lazy(() => import('@/features/transactions/TransactionManager').then(m => ({ default: m.TransactionManager })));
+const PaymentManager = lazy(() => import('@/features/payments/PaymentManager').then(m => ({ default: m.PaymentManager })));
 const BudgetManager = lazy(() => import('@/features/budgets/BudgetManager').then(m => ({ default: m.BudgetManager })));
 const AnalyticsManager = lazy(() => import('@/features/analytics/AnalyticsManager').then(m => ({ default: m.AnalyticsManager })));
 const ReportsManager = lazy(() => import('@/features/reports/ReportsManager').then(m => ({ default: m.ReportsManager })));
+const SettingsManager = lazy(() => import('@/features/settings/SettingsManager').then(m => ({ default: m.SettingsManager })));
+const DevelopersPage = lazy(() => import('@/features/developers/DevelopersPage').then(m => ({ default: m.DevelopersPage })));
 const TransactionModal = lazy(() => import('@/features/transactions/TransactionModal').then(m => ({ default: m.TransactionModal })));
 
 export function App() {
@@ -84,17 +88,24 @@ export function App() {
           {activeTab === 'dashboard' && (
             <FinanceDashboard
               onNavigateToTransactions={() => setActiveTab('transactions')}
+              onNavigateToPayments={() => setActiveTab('payments')}
               onOpenAddTransaction={() => setIsGlobalAddOpen(true)}
             />
           )}
 
           {activeTab === 'transactions' && <TransactionManager />}
 
+          {activeTab === 'payments' && <PaymentManager />}
+
           {activeTab === 'budgets' && <BudgetManager />}
 
           {activeTab === 'analytics' && <AnalyticsManager />}
 
           {activeTab === 'reports' && <ReportsManager />}
+
+          {activeTab === 'settings' && <SettingsManager />}
+
+          {activeTab === 'developers' && <DevelopersPage />}
         </Suspense>
       </main>
 
@@ -108,8 +119,7 @@ export function App() {
             currency={currency}
             categories={categories}
             onTransactionSaved={() => {
-              // Trigger refresh by updating state or event
-              window.dispatchEvent(new Event('duesdock_transaction_saved'));
+              notifyTransactionUpdated();
             }}
             onCategoryAdded={(newCat) => setCategories(prev => [...prev, newCat])}
           />
@@ -119,12 +129,26 @@ export function App() {
       {/* Premium Fintech Footer */}
       <footer className="mt-auto border-t border-[#E5E9EF] dark:border-[#303943] bg-[#FFFFFF] dark:bg-[#171D23] py-6 no-print transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[#667085] dark:text-[#9AA6B2]">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <span className="font-heading font-bold text-[#17212B] dark:text-[#F5F7FA]">
               DuesDock
             </span>
             <span>•</span>
-            <span>Personal Finance & Wealth Management</span>
+            <span>Personal Finance & Payment Tracking</span>
+            <span>•</span>
+            <button
+              onClick={() => setActiveTab('developers')}
+              className="text-[#008F62] dark:text-[#00C78A] hover:underline cursor-pointer"
+            >
+              Developers & Architecture
+            </button>
+            <span>•</span>
+            <button
+              onClick={() => setActiveTab('settings')}
+              className="hover:text-[#17212B] dark:hover:text-[#F5F7FA] cursor-pointer"
+            >
+              Settings
+            </button>
           </div>
           <div className="flex items-center gap-2">
             <span className="text-[#008F62] dark:text-[#00C78A] font-medium flex items-center gap-1.5">

@@ -16,6 +16,9 @@ export type PaymentMethod =
   | 'upi'
   | 'other';
 
+export type PaymentDirection = 'payable' | 'receivable';
+export type PaymentStatus = 'pending' | 'partially_paid' | 'paid' | 'overdue' | 'cancelled';
+
 export interface Database {
   public: {
     Tables: {
@@ -160,6 +163,87 @@ export interface Database {
         };
         Relationships: [];
       };
+      payments: {
+        Row: {
+          id: string;
+          user_id: string;
+          title: string;
+          party_name: string;
+          direction: PaymentDirection;
+          total_amount: number;
+          paid_amount: number;
+          due_date: string;
+          category_id: string | null;
+          status: PaymentStatus;
+          notes: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          title: string;
+          party_name: string;
+          direction: PaymentDirection;
+          total_amount: number;
+          paid_amount?: number;
+          due_date: string;
+          category_id?: string | null;
+          status?: PaymentStatus;
+          notes?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          title?: string;
+          party_name?: string;
+          direction?: PaymentDirection;
+          total_amount?: number;
+          paid_amount?: number;
+          due_date?: string;
+          category_id?: string | null;
+          status?: PaymentStatus;
+          notes?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      payment_records: {
+        Row: {
+          id: string;
+          payment_id: string;
+          user_id: string;
+          amount: number;
+          payment_date: string;
+          payment_method: PaymentMethod;
+          notes: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          payment_id: string;
+          user_id: string;
+          amount: number;
+          payment_date?: string;
+          payment_method?: PaymentMethod;
+          notes?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          payment_id?: string;
+          user_id?: string;
+          amount?: number;
+          payment_date?: string;
+          payment_method?: PaymentMethod;
+          notes?: string | null;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;
@@ -172,3 +256,5 @@ export type Profile = Database['public']['Tables']['profiles']['Row'];
 export type Category = Database['public']['Tables']['categories']['Row'];
 export type Transaction = Database['public']['Tables']['transactions']['Row'];
 export type Budget = Database['public']['Tables']['budgets']['Row'];
+export type Payment = Database['public']['Tables']['payments']['Row'];
+export type PaymentRecord = Database['public']['Tables']['payment_records']['Row'];

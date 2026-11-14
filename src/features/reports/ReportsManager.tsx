@@ -2,11 +2,12 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '@/features/auth/AuthContext';
 import { transactionService } from '@/services/transactionService';
 import { budgetService } from '@/services/budgetService';
+import { paymentService, PAYMENT_UPDATED_EVENT } from '@/services/paymentService';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
-import { formatCurrency, CURRENCY_SYMBOLS, getCurrentMonthKey } from '@/lib/utils';
+import { formatCurrency, CURRENCY_SYMBOLS, getCurrentMonthKey, getLastMonthKey, isDateWithinMonths, isDateInCurrentYear, TRANSACTION_UPDATED_EVENT } from '@/lib/utils';
 import { Logo } from '@/components/common/Logo';
-import type { Transaction, Category, Budget, CurrencyCode } from '@/types/database.types';
+import type { Transaction, Category, Payment, CurrencyCode } from '@/types/database.types';
 import Papa from 'papaparse';
 import {
   Printer,
@@ -27,6 +28,7 @@ export const ReportsManager: React.FC = () => {
   // Data
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [payments, setPayments] = useState<Payment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [fetchError, setFetchError] = useState<string | null>(null);
 
@@ -37,19 +39,22 @@ export const ReportsManager: React.FC = () => {
 
   // Success Feedback
   const [csvDownloaded, setCsvDownloaded] = useState(false);
+  const [paymentsCsvDownloaded, setPaymentsCsvDownloaded] = useState(false);
 
   const loadData = async () => {
     if (!user) return;
     try {
       setIsLoading(true);
       setFetchError(null);
-      const [tData, cData] = await Promise.all([
+      const [tData, cData, pData] = await Promise.all([
         transactionService.getTransactions(user.id),
         transactionService.getCategories(user.id),
+        paymentService.getPayments(user.id),
         budgetService.getBudgets(user.id, getCurrentMonthKey()),
       ]);
       setTransactions(tData);
       setCategories(cData);
+      setPayments(pData);
     } catch (err: any) {
       setFetchError(err.message || 'Failed to load report data');
     } finally {
@@ -59,6 +64,19 @@ export const ReportsManager: React.FC = () => {
 
   useEffect(() => {
     loadData();
+
+    const handleUpdate = () => {
+      loadData();
+    };
+
+    window.addEventListener(TRANSACTION_UPDATED_EVENT, handleUpdate);
+    window.addEventListener('duesdock_transaction_saved', handleUpdate);
+    window.addEventListener(PAYMENT_UPDATED_EVENT, handleUpdate);
+    return () => {
+      window.removeEventListener(TRANSACTION_UPDATED_EVENT, handleUpdate);
+      window.removeEventListener('duesdock_transaction_saved', handleUpdate);
+      window.removeEventListener(PAYMENT_UPDATED_EVENT, handleUpdate);
+    };
   }, [user]);
 
   // Format Period Range Label
@@ -77,35 +95,21 @@ export const ReportsManager: React.FC = () => {
     }
   };
 
-  // Filtered Transactions
+  // Filtered Transactions (using robust calendar date logic immune to UTC offsets)
   const filteredTransactions = useMemo(() => {
-    const now = new Date();
+    const currentMonthKey = getCurrentMonthKey();
+    const lastMonthKey = getLastMonthKey();
 
     return transactions.filter((t) => {
-      const txDate = new Date(t.transaction_date);
-
       // Period filter
       if (period === 'this_month') {
-        if (
-          txDate.getFullYear() !== now.getFullYear() ||
-          txDate.getMonth() !== now.getMonth()
-        ) {
-          return false;
-        }
+        if (!t.transaction_date.startsWith(currentMonthKey)) return false;
       } else if (period === 'last_month') {
-        const lastMonthDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-        if (
-          txDate.getFullYear() !== lastMonthDate.getFullYear() ||
-          txDate.getMonth() !== lastMonthDate.getMonth()
-        ) {
-          return false;
-        }
+        if (!t.transaction_date.startsWith(lastMonthKey)) return false;
       } else if (period === 'last_3_months') {
-        const threeMonthsAgo = new Date();
-        threeMonthsAgo.setMonth(now.getMonth() - 3);
-        if (txDate < threeMonthsAgo) return false;
+        if (!isDateWithinMonths(t.transaction_date, 3)) return false;
       } else if (period === 'this_year') {
-        if (txDate.getFullYear() !== now.getFullYear()) return false;
+        if (!isDateInCurrentYear(t.transaction_date)) return false;
       }
 
       // Type filter
@@ -196,7 +200,46 @@ export const ReportsManager: React.FC = () => {
     setTimeout(() => setCsvDownloaded(false), 2500);
   };
 
-  // 2. Printable PDF Statement Handler
+  // 2. Payments CSV Export Handler
+  const handleExportPaymentsCsv = () => {
+    if (payments.length === 0) {
+      alert('No payment obligations available to export.');
+      return;
+    }
+
+    const csvData = payments.map((p) => {
+      const cat = categories.find((c) => c.id === p.category_id);
+      const remaining = Math.max(0, Number(p.total_amount) - Number(p.paid_amount));
+      return {
+        Title: p.title,
+        Counterparty: p.party_name,
+        Direction: p.direction.toUpperCase(),
+        'Due Date': p.due_date,
+        'Total Amount': Number(p.total_amount).toFixed(2),
+        'Paid Amount': Number(p.paid_amount).toFixed(2),
+        'Remaining Balance': remaining.toFixed(2),
+        Currency: currency,
+        Category: cat ? cat.name : 'General',
+        Status: p.status.toUpperCase(),
+        Notes: p.notes || '',
+      };
+    });
+
+    const csvString = Papa.unparse(csvData, { quotes: true, header: true });
+    const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `DuesDock_Payments_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    setPaymentsCsvDownloaded(true);
+    setTimeout(() => setPaymentsCsvDownloaded(false), 2500);
+  };
+
+  // 3. Printable PDF Statement Handler
   const handlePrintPdf = () => {
     window.print();
   };
@@ -214,7 +257,7 @@ export const ReportsManager: React.FC = () => {
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5">
+        <div className="flex flex-wrap items-center gap-2">
           <Button
             variant="outline"
             size="sm"
@@ -228,7 +271,23 @@ export const ReportsManager: React.FC = () => {
               )
             }
           >
-            <span>{csvDownloaded ? 'CSV Downloaded' : 'Export CSV'}</span>
+            <span>{csvDownloaded ? 'Ledger CSV Saved' : 'Transactions CSV'}</span>
+          </Button>
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleExportPaymentsCsv}
+            disabled={payments.length === 0}
+            leftIcon={
+              paymentsCsvDownloaded ? (
+                <Check className="w-4 h-4 text-[#008F62] dark:text-[#00C78A]" />
+              ) : (
+                <Download className="w-4 h-4 text-[#0284C7] dark:text-[#38BDF8]" />
+              )
+            }
+          >
+            <span>{paymentsCsvDownloaded ? 'Payments CSV Saved' : 'Payments CSV'}</span>
           </Button>
 
           <Button
@@ -494,6 +553,59 @@ export const ReportsManager: React.FC = () => {
             </div>
           )}
         </div>
+
+        {/* 4. Payment Obligations & Dues Ledger */}
+        {payments.length > 0 && (
+          <div>
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-[#667085] dark:text-[#9AA6B2] print:text-black mb-3">
+              4. Payment Obligations & Pending Dues ({payments.length} items)
+            </h3>
+            <div className="overflow-x-auto rounded-xl border border-[#E5E9EF] dark:border-[#303943] print:border-gray-300">
+              <table className="w-full text-left border-collapse text-xs">
+                <thead>
+                  <tr className="bg-[#F7F8FA] dark:bg-[#101418] print:bg-gray-100 font-semibold text-[11px] text-[#667085] dark:text-[#9AA6B2] print:text-black border-b border-[#E5E9EF] dark:border-[#303943] print:border-gray-300">
+                    <th className="py-3 px-6">Due Date</th>
+                    <th className="py-3 px-6">Title & Counterparty</th>
+                    <th className="py-3 px-6">Direction</th>
+                    <th className="py-3 px-6 text-right">Total Amount</th>
+                    <th className="py-3 px-6 text-right">Remaining Balance</th>
+                    <th className="py-3 px-6">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[#E5E9EF] dark:divide-[#303943] print:divide-gray-200">
+                  {payments.map((p) => {
+                    const remaining = Math.max(0, Number(p.total_amount) - Number(p.paid_amount));
+                    return (
+                      <tr key={p.id} className="hover:bg-[#F1F4F6]/50 dark:hover:bg-[#202830]/50 print:hover:bg-transparent">
+                        <td className="py-3 px-6 font-mono text-[#667085] dark:text-[#9AA6B2] print:text-gray-700 whitespace-nowrap">
+                          {p.due_date}
+                        </td>
+                        <td className="py-3 px-6 font-medium text-[#17212B] dark:text-[#F5F7FA] print:text-black">
+                          {p.title}
+                          <span className="block text-[11px] text-[#667085] dark:text-[#9AA6B2] print:text-gray-600 font-normal mt-0.5">
+                            {p.party_name}
+                          </span>
+                        </td>
+                        <td className="py-3 px-6 capitalize text-[#667085] dark:text-[#9AA6B2] print:text-gray-700">
+                          {p.direction}
+                        </td>
+                        <td className="py-3 px-6 text-right font-mono text-[#17212B] dark:text-[#F5F7FA] print:text-black">
+                          {formatCurrency(p.total_amount, currency)}
+                        </td>
+                        <td className="py-3 px-6 text-right font-mono font-semibold text-[#DC5252] dark:text-[#FF6666] print:text-black">
+                          {formatCurrency(remaining, currency)}
+                        </td>
+                        <td className="py-3 px-6 capitalize font-medium text-[#667085] dark:text-[#9AA6B2] print:text-gray-700">
+                          {p.status.replace('_', ' ')}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
 
         {/* Statement Footer */}
         <div className="pt-6 border-t border-[#E5E9EF] dark:border-[#303943] print:border-gray-300 text-xs text-[#667085] dark:text-[#9AA6B2] print:text-black flex flex-col sm:flex-row justify-between items-center gap-2">

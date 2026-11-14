@@ -2,10 +2,11 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '@/features/auth/AuthContext';
 import { useTheme } from '@/context/ThemeContext';
 import { transactionService } from '@/services/transactionService';
+import { paymentService, PAYMENT_UPDATED_EVENT } from '@/services/paymentService';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { StatCard } from '@/components/common/StatCard';
-import { formatCurrency, CURRENCY_SYMBOLS } from '@/lib/utils';
-import type { Transaction, Category, CurrencyCode } from '@/types/database.types';
+import { formatCurrency, CURRENCY_SYMBOLS, getCurrentMonthKey, isDateWithinMonths, isDateInCurrentYear, TRANSACTION_UPDATED_EVENT } from '@/lib/utils';
+import type { Transaction, Category, Payment, CurrencyCode } from '@/types/database.types';
 import {
   TrendingUp,
   TrendingDown,
@@ -40,45 +41,58 @@ export const AnalyticsManager: React.FC = () => {
 
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [payments, setPayments] = useState<Payment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [period, setPeriod] = useState<AnalyticsPeriod>('last_6_months');
 
-  useEffect(() => {
+  const loadData = () => {
     if (!user) return;
     setIsLoading(true);
     Promise.all([
       transactionService.getTransactions(user.id),
       transactionService.getCategories(user.id),
+      paymentService.getPayments(user.id),
     ])
-      .then(([txs, cats]) => {
+      .then(([txs, cats, payList]) => {
         setTransactions(txs);
         setCategories(cats);
+        setPayments(payList);
       })
       .finally(() => setIsLoading(false));
+  };
+
+  useEffect(() => {
+    loadData();
+
+    const handleUpdate = () => {
+      loadData();
+    };
+
+    window.addEventListener(TRANSACTION_UPDATED_EVENT, handleUpdate);
+    window.addEventListener('duesdock_transaction_saved', handleUpdate);
+    window.addEventListener(PAYMENT_UPDATED_EVENT, handleUpdate);
+    return () => {
+      window.removeEventListener(TRANSACTION_UPDATED_EVENT, handleUpdate);
+      window.removeEventListener('duesdock_transaction_saved', handleUpdate);
+      window.removeEventListener(PAYMENT_UPDATED_EVENT, handleUpdate);
+    };
   }, [user]);
 
-  // Filter transactions by period
+  // Filter transactions by period using robust calendar date logic
   const filteredTransactions = useMemo(() => {
-    const now = new Date();
+    const currentMonthKey = getCurrentMonthKey();
     return transactions.filter((t) => {
-      const txDate = new Date(t.transaction_date);
-
       if (period === 'this_month') {
-        return (
-          txDate.getFullYear() === now.getFullYear() &&
-          txDate.getMonth() === now.getMonth()
-        );
+        return t.transaction_date.startsWith(currentMonthKey);
       }
       if (period === 'last_3_months') {
-        const d = new Date(now.getFullYear(), now.getMonth() - 2, 1);
-        return txDate >= d;
+        return isDateWithinMonths(t.transaction_date, 3);
       }
       if (period === 'last_6_months') {
-        const d = new Date(now.getFullYear(), now.getMonth() - 5, 1);
-        return txDate >= d;
+        return isDateWithinMonths(t.transaction_date, 6);
       }
       if (period === 'this_year') {
-        return txDate.getFullYear() === now.getFullYear();
+        return isDateInCurrentYear(t.transaction_date);
       }
       return true; // all_time
     });
@@ -106,6 +120,21 @@ export const AnalyticsManager: React.FC = () => {
     if (expenses.length === 0) return null;
     return expenses.reduce((max, t) => (Number(t.amount) > Number(max.amount) ? t : max), expenses[0]);
   }, [filteredTransactions]);
+
+  const largestExpenseCategory = useMemo(() => {
+    if (!largestExpense) return null;
+    return categories.find((c) => c.id === largestExpense.category_id)?.name || null;
+  }, [largestExpense, categories]);
+
+  const largestExpenseSubtitle = useMemo(() => {
+    if (!largestExpense) return 'No expenses in this period';
+    return (
+      largestExpense.merchant ||
+      largestExpenseCategory ||
+      largestExpense.notes ||
+      `Expense on ${largestExpense.transaction_date}`
+    );
+  }, [largestExpense, largestExpenseCategory]);
 
   // Category Distribution
   const categoryBreakdown = useMemo(() => {
@@ -151,6 +180,50 @@ export const AnalyticsManager: React.FC = () => {
       .sort((a, b) => b.total - a.total)
       .slice(0, 5);
   }, [filteredTransactions]);
+
+  // Payment Obligations Analytics
+  const paymentAnalytics = useMemo(() => {
+    let totalPayable = 0;
+    let payableSettled = 0;
+    let totalReceivable = 0;
+    let receivableSettled = 0;
+    let overdueCount = 0;
+    const today = new Date().toISOString().split('T')[0];
+
+    payments.forEach((p) => {
+      const tot = Number(p.total_amount);
+      const paid = Number(p.paid_amount);
+      if (p.direction === 'payable') {
+        totalPayable += tot;
+        payableSettled += paid;
+      } else {
+        totalReceivable += tot;
+        receivableSettled += paid;
+      }
+      if (
+        p.status === 'overdue' ||
+        (p.due_date < today && p.status !== 'paid' && p.status !== 'cancelled')
+      ) {
+        overdueCount += 1;
+      }
+    });
+
+    const outstandingPayable = Math.max(0, totalPayable - payableSettled);
+    const outstandingReceivable = Math.max(0, totalReceivable - receivableSettled);
+    const overallObligations = totalPayable + totalReceivable;
+    const overallSettled = payableSettled + receivableSettled;
+    const settlementRate = overallObligations > 0 ? (overallSettled / overallObligations) * 100 : 0;
+
+    return {
+      totalPayable,
+      outstandingPayable,
+      totalReceivable,
+      outstandingReceivable,
+      settlementRate,
+      overdueCount,
+      totalCount: payments.length,
+    };
+  }, [payments]);
 
   // 6-Month Comparison Trend
   const monthlyTrendData = useMemo(() => {
@@ -266,7 +339,7 @@ export const AnalyticsManager: React.FC = () => {
             <StatCard
               title="Largest Single Outflow"
               value={largestExpense ? formatCurrency(Number(largestExpense.amount), currency) : '—'}
-              subtitle={largestExpense?.merchant || largestExpense?.notes || 'No expenses recorded'}
+              subtitle={largestExpenseSubtitle}
               icon={<CreditCard className="w-5 h-5" />}
               color="sky"
             />
@@ -452,6 +525,77 @@ export const AnalyticsManager: React.FC = () => {
               </div>
             </Card>
           )}
+
+          {/* 4. Payment Obligations & Dues Settlement Velocity */}
+          <Card className="p-6">
+            <div className="pb-4 border-b border-[#E5E9EF] dark:border-[#303943]">
+              <h3 className="font-heading font-semibold text-base text-[#17212B] dark:text-[#F5F7FA] flex items-center gap-2">
+                <CreditCard className="w-4 h-4 text-[#008F62] dark:text-[#00C78A]" />
+                Payment Obligations & Settlement Insights
+              </h3>
+              <p className="text-xs text-[#667085] dark:text-[#9AA6B2] mt-0.5">
+                Overview of debt clearance, receivables collection, and counterparty settlement progress
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4">
+              <div className="p-4 rounded-xl border border-[#E5E9EF] dark:border-[#303943] bg-[#F7F8FA] dark:bg-[#101418] space-y-1">
+                <span className="text-[11px] text-[#667085] dark:text-[#9AA6B2] font-medium block">
+                  Pending Payables
+                </span>
+                <span className="font-mono font-bold text-lg text-[#DC5252] dark:text-[#FF6666] block">
+                  {formatCurrency(paymentAnalytics.outstandingPayable, currency)}
+                </span>
+                <span className="text-[10px] text-[#667085] dark:text-[#9AA6B2]">
+                  Total obligations: {formatCurrency(paymentAnalytics.totalPayable, currency)}
+                </span>
+              </div>
+
+              <div className="p-4 rounded-xl border border-[#E5E9EF] dark:border-[#303943] bg-[#F7F8FA] dark:bg-[#101418] space-y-1">
+                <span className="text-[11px] text-[#667085] dark:text-[#9AA6B2] font-medium block">
+                  Expected Receivables
+                </span>
+                <span className="font-mono font-bold text-lg text-[#008F62] dark:text-[#00C78A] block">
+                  {formatCurrency(paymentAnalytics.outstandingReceivable, currency)}
+                </span>
+                <span className="text-[10px] text-[#667085] dark:text-[#9AA6B2]">
+                  Total expected: {formatCurrency(paymentAnalytics.totalReceivable, currency)}
+                </span>
+              </div>
+
+              <div className="p-4 rounded-xl border border-[#E5E9EF] dark:border-[#303943] bg-[#F7F8FA] dark:bg-[#101418] space-y-1">
+                <span className="text-[11px] text-[#667085] dark:text-[#9AA6B2] font-medium block">
+                  Settlement Rate
+                </span>
+                <span className="font-mono font-bold text-lg text-[#17212B] dark:text-[#F5F7FA] block">
+                  {Math.round(paymentAnalytics.settlementRate)}%
+                </span>
+                <span className="text-[10px] text-[#667085] dark:text-[#9AA6B2]">
+                  Of total obligation volume settled
+                </span>
+              </div>
+
+              <div className="p-4 rounded-xl border border-[#E5E9EF] dark:border-[#303943] bg-[#F7F8FA] dark:bg-[#101418] space-y-1">
+                <span className="text-[11px] text-[#667085] dark:text-[#9AA6B2] font-medium block">
+                  Active Dues Count
+                </span>
+                <span className="font-mono font-bold text-lg text-[#17212B] dark:text-[#F5F7FA] block">
+                  {paymentAnalytics.totalCount} Obligations
+                </span>
+                <span
+                  className={`text-[10px] ${
+                    paymentAnalytics.overdueCount > 0
+                      ? 'text-[#DC5252] dark:text-[#FF6666] font-semibold'
+                      : 'text-[#667085] dark:text-[#9AA6B2]'
+                  }`}
+                >
+                  {paymentAnalytics.overdueCount > 0
+                    ? `${paymentAnalytics.overdueCount} currently overdue`
+                    : 'Zero overdue payments'}
+                </span>
+              </div>
+            </div>
+          </Card>
         </>
       )}
     </div>
