@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils';
 import { Loader2 } from 'lucide-react';
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'outline' | 'danger' | 'ghost' | 'soft';
+  variant?: 'primary' | 'secondary' | 'outline' | 'danger' | 'ghost' | 'soft' | 'glass';
   size?: 'sm' | 'md' | 'lg';
   isLoading?: boolean;
   leftIcon?: React.ReactNode;
@@ -22,27 +22,29 @@ export const Button: React.FC<ButtonProps> = ({
   ...props
 }) => {
   const baseStyles =
-    'inline-flex items-center justify-center font-medium transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-[#008F62]/30 dark:focus:ring-[#00C78A]/30 disabled:opacity-50 disabled:cursor-not-allowed select-none cursor-pointer';
+    'inline-flex items-center justify-center font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 disabled:opacity-50 disabled:cursor-not-allowed select-none cursor-pointer relative overflow-hidden group';
 
   const variants = {
     primary:
-      'bg-[#008F62] hover:bg-[#007A53] dark:bg-[#00C78A] dark:hover:bg-[#00B37C] text-white dark:text-[#101418] shadow-xs hover:shadow font-semibold',
+      'bg-gradient-to-r from-emerald-600 via-teal-600 to-sky-600 hover:from-emerald-500 hover:via-teal-500 hover:to-sky-500 text-white font-semibold shadow-md shadow-emerald-600/20 hover:shadow-lg hover:shadow-emerald-500/30 border border-emerald-400/30 active:scale-[0.98]',
     secondary:
-      'bg-[#F1F4F6] hover:bg-[#E5E9EF] dark:bg-[#202830] dark:hover:bg-[#28323C] text-[#17212B] dark:text-[#F5F7FA] border border-[#E5E9EF] dark:border-[#303943]',
+      'bg-white/60 hover:bg-white/90 dark:bg-white/5 dark:hover:bg-white/10 text-slate-800 dark:text-slate-100 border border-slate-200/80 dark:border-white/10 backdrop-blur-md shadow-sm hover:border-emerald-500/30 dark:hover:border-emerald-400/30 active:scale-[0.98]',
     outline:
-      'bg-transparent hover:bg-[#F1F4F6] dark:hover:bg-[#202830] text-[#17212B] dark:text-[#F5F7FA] border border-[#E5E9EF] dark:border-[#303943]',
+      'bg-transparent hover:bg-white/40 dark:hover:bg-white/5 text-slate-700 dark:text-slate-200 border border-slate-300/80 dark:border-white/15 backdrop-blur-sm active:scale-[0.98]',
     soft:
-      'bg-[#008F62]/10 hover:bg-[#008F62]/15 dark:bg-[#00C78A]/15 dark:hover:bg-[#00C78A]/20 text-[#008F62] dark:text-[#00C78A] border border-[#008F62]/20 dark:border-[#00C78A]/30',
+      'bg-emerald-500/10 hover:bg-emerald-500/15 dark:bg-emerald-400/15 dark:hover:bg-emerald-400/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20 dark:border-emerald-400/30 backdrop-blur-md active:scale-[0.98]',
+    glass:
+      'glass-card hover:bg-white/80 dark:hover:bg-white/10 text-slate-900 dark:text-white border-white/40 dark:border-white/10 active:scale-[0.98]',
     danger:
-      'bg-[#DC5252] hover:bg-[#C94545] dark:bg-[#FF6666] dark:hover:bg-[#E65555] text-white dark:text-[#101418] shadow-xs hover:shadow font-semibold',
+      'bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white font-semibold shadow-md shadow-rose-600/20 hover:shadow-lg hover:shadow-rose-500/30 border border-rose-400/30 active:scale-[0.98]',
     ghost:
-      'bg-transparent hover:bg-[#F1F4F6] dark:hover:bg-[#202830] text-[#667085] dark:text-[#9AA6B2] hover:text-[#17212B] dark:hover:text-[#F5F7FA]',
+      'bg-transparent hover:bg-slate-200/40 dark:hover:bg-white/5 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white',
   };
 
   const sizes = {
-    sm: 'text-xs px-3 py-1.5 gap-1.5 rounded-md',
-    md: 'text-sm px-4 py-2 gap-2 rounded-lg',
-    lg: 'text-base px-5 py-2.5 gap-2.5 rounded-lg',
+    sm: 'text-xs px-3 py-1.5 gap-1.5 rounded-xl',
+    md: 'text-sm px-4 py-2 gap-2 rounded-xl',
+    lg: 'text-base px-5 py-2.5 gap-2.5 rounded-2xl',
   };
 
   return (
@@ -51,6 +53,8 @@ export const Button: React.FC<ButtonProps> = ({
       disabled={disabled || isLoading}
       {...props}
     >
+      {/* Specular sheen on top edge */}
+      <span className="absolute inset-x-0 top-0 h-px bg-white/25 pointer-events-none" />
       {isLoading ? (
         <Loader2 className="w-4 h-4 animate-spin text-current shrink-0" />
       ) : (

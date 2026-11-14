@@ -332,7 +332,7 @@ export const PaymentManager: React.FC = () => {
             <select
               value={directionFilter}
               onChange={(e) => setDirectionFilter(e.target.value as any)}
-              className="w-full h-10 rounded-lg border border-[#E5E9EF] dark:border-[#303943] bg-[#FFFFFF] dark:bg-[#101418] px-3 py-2 text-xs font-medium text-[#17212B] dark:text-[#F5F7FA] focus:border-[#008F62] dark:focus:border-[#00C78A] focus:outline-none"
+              className="w-full h-10 rounded-xl border border-slate-200/70 dark:border-white/10 bg-white/70 dark:bg-slate-900/60 backdrop-blur-md px-3 py-2 text-xs font-medium text-slate-800 dark:text-slate-100 shadow-xs focus:border-emerald-500/60 dark:focus:border-emerald-400/60 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none transition-all"
             >
               <option value="all">All Directions</option>
               <option value="payable">Payable (Money to Pay)</option>
@@ -345,7 +345,7 @@ export const PaymentManager: React.FC = () => {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value as any)}
-              className="w-full h-10 rounded-lg border border-[#E5E9EF] dark:border-[#303943] bg-[#FFFFFF] dark:bg-[#101418] px-3 py-2 text-xs font-medium text-[#17212B] dark:text-[#F5F7FA] focus:border-[#008F62] dark:focus:border-[#00C78A] focus:outline-none"
+              className="w-full h-10 rounded-xl border border-slate-200/70 dark:border-white/10 bg-white/70 dark:bg-slate-900/60 backdrop-blur-md px-3 py-2 text-xs font-medium text-slate-800 dark:text-slate-100 shadow-xs focus:border-emerald-500/60 dark:focus:border-emerald-400/60 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none transition-all"
             >
               <option value="all">All Statuses</option>
               <option value="pending">Pending</option>
@@ -361,7 +361,7 @@ export const PaymentManager: React.FC = () => {
             <select
               value={deadlineFilter}
               onChange={(e) => setDeadlineFilter(e.target.value as any)}
-              className="w-full h-10 rounded-lg border border-[#E5E9EF] dark:border-[#303943] bg-[#FFFFFF] dark:bg-[#101418] px-3 py-2 text-xs font-medium text-[#17212B] dark:text-[#F5F7FA] focus:border-[#008F62] dark:focus:border-[#00C78A] focus:outline-none"
+              className="w-full h-10 rounded-xl border border-slate-200/70 dark:border-white/10 bg-white/70 dark:bg-slate-900/60 backdrop-blur-md px-3 py-2 text-xs font-medium text-slate-800 dark:text-slate-100 shadow-xs focus:border-emerald-500/60 dark:focus:border-emerald-400/60 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none transition-all"
             >
               <option value="all">All Deadlines</option>
               <option value="overdue">Overdue Only</option>
@@ -372,7 +372,7 @@ export const PaymentManager: React.FC = () => {
         </div>
 
         {/* Sub-toolbar: Active Filter Tags & Sorting */}
-        <div className="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-[#E5E9EF] dark:border-[#303943] text-xs">
+        <div className="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-slate-200/60 dark:border-white/[0.08] text-xs">
           <div className="flex items-center gap-2 text-[#667085] dark:text-[#9AA6B2]">
             <span>
               Showing <strong className="text-[#17212B] dark:text-[#F5F7FA] font-semibold">{filteredPayments.length}</strong> of {payments.length} obligations
@@ -393,7 +393,7 @@ export const PaymentManager: React.FC = () => {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as any)}
-              className="h-8 rounded-lg border border-[#E5E9EF] dark:border-[#303943] bg-[#FFFFFF] dark:bg-[#101418] px-2 py-1 text-xs font-medium text-[#17212B] dark:text-[#F5F7FA] focus:outline-none"
+              className="h-8 rounded-lg border border-slate-200/70 dark:border-white/10 bg-white/70 dark:bg-slate-900/60 backdrop-blur-md px-2.5 py-1 text-xs font-medium text-slate-800 dark:text-slate-100 shadow-xs focus:border-emerald-500/60 focus:outline-none transition-all"
             >
               <option value="date_asc">Deadline: Earliest First</option>
               <option value="date_desc">Deadline: Latest First</option>
@@ -421,7 +421,7 @@ export const PaymentManager: React.FC = () => {
           <span>Loading payment obligations...</span>
         </div>
       ) : filteredPayments.length === 0 ? (
-        <Card className="p-12 text-center space-y-3 border border-dashed border-[#E5E9EF] dark:border-[#303943]">
+        <Card className="p-12 text-center space-y-3 border border-dashed border-slate-200/70 dark:border-white/15">
           <div className="w-12 h-12 rounded-xl bg-[#008F62]/10 dark:bg-[#00C78A]/15 text-[#008F62] dark:text-[#00C78A] flex items-center justify-center mx-auto">
             <Clock className="w-6 h-6" />
           </div>
@@ -456,7 +456,7 @@ export const PaymentManager: React.FC = () => {
           <div className="overflow-x-auto hidden md:block">
             <table className="w-full text-left border-collapse text-xs">
               <thead>
-                <tr className="border-b border-[#E5E9EF] dark:border-[#303943] bg-[#F7F8FA] dark:bg-[#101418] text-[#667085] dark:text-[#9AA6B2] font-semibold">
+                <tr className="border-b border-slate-200/70 dark:border-white/10 bg-slate-100/60 dark:bg-slate-900/50 backdrop-blur-md text-[11px] font-semibold text-slate-500 dark:text-slate-400">
                   <th className="py-3 px-4">Title & Counterparty</th>
                   <th className="py-3 px-4">Direction</th>
                   <th className="py-3 px-4">Due Date</th>
@@ -466,7 +466,7 @@ export const PaymentManager: React.FC = () => {
                   <th className="py-3 px-4 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#E5E9EF] dark:divide-[#303943]">
+              <tbody className="divide-y divide-slate-200/60 dark:divide-white/[0.06]">
                 {filteredPayments.map((p) => {
                   const total = Number(p.total_amount);
                   const paid = Number(p.paid_amount);
@@ -477,7 +477,7 @@ export const PaymentManager: React.FC = () => {
                   return (
                     <tr
                       key={p.id}
-                      className="hover:bg-[#F7F8FA] dark:hover:bg-[#101418] transition-colors group cursor-pointer"
+                      className="hover:bg-emerald-500/[0.04] dark:hover:bg-emerald-400/[0.05] transition-colors group cursor-pointer"
                       onClick={() => setViewingPayment(p)}
                     >
                       <td className="py-3 px-4">
@@ -592,7 +592,7 @@ export const PaymentManager: React.FC = () => {
           </div>
 
           {/* Mobile Card List View */}
-          <div className="divide-y divide-[#E5E9EF] dark:divide-[#303943] md:hidden">
+          <div className="divide-y divide-slate-200/60 dark:divide-white/[0.06] md:hidden">
             {filteredPayments.map((p) => {
               const total = Number(p.total_amount);
               const paid = Number(p.paid_amount);
@@ -603,7 +603,7 @@ export const PaymentManager: React.FC = () => {
               return (
                 <div
                   key={p.id}
-                  className="p-4 space-y-3 cursor-pointer hover:bg-[#F7F8FA] dark:hover:bg-[#101418] transition-colors"
+                  className="p-4 space-y-3 cursor-pointer hover:bg-emerald-500/[0.04] dark:hover:bg-emerald-400/[0.05] transition-colors"
                   onClick={() => setViewingPayment(p)}
                 >
                   <div className="flex items-start justify-between gap-2">
@@ -660,7 +660,7 @@ export const PaymentManager: React.FC = () => {
 
                   {/* Mobile Actions */}
                   <div
-                    className="flex items-center justify-end gap-2 pt-2 border-t border-[#E5E9EF] dark:border-[#303943]"
+                    className="flex items-center justify-end gap-2 pt-2 border-t border-slate-200/60 dark:border-white/[0.08]"
                     onClick={(e) => e.stopPropagation()}
                   >
                     {remaining > 0 && p.status !== 'cancelled' && (

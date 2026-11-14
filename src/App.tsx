@@ -37,14 +37,14 @@ export function App() {
   // Loading state
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#F7F8FA] dark:bg-[#101418] flex flex-col items-center justify-center p-4 transition-colors">
-        <div className="bg-[#FFFFFF] dark:bg-[#171D23] border border-[#E5E9EF] dark:border-[#303943] rounded-2xl p-8 fintech-card-shadow flex flex-col items-center max-w-sm w-full text-center">
+      <div className="min-h-screen flex flex-col items-center justify-center p-4 transition-colors">
+        <div className="glass-panel rounded-3xl p-8 max-w-sm w-full text-center flex flex-col items-center shadow-2xl border border-white/60 dark:border-white/10">
           <Logo size="xl" showText={false} className="mb-4" />
-          <h2 className="font-heading font-semibold text-lg text-[#17212B] dark:text-[#F5F7FA] mb-2">
+          <h2 className="font-heading font-bold text-xl text-slate-900 dark:text-white mb-2">
             DuesDock
           </h2>
-          <div className="flex items-center gap-2 text-xs font-medium text-[#667085] dark:text-[#9AA6B2]">
-            <Loader2 className="w-4 h-4 animate-spin text-[#008F62] dark:text-[#00C78A]" />
+          <div className="flex items-center gap-2 text-xs font-medium text-slate-500 dark:text-slate-400">
+            <Loader2 className="w-4 h-4 animate-spin text-emerald-600 dark:text-emerald-400" />
             <span>Loading your financial workspace...</span>
           </div>
         </div>
@@ -72,7 +72,7 @@ export function App() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F7F8FA] dark:bg-[#101418] text-[#17212B] dark:text-[#F5F7FA] flex flex-col font-sans transition-colors selection:bg-[#008F62] selection:text-white dark:selection:bg-[#00C78A] dark:selection:text-[#101418]">
+    <div className="min-h-screen text-slate-900 dark:text-slate-100 flex flex-col font-sans transition-colors selection:bg-emerald-500 selection:text-white">
       {/* Unified Top Navigation */}
       <div className="no-print">
         <Navbar
@@ -126,32 +126,32 @@ export function App() {
         </Suspense>
       )}
 
-      {/* Premium Fintech Footer */}
-      <footer className="mt-auto border-t border-[#E5E9EF] dark:border-[#303943] bg-[#FFFFFF] dark:bg-[#171D23] py-6 no-print transition-colors">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[#667085] dark:text-[#9AA6B2]">
+      {/* Premium Liquid Glass Footer */}
+      <footer className="mt-auto border-t border-slate-200/70 dark:border-white/10 bg-white/50 dark:bg-[#070B10]/60 backdrop-blur-xl py-6 no-print transition-colors">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500 dark:text-slate-400">
           <div className="flex items-center gap-3">
-            <span className="font-heading font-bold text-[#17212B] dark:text-[#F5F7FA]">
+            <span className="font-heading font-bold text-slate-900 dark:text-white">
               DuesDock
             </span>
             <span>•</span>
-            <span>Personal Finance & Payment Tracking</span>
+            <span>Liquid Glass Wealth Workspace</span>
             <span>•</span>
             <button
               onClick={() => setActiveTab('developers')}
-              className="text-[#008F62] dark:text-[#00C78A] hover:underline cursor-pointer"
+              className="text-emerald-600 dark:text-emerald-400 hover:underline cursor-pointer"
             >
               Developers & Architecture
             </button>
             <span>•</span>
             <button
               onClick={() => setActiveTab('settings')}
-              className="hover:text-[#17212B] dark:hover:text-[#F5F7FA] cursor-pointer"
+              className="hover:text-slate-900 dark:hover:text-white cursor-pointer"
             >
               Settings
             </button>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-[#008F62] dark:text-[#00C78A] font-medium flex items-center gap-1.5">
+            <span className="text-emerald-600 dark:text-emerald-400 font-medium flex items-center gap-1.5">
               <ShieldCheck className="w-3.5 h-3.5" /> Google OAuth + Supabase RLS
             </span>
           </div>

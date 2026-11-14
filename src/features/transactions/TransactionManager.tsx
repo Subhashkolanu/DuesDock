@@ -283,7 +283,7 @@ export const TransactionManager: React.FC = () => {
             <select
               value={typeFilter}
               onChange={(e) => setTypeFilter(e.target.value as any)}
-              className="w-full h-10 rounded-lg border border-[#E5E9EF] dark:border-[#303943] bg-[#FFFFFF] dark:bg-[#101418] px-3 py-2 text-xs font-medium text-[#17212B] dark:text-[#F5F7FA] focus:border-[#008F62] dark:focus:border-[#00C78A] focus:outline-none"
+              className="w-full h-10 rounded-xl border border-slate-200/70 dark:border-white/10 bg-white/70 dark:bg-slate-900/60 backdrop-blur-md px-3 py-2 text-xs font-medium text-slate-800 dark:text-slate-100 shadow-xs focus:border-emerald-500/60 dark:focus:border-emerald-400/60 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none transition-all"
             >
               <option value="all">All Types</option>
               <option value="expense">Expenses Only</option>
@@ -296,7 +296,7 @@ export const TransactionManager: React.FC = () => {
             <select
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
-              className="w-full h-10 rounded-lg border border-[#E5E9EF] dark:border-[#303943] bg-[#FFFFFF] dark:bg-[#101418] px-3 py-2 text-xs font-medium text-[#17212B] dark:text-[#F5F7FA] focus:border-[#008F62] dark:focus:border-[#00C78A] focus:outline-none"
+              className="w-full h-10 rounded-xl border border-slate-200/70 dark:border-white/10 bg-white/70 dark:bg-slate-900/60 backdrop-blur-md px-3 py-2 text-xs font-medium text-slate-800 dark:text-slate-100 shadow-xs focus:border-emerald-500/60 dark:focus:border-emerald-400/60 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none transition-all"
             >
               <option value="all">All Categories</option>
               {categories.map((c) => (
@@ -312,7 +312,7 @@ export const TransactionManager: React.FC = () => {
             <select
               value={dateFilter}
               onChange={(e) => setDateFilter(e.target.value as any)}
-              className="w-full h-10 rounded-lg border border-[#E5E9EF] dark:border-[#303943] bg-[#FFFFFF] dark:bg-[#101418] px-3 py-2 text-xs font-medium text-[#17212B] dark:text-[#F5F7FA] focus:border-[#008F62] dark:focus:border-[#00C78A] focus:outline-none"
+              className="w-full h-10 rounded-xl border border-slate-200/70 dark:border-white/10 bg-white/70 dark:bg-slate-900/60 backdrop-blur-md px-3 py-2 text-xs font-medium text-slate-800 dark:text-slate-100 shadow-xs focus:border-emerald-500/60 dark:focus:border-emerald-400/60 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none transition-all"
             >
               <option value="all">All Dates</option>
               <option value="this_month">This Month</option>
@@ -324,7 +324,7 @@ export const TransactionManager: React.FC = () => {
         </div>
 
         {/* Sub-toolbar: Active Filter Tags & Sorting */}
-        <div className="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-[#E5E9EF] dark:border-[#303943] text-xs">
+        <div className="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-slate-200/60 dark:border-white/[0.08] text-xs">
           <div className="flex items-center gap-2 text-[#667085] dark:text-[#9AA6B2]">
             <span>
               Showing <strong className="text-[#17212B] dark:text-[#F5F7FA] font-semibold">{filteredTransactions.length}</strong> of {transactions.length} items
@@ -345,7 +345,7 @@ export const TransactionManager: React.FC = () => {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as any)}
-              className="h-8 rounded-lg border border-[#E5E9EF] dark:border-[#303943] bg-[#FFFFFF] dark:bg-[#101418] px-2 py-1 text-xs font-medium text-[#17212B] dark:text-[#F5F7FA] focus:outline-none"
+              className="h-8 rounded-lg border border-slate-200/70 dark:border-white/10 bg-white/70 dark:bg-slate-900/60 backdrop-blur-md px-2.5 py-1 text-xs font-medium text-slate-800 dark:text-slate-100 shadow-xs focus:border-emerald-500/60 focus:outline-none transition-all"
             >
               <option value="date_desc">Date: Newest</option>
               <option value="date_asc">Date: Oldest</option>
@@ -373,7 +373,7 @@ export const TransactionManager: React.FC = () => {
           <span>Loading transactions...</span>
         </div>
       ) : filteredTransactions.length === 0 ? (
-        <Card className="p-12 text-center space-y-3 border border-dashed border-[#E5E9EF] dark:border-[#303943]">
+        <Card className="p-12 text-center space-y-3 border border-dashed border-slate-200/70 dark:border-white/15">
           <div className="w-12 h-12 rounded-xl bg-[#008F62]/10 dark:bg-[#00C78A]/15 text-[#008F62] dark:text-[#00C78A] flex items-center justify-center mx-auto">
             <Receipt className="w-6 h-6" />
           </div>
@@ -399,7 +399,7 @@ export const TransactionManager: React.FC = () => {
           <div className="overflow-x-auto hidden md:block">
             <table className="w-full text-left border-collapse text-xs">
               <thead>
-                <tr className="border-b border-[#E5E9EF] dark:border-[#303943] bg-[#F7F8FA] dark:bg-[#101418] text-[11px] font-semibold text-[#667085] dark:text-[#9AA6B2]">
+                <tr className="border-b border-slate-200/70 dark:border-white/10 bg-slate-100/60 dark:bg-slate-900/50 backdrop-blur-md text-[11px] font-semibold text-slate-500 dark:text-slate-400">
                   <th className="py-3 px-6">Date</th>
                   <th className="py-3 px-6">Type</th>
                   <th className="py-3 px-6">Merchant / Description</th>
@@ -410,7 +410,7 @@ export const TransactionManager: React.FC = () => {
                   <th className="py-3 px-6 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#E5E9EF] dark:divide-[#303943]">
+              <tbody className="divide-y divide-slate-200/60 dark:divide-white/[0.06]">
                 {filteredTransactions.map((tx) => {
                   const category = categories.find((c) => c.id === tx.category_id);
                   const isIncome = tx.type === 'income';
@@ -418,7 +418,7 @@ export const TransactionManager: React.FC = () => {
                   return (
                     <tr
                       key={tx.id}
-                      className="hover:bg-[#F1F4F6]/60 dark:hover:bg-[#202830]/60 transition-colors"
+                      className="hover:bg-emerald-500/[0.04] dark:hover:bg-emerald-400/[0.05] transition-colors"
                     >
                       <td className="py-3.5 px-6 font-mono text-[#667085] dark:text-[#9AA6B2] whitespace-nowrap">
                         {tx.transaction_date}
@@ -537,7 +537,7 @@ export const TransactionManager: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between pt-2 border-t border-[#E5E9EF]/60 dark:border-[#303943]/60 text-xs">
+                  <div className="flex items-center justify-between pt-2 border-t border-slate-200/50 dark:border-white/[0.06] text-xs">
                     <PaymentMethodBadge method={tx.payment_method} />
 
                     <div className="flex items-center gap-1">

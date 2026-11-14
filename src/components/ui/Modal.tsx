@@ -44,34 +44,37 @@ export const Modal: React.FC<ModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
-      <div className="flex min-h-screen items-center justify-center p-4 text-center">
-        {/* Backdrop */}
+      <div className="flex min-h-screen items-center justify-center p-4 text-center sm:p-6">
+        {/* Liquid Glass Backdrop with deep blur */}
         <div
-          className="fixed inset-0 bg-black/45 backdrop-blur-xs transition-opacity"
+          className="fixed inset-0 bg-slate-950/50 dark:bg-black/70 backdrop-blur-md transition-opacity duration-300"
           onClick={onClose}
         />
 
-        {/* Dialog panel */}
+        {/* Floating Glass Dialog panel */}
         <div
           className={cn(
-            'relative w-full transform rounded-2xl bg-[#FFFFFF] dark:bg-[#171D23] p-6 text-left border border-[#E5E9EF] dark:border-[#303943] fintech-modal-shadow transition-all',
+            'relative w-full transform rounded-3xl glass-panel p-6 sm:p-7 text-left border border-white/60 dark:border-white/10 transition-all duration-300 overflow-hidden shadow-2xl',
             maxWidths[maxWidth]
           )}
         >
-          <div className="flex items-start justify-between pb-4 border-b border-[#E5E9EF] dark:border-[#303943]">
+          {/* Specular top-edge refraction highlight */}
+          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/50 dark:via-white/20 to-transparent pointer-events-none" />
+
+          <div className="flex items-start justify-between pb-4 border-b border-slate-200/60 dark:border-white/5">
             <div>
-              <h3 className="font-heading font-semibold text-lg text-[#17212B] dark:text-[#F5F7FA] leading-tight">
+              <h3 className="font-heading font-bold text-lg text-slate-900 dark:text-white leading-tight">
                 {title}
               </h3>
               {description && (
-                <p className="mt-1 text-xs text-[#667085] dark:text-[#9AA6B2]">
+                <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
                   {description}
                 </p>
               )}
             </div>
             <button
               onClick={onClose}
-              className="rounded-lg p-1.5 text-[#667085] dark:text-[#9AA6B2] hover:text-[#17212B] dark:hover:text-[#F5F7FA] hover:bg-[#F1F4F6] dark:hover:bg-[#202830] transition-colors"
+              className="rounded-xl p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-white/10 transition-colors cursor-pointer"
             >
               <X className="w-4 h-4" />
             </button>

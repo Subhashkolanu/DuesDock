@@ -274,24 +274,24 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
       {/* Top Bar: Title & Period Switcher */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="font-heading font-bold text-2xl text-[#17212B] dark:text-[#F5F7FA] tracking-tight">
+          <h1 className="font-heading font-extrabold text-2xl sm:text-3xl text-slate-900 dark:text-white tracking-tight">
             Financial Dashboard
           </h1>
-          <p className="text-xs text-[#667085] dark:text-[#9AA6B2] mt-0.5">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
             Real-time overview of your cash flow, expenditure, and savings
           </p>
         </div>
 
-        {/* Period Selector Pills */}
-        <div className="flex items-center gap-1 p-1 bg-[#F1F4F6] dark:bg-[#202830] rounded-xl border border-[#E5E9EF] dark:border-[#303943] text-xs">
+        {/* Period Selector Pills with Liquid Glass */}
+        <div className="flex items-center gap-1.5 p-1 glass-card-subtle rounded-2xl border border-white/60 dark:border-white/10 text-xs shadow-xs">
           {(['this_month', 'last_month', 'last_3_months', 'this_year'] as DashboardPeriodFilter[]).map((p) => (
             <button
               key={p}
               onClick={() => setPeriod(p)}
-              className={`px-3 py-1.5 rounded-lg font-medium transition-all cursor-pointer ${
+              className={`px-3.5 py-1.5 rounded-xl font-medium transition-all cursor-pointer ${
                 period === p
-                  ? 'bg-[#FFFFFF] dark:bg-[#171D23] text-[#008F62] dark:text-[#00C78A] shadow-xs font-semibold'
-                  : 'text-[#667085] dark:text-[#9AA6B2] hover:text-[#17212B] dark:hover:text-[#F5F7FA]'
+                  ? 'liquid-pill-active text-emerald-800 dark:text-emerald-300 font-bold'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-white/40 dark:hover:bg-white/5'
               }`}
             >
               {formatPeriodLabel(p)}
@@ -301,12 +301,12 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
       </div>
 
       {isLoading ? (
-        <div className="p-16 text-center text-xs text-[#667085] dark:text-[#9AA6B2] flex items-center justify-center gap-2">
-          <Loader2 className="w-5 h-5 animate-spin text-[#008F62] dark:text-[#00C78A]" />
+        <div className="p-16 text-center text-xs text-slate-500 dark:text-slate-400 flex items-center justify-center gap-2.5">
+          <Loader2 className="w-5 h-5 animate-spin text-emerald-600 dark:text-emerald-400" />
           <span>Loading financial overview...</span>
         </div>
       ) : fetchError ? (
-        <div className="p-8 text-center text-xs text-[#DC5252] dark:text-[#FF6666] bg-[#DC5252]/10 border border-[#DC5252]/20 rounded-xl">
+        <div className="p-8 text-center text-xs text-rose-600 dark:text-rose-400 bg-rose-500/10 border border-rose-500/25 rounded-2xl backdrop-blur-md">
           <p className="font-semibold">{fetchError}</p>
           <Button variant="outline" size="sm" onClick={loadData} className="mt-3">
             Retry
@@ -364,45 +364,45 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
 
           {/* Budget Utilization Overview Banner (if budget target set) */}
           {monthlyBudgetTarget > 0 && (
-            <div className="p-4 rounded-xl border border-[#E5E9EF] dark:border-[#303943] bg-[#FFFFFF] dark:bg-[#171D23] fintech-card-shadow flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="p-5 rounded-2xl glass-card flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm border border-white/70 dark:border-white/10">
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-semibold text-[#17212B] dark:text-[#F5F7FA]">
+                  <span className="text-xs font-semibold text-slate-900 dark:text-white">
                     Monthly Budget Progress
                   </span>
                   <span
-                    className={`text-xs font-bold px-2 py-0.5 rounded-full ${
+                    className={`text-xs font-bold px-2.5 py-0.5 rounded-full border backdrop-blur-md ${
                       budgetUsagePercent >= 100
-                        ? 'bg-[#DC5252]/10 text-[#DC5252] dark:text-[#FF6666]'
+                        ? 'bg-rose-500/15 text-rose-700 dark:text-rose-300 border-rose-500/30'
                         : budgetUsagePercent >= 80
-                        ? 'bg-[#D99A27]/10 text-[#D99A27] dark:text-[#F0B94B]'
-                        : 'bg-[#008F62]/10 text-[#008F62] dark:text-[#00C78A]'
+                        ? 'bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/30'
+                        : 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/30'
                     }`}
                   >
                     {Math.round(budgetUsagePercent)}% Utilized
                   </span>
                 </div>
-                <p className="text-xs text-[#667085] dark:text-[#9AA6B2]">
+                <p className="text-xs text-slate-500 dark:text-slate-400">
                   {formatCurrency(currentMonthExpenses, currency)} spent of {formatCurrency(monthlyBudgetTarget, currency)} ceiling
                 </p>
               </div>
 
-              {/* Progress bar */}
-              <div className="w-full sm:w-72 space-y-1">
-                <div className="w-full bg-[#F1F4F6] dark:bg-[#202830] rounded-full h-2 overflow-hidden">
+              {/* Progress bar with glowing liquid gradient */}
+              <div className="w-full sm:w-72 space-y-1.5">
+                <div className="w-full bg-slate-200/60 dark:bg-white/10 rounded-full h-2.5 overflow-hidden backdrop-blur-xs">
                   <div
-                    className={`h-full rounded-full transition-all duration-300 ${
+                    className={`h-full rounded-full transition-all duration-500 ${
                       budgetUsagePercent >= 100
-                        ? 'bg-[#DC5252] dark:bg-[#FF6666]'
+                        ? 'bg-gradient-to-r from-rose-500 to-red-600 shadow-xs shadow-rose-500/50'
                         : budgetUsagePercent >= 80
-                        ? 'bg-[#D99A27] dark:bg-[#F0B94B]'
-                        : 'bg-[#008F62] dark:bg-[#00C78A]'
+                        ? 'bg-gradient-to-r from-amber-500 to-amber-600 shadow-xs shadow-amber-500/50'
+                        : 'bg-gradient-to-r from-emerald-500 to-teal-500 shadow-xs shadow-emerald-500/50'
                     }`}
                     style={{ width: `${Math.min(100, Math.max(0, budgetUsagePercent))}%` }}
                   />
                 </div>
                 {budgetUsagePercent >= 100 && (
-                  <p className="text-[11px] text-[#DC5252] dark:text-[#FF6666] font-medium flex items-center gap-1">
+                  <p className="text-[11px] text-rose-600 dark:text-rose-400 font-medium flex items-center gap-1">
                     <AlertTriangle className="w-3 h-3" /> Budget ceiling exceeded
                   </p>
                 )}
@@ -411,27 +411,27 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
           )}
 
           {/* Payment Obligations Quick Overview */}
-          <div className="p-4 rounded-xl border border-[#E5E9EF] dark:border-[#303943] bg-[#FFFFFF] dark:bg-[#171D23] fintech-card-shadow flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="p-5 rounded-2xl glass-card flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm border border-white/70 dark:border-white/10">
             <div className="space-y-1">
               <div className="flex items-center gap-2">
-                <span className="text-xs font-semibold text-[#17212B] dark:text-[#F5F7FA]">
+                <span className="text-xs font-semibold text-slate-900 dark:text-white">
                   Active Payment Obligations
                 </span>
                 {paymentMetrics.overdueCount > 0 ? (
-                  <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-[#DC5252]/10 text-[#DC5252] dark:text-[#FF6666] flex items-center gap-1">
+                  <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-rose-500/15 text-rose-700 dark:text-rose-300 border border-rose-500/30 flex items-center gap-1">
                     <AlertTriangle className="w-3 h-3" />
                     <span>{paymentMetrics.overdueCount} Overdue ({formatCurrency(paymentMetrics.overdueAmount, currency)})</span>
                   </span>
                 ) : (
-                  <span className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-[#008F62]/10 text-[#008F62] dark:text-[#00C78A]">
+                  <span className="text-[11px] font-medium px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30">
                     Deadlines on track
                   </span>
                 )}
               </div>
-              <p className="text-xs text-[#667085] dark:text-[#9AA6B2]">
-                Payables: <strong className="text-[#DC5252] dark:text-[#FF6666] font-mono">{formatCurrency(paymentMetrics.outstandingPayable, currency)}</strong>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                Payables: <strong className="text-rose-600 dark:text-rose-400 font-mono">{formatCurrency(paymentMetrics.outstandingPayable, currency)}</strong>
                 {' • '}
-                Receivables: <strong className="text-[#008F62] dark:text-[#00C78A] font-mono">{formatCurrency(paymentMetrics.outstandingReceivable, currency)}</strong>
+                Receivables: <strong className="text-emerald-600 dark:text-emerald-400 font-mono">{formatCurrency(paymentMetrics.outstandingReceivable, currency)}</strong>
               </p>
             </div>
 
@@ -476,13 +476,13 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Monthly Income vs Expense Chart (2 Cols) */}
                 <Card className="lg:col-span-2 p-6 flex flex-col justify-between">
-                  <div className="flex items-center justify-between pb-4 border-b border-[#E5E9EF] dark:border-[#303943]">
+                  <div className="flex items-center justify-between pb-4 border-b border-slate-200/60 dark:border-white/5">
                     <div>
-                      <h2 className="font-heading font-semibold text-base text-[#17212B] dark:text-[#F5F7FA] flex items-center gap-2">
-                        <BarChart3 className="w-4 h-4 text-[#008F62] dark:text-[#00C78A]" />
+                      <h2 className="font-heading font-semibold text-base text-slate-900 dark:text-white flex items-center gap-2">
+                        <BarChart3 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                         Income vs. Expenses
                       </h2>
-                      <p className="text-xs text-[#667085] dark:text-[#9AA6B2] mt-0.5">
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                         Past 6 months comparison in {currency}
                       </p>
                     </div>
@@ -497,29 +497,30 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
                         <CartesianGrid
                           strokeDasharray="3 3"
                           vertical={false}
-                          stroke={isDark ? '#303943' : '#E5E9EF'}
+                          stroke={isDark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(226, 232, 240, 0.8)'}
                         />
                         <XAxis
                           dataKey="label"
-                          tick={{ fill: isDark ? '#9AA6B2' : '#667085', fontSize: 11 }}
-                          axisLine={{ stroke: isDark ? '#303943' : '#E5E9EF' }}
+                          tick={{ fill: isDark ? '#94A3B8' : '#64748B', fontSize: 11 }}
+                          axisLine={{ stroke: isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(203, 213, 225, 0.8)' }}
                           tickLine={false}
                         />
                         <YAxis
-                          tick={{ fill: isDark ? '#9AA6B2' : '#667085', fontSize: 11 }}
-                          axisLine={{ stroke: isDark ? '#303943' : '#E5E9EF' }}
+                          tick={{ fill: isDark ? '#94A3B8' : '#64748B', fontSize: 11 }}
+                          axisLine={{ stroke: isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(203, 213, 225, 0.8)' }}
                           tickLine={false}
                           tickFormatter={(v) => `${CURRENCY_SYMBOLS[currency]}${v >= 1000 ? (v / 1000).toFixed(0) + 'k' : v}`}
                         />
                         <Tooltip
                           formatter={(value: any) => [formatCurrency(Number(value), currency), '']}
                           contentStyle={{
-                            backgroundColor: isDark ? '#171D23' : '#FFFFFF',
-                            borderRadius: '8px',
-                            border: `1px solid ${isDark ? '#303943' : '#E5E9EF'}`,
-                            color: isDark ? '#F5F7FA' : '#17212B',
+                            backgroundColor: isDark ? 'rgba(10, 16, 25, 0.85)' : 'rgba(255, 255, 255, 0.88)',
+                            backdropFilter: 'blur(16px)',
+                            borderRadius: '16px',
+                            border: isDark ? '1px solid rgba(255, 255, 255, 0.12)' : '1px solid rgba(255, 255, 255, 0.9)',
+                            color: isDark ? '#FFFFFF' : '#0F172A',
                             fontSize: '12px',
-                            boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)',
+                            boxShadow: '0 12px 32px 0 rgba(0, 0, 0, 0.25)',
                           }}
                         />
                         <Legend
@@ -528,14 +529,14 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
                         />
                         <Bar
                           dataKey="Income"
-                          fill={isDark ? '#00C78A' : '#008F62'}
-                          radius={[4, 4, 0, 0]}
+                          fill={isDark ? '#00C78A' : '#059669'}
+                          radius={[6, 6, 0, 0]}
                           maxBarSize={32}
                         />
                         <Bar
                           dataKey="Expenses"
-                          fill={isDark ? '#FF6666' : '#DC5252'}
-                          radius={[4, 4, 0, 0]}
+                          fill={isDark ? '#FB7185' : '#F43F5E'}
+                          radius={[6, 6, 0, 0]}
                           maxBarSize={32}
                         />
                       </BarChart>
@@ -545,23 +546,23 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
 
                 {/* Category Analytics (1 Col) */}
                 <Card className="p-6 flex flex-col justify-between">
-                  <div className="pb-4 border-b border-[#E5E9EF] dark:border-[#303943]">
-                    <h2 className="font-heading font-semibold text-base text-[#17212B] dark:text-[#F5F7FA] flex items-center gap-2">
-                      <PieIcon className="w-4 h-4 text-[#008F62] dark:text-[#00C78A]" />
+                  <div className="pb-4 border-b border-slate-200/60 dark:border-white/5">
+                    <h2 className="font-heading font-semibold text-base text-slate-900 dark:text-white flex items-center gap-2">
+                      <PieIcon className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                       Spending by Category
                     </h2>
-                    <p className="text-xs text-[#667085] dark:text-[#9AA6B2] mt-0.5">
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                       Distribution for {formatPeriodLabel(period)}
                     </p>
                   </div>
 
                   {categorySpendingBreakdown.length === 0 ? (
-                    <div className="py-16 text-center text-xs text-[#667085] dark:text-[#9AA6B2]">
+                    <div className="py-16 text-center text-xs text-slate-500 dark:text-slate-400">
                       No expense transactions logged for this period.
                     </div>
                   ) : (
                     <>
-                      {/* Donut Chart */}
+                      {/* Donut Chart with clean translucent center */}
                       <div className="h-44 w-full my-2">
                         <ResponsiveContainer width="100%" height="100%">
                           <PieChart>
@@ -574,7 +575,7 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
                               innerRadius={48}
                               outerRadius={72}
                               paddingAngle={3}
-                              stroke={isDark ? '#171D23' : '#FFFFFF'}
+                              stroke={isDark ? '#070B10' : '#FFFFFF'}
                               strokeWidth={2}
                             >
                               {categorySpendingBreakdown.map((entry, index) => (
@@ -584,10 +585,11 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
                             <Tooltip
                               formatter={(value: any) => [formatCurrency(Number(value), currency), '']}
                               contentStyle={{
-                                backgroundColor: isDark ? '#171D23' : '#FFFFFF',
-                                borderRadius: '8px',
-                                border: `1px solid ${isDark ? '#303943' : '#E5E9EF'}`,
-                                color: isDark ? '#F5F7FA' : '#17212B',
+                                backgroundColor: isDark ? 'rgba(10, 16, 25, 0.85)' : 'rgba(255, 255, 255, 0.88)',
+                                backdropFilter: 'blur(16px)',
+                                borderRadius: '14px',
+                                border: isDark ? '1px solid rgba(255, 255, 255, 0.12)' : '1px solid rgba(255, 255, 255, 0.9)',
+                                color: isDark ? '#FFFFFF' : '#0F172A',
                                 fontSize: '11px',
                               }}
                             />
@@ -597,29 +599,29 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
 
                       {/* Top Spending Category Callout */}
                       {highestSpendingCategory && (
-                        <div className="p-3 rounded-xl bg-[#F7F8FA] dark:bg-[#101418] border border-[#E5E9EF] dark:border-[#303943] text-xs mb-3 flex items-center justify-between">
+                        <div className="p-3.5 rounded-2xl glass-card-subtle text-xs mb-3 flex items-center justify-between border border-white/40 dark:border-white/5">
                           <div>
-                            <span className="text-[10px] font-medium text-[#667085] dark:text-[#9AA6B2] block">
+                            <span className="text-[10px] font-medium text-slate-500 dark:text-slate-400 block">
                               Top Spending Category
                             </span>
-                            <span className="font-semibold text-[#17212B] dark:text-[#F5F7FA]">
+                            <span className="font-semibold text-slate-900 dark:text-white">
                               {highestSpendingCategory.name}
                             </span>
                           </div>
-                          <span className="font-mono font-bold text-[#DC5252] dark:text-[#FF6666]">
+                          <span className="font-mono font-bold text-rose-600 dark:text-rose-400">
                             {formatCurrency(highestSpendingCategory.total, currency)} ({Math.round(highestSpendingCategory.percentage)}%)
                           </span>
                         </div>
                       )}
 
                       {/* Top Category List with Progress Bars */}
-                      <div className="space-y-2 max-h-36 overflow-y-auto pr-1">
+                      <div className="space-y-2.5 max-h-36 overflow-y-auto pr-1">
                         {categorySpendingBreakdown.slice(0, 4).map((cat) => (
                           <div key={cat.categoryId} className="text-xs space-y-1">
-                            <div className="flex justify-between items-center text-[#17212B] dark:text-[#F5F7FA]">
+                            <div className="flex justify-between items-center text-slate-800 dark:text-slate-200">
                               <span className="flex items-center gap-1.5 font-medium truncate max-w-[140px]">
                                 <span
-                                  className="w-2 h-2 rounded-full"
+                                  className="w-2 h-2 rounded-full shadow-xs"
                                   style={{ backgroundColor: cat.color }}
                                 />
                                 {cat.name}
@@ -628,7 +630,7 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
                                 {formatCurrency(cat.total, currency)}
                               </span>
                             </div>
-                            <div className="w-full bg-[#F1F4F6] dark:bg-[#202830] rounded-full h-1.5 overflow-hidden">
+                            <div className="w-full bg-slate-200/60 dark:bg-white/10 rounded-full h-1.5 overflow-hidden">
                               <div
                                 className="h-full rounded-full transition-all duration-300"
                                 style={{
@@ -650,10 +652,10 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
                 <CardHeader>
                   <div>
                     <CardTitle className="flex items-center gap-2">
-                      <Clock className="w-4 h-4 text-[#008F62] dark:text-[#00C78A]" />
+                      <Clock className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                       Recent Transactions
                     </CardTitle>
-                    <p className="text-xs text-[#667085] dark:text-[#9AA6B2] mt-0.5">
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                       Your latest 5 financial movements
                     </p>
                   </div>
@@ -671,15 +673,15 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
                 <div className="overflow-x-auto">
                   <table className="w-full text-left border-collapse text-xs">
                     <thead>
-                      <tr className="border-b border-[#E5E9EF] dark:border-[#303943] bg-[#F7F8FA] dark:bg-[#101418] text-[11px] font-semibold text-[#667085] dark:text-[#9AA6B2]">
-                        <th className="py-3 px-6">Date</th>
-                        <th className="py-3 px-6">Merchant / Description</th>
-                        <th className="py-3 px-6">Category</th>
-                        <th className="py-3 px-6">Method</th>
-                        <th className="py-3 px-6 text-right">Amount</th>
+                      <tr className="border-b border-slate-200/60 dark:border-white/5 bg-slate-100/50 dark:bg-white/5 backdrop-blur-xs text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+                        <th className="py-3.5 px-6">Date</th>
+                        <th className="py-3.5 px-6">Merchant / Description</th>
+                        <th className="py-3.5 px-6">Category</th>
+                        <th className="py-3.5 px-6">Method</th>
+                        <th className="py-3.5 px-6 text-right">Amount</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-[#E5E9EF] dark:divide-[#303943]">
+                    <tbody className="divide-y divide-slate-200/60 dark:divide-white/5">
                       {recentTransactions.map((tx) => {
                         const category = categories.find((c) => c.id === tx.category_id);
                         const isIncome = tx.type === 'income';
@@ -687,31 +689,31 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
                         return (
                           <tr
                             key={tx.id}
-                            className="hover:bg-[#F1F4F6]/60 dark:hover:bg-[#202830]/60 transition-colors cursor-pointer"
+                            className="hover:bg-white/50 dark:hover:bg-white/5 transition-colors cursor-pointer"
                             onClick={onNavigateToTransactions}
                           >
-                            <td className="py-3.5 px-6 text-[#667085] dark:text-[#9AA6B2] whitespace-nowrap">
+                            <td className="py-3.5 px-6 text-slate-500 dark:text-slate-400 whitespace-nowrap">
                               {new Date(tx.transaction_date).toLocaleDateString('en-US', {
                                 month: 'short',
                                 day: 'numeric',
                               })}
                             </td>
 
-                            <td className="py-3.5 px-6 font-medium text-[#17212B] dark:text-[#F5F7FA]">
+                            <td className="py-3.5 px-6 font-medium text-slate-900 dark:text-white">
                               {tx.merchant || (isIncome ? 'Income Deposit' : 'Expense Payment')}
                             </td>
 
                             <td className="py-3.5 px-6 whitespace-nowrap">
                               {category ? (
-                                <span className="inline-flex items-center gap-1.5 text-xs text-[#17212B] dark:text-[#F5F7FA]">
+                                <span className="inline-flex items-center gap-1.5 text-xs text-slate-800 dark:text-slate-200">
                                   <span
-                                    className="w-2 h-2 rounded-full shrink-0"
+                                    className="w-2 h-2 rounded-full shrink-0 shadow-xs"
                                     style={{ backgroundColor: category.color }}
                                   />
                                   {category.name}
                                 </span>
                               ) : (
-                                <span className="text-[#667085] dark:text-[#9AA6B2] italic">Uncategorized</span>
+                                <span className="text-slate-400 italic">Uncategorized</span>
                               )}
                             </td>
 
@@ -720,7 +722,7 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
                             </td>
 
                             <td className="py-3.5 px-6 text-right font-mono font-semibold whitespace-nowrap text-sm">
-                              <span className={isIncome ? 'text-[#008F62] dark:text-[#00C78A]' : 'text-[#17212B] dark:text-[#F5F7FA]'}>
+                              <span className={isIncome ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-900 dark:text-white'}>
                                 {isIncome ? '+' : '-'} {formatCurrency(tx.amount, currency)}
                               </span>
                             </td>

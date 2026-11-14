@@ -22,14 +22,42 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
 });
 
 /**
+ * Resolves the OAuth redirect URL dynamically based on the current origin.
+ * Automatically and explicitly supports:
+ * - Local Development: http://localhost:5173/
+ * - Local Production Preview: http://localhost:4173/
+ * - Production Deployment: https://duesdock.vercel.app/
+ */
+export function getAuthRedirectTo(): string {
+  if (typeof window !== 'undefined' && window.location?.origin) {
+    const origin = window.location.origin.replace(/\/+$/, '');
+
+    if (origin.includes('localhost:5173')) {
+      return 'http://localhost:5173/';
+    }
+    if (origin.includes('localhost:4173')) {
+      return 'http://localhost:4173/';
+    }
+    if (origin.includes('duesdock.vercel.app')) {
+      return 'https://duesdock.vercel.app/';
+    }
+
+    return `${origin}/`;
+  }
+
+  return 'https://duesdock.vercel.app/';
+}
+
+/**
  * Initiates official Google OAuth authentication via Supabase.
  * Strictly never simulates authentication.
  */
 export async function signInWithGoogle() {
+  const redirectTo = getAuthRedirectTo();
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
-      redirectTo: `${window.location.origin}/`,
+      redirectTo,
       queryParams: {
         access_type: 'offline',
         prompt: 'consent',

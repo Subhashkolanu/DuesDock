@@ -67,7 +67,7 @@ export const OnboardingWizard: React.FC = () => {
         name: customCategoryName.trim(),
         type: customCategoryType,
         icon: 'Tag',
-        color: customCategoryType === 'income' ? '#008F62' : '#DC5252',
+        color: customCategoryType === 'income' ? '#10B981' : '#F43F5E',
         is_system: false,
       },
     ]);
@@ -93,7 +93,7 @@ export const OnboardingWizard: React.FC = () => {
           particleCount: 80,
           spread: 60,
           origin: { y: 0.6 },
-          colors: ['#008F62', '#00C78A', '#17212B', '#FFFFFF'],
+          colors: ['#10B981', '#38BDF8', '#0284C7', '#FFFFFF'],
         });
       } catch {
         // Safe fallback
@@ -118,21 +118,25 @@ export const OnboardingWizard: React.FC = () => {
   const activePresets = budgetPresets[selectedCurrency] || budgetPresets.USD;
 
   return (
-    <div className="min-h-screen bg-[#F7F8FA] dark:bg-[#101418] text-[#17212B] dark:text-[#F5F7FA] flex flex-col justify-center py-10 px-4 sm:px-6 lg:px-8 font-sans transition-colors relative selection:bg-[#008F62] selection:text-white dark:selection:bg-[#00C78A] dark:selection:text-[#101418]">
+    <div className="min-h-screen text-slate-900 dark:text-white flex flex-col justify-center py-10 px-4 sm:px-6 lg:px-8 font-sans transition-colors relative selection:bg-emerald-500 selection:text-white">
+      {/* Ambient background light orbs for liquid refraction */}
+      <div className="absolute top-1/4 left-1/3 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-emerald-500/10 dark:bg-emerald-500/15 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-1/4 right-1/3 w-80 h-80 bg-sky-500/10 dark:bg-sky-500/15 rounded-full blur-3xl pointer-events-none" />
+
       {/* Floating Theme Toggle */}
-      <div className="absolute top-5 right-5 sm:top-8 sm:right-8">
+      <div className="absolute top-5 right-5 sm:top-8 sm:right-8 z-10">
         <ThemeToggle showLabel />
       </div>
 
-      <div className="sm:mx-auto sm:w-full sm:max-w-xl">
+      <div className="sm:mx-auto sm:w-full sm:max-w-xl relative z-10">
         {/* Header */}
         <div className="text-center mb-6">
           <div className="flex justify-center mb-3">
             <Logo size="lg" showText={false} />
           </div>
 
-          {/* Stepper Progress */}
-          <div className="inline-flex items-center gap-1.5 p-1 bg-[#F1F4F6] dark:bg-[#202830] border border-[#E5E9EF] dark:border-[#303943] rounded-full mb-3 text-xs">
+          {/* Stepper Progress with Liquid Glass Pills */}
+          <div className="inline-flex items-center gap-1.5 p-1 glass-card-subtle rounded-full mb-3 text-xs border border-white/60 dark:border-white/10 shadow-xs">
             {[
               { num: 1, label: 'Currency' },
               { num: 2, label: 'Budget Target' },
@@ -140,12 +144,12 @@ export const OnboardingWizard: React.FC = () => {
             ].map((s) => (
               <span
                 key={s.num}
-                className={`px-3 py-1 rounded-full font-medium transition-colors ${
+                className={`px-3 py-1 rounded-full font-medium transition-all ${
                   step === s.num
-                    ? 'bg-[#008F62] dark:bg-[#00C78A] text-white dark:text-[#101418] font-semibold shadow-xs'
+                    ? 'liquid-pill-active text-emerald-800 dark:text-emerald-300 font-bold'
                     : step > s.num
-                    ? 'text-[#008F62] dark:text-[#00C78A]'
-                    : 'text-[#667085] dark:text-[#9AA6B2]'
+                    ? 'text-emerald-600 dark:text-emerald-400 font-semibold'
+                    : 'text-slate-500 dark:text-slate-400'
                 }`}
               >
                 {s.num}. {s.label}
@@ -153,19 +157,19 @@ export const OnboardingWizard: React.FC = () => {
             ))}
           </div>
 
-          <h1 className="font-heading font-bold text-2xl sm:text-3xl text-[#17212B] dark:text-[#F5F7FA] tracking-tight">
+          <h1 className="font-heading font-extrabold text-2xl sm:text-3xl text-slate-900 dark:text-white tracking-tight">
             Personalize Your DuesDock Workspace
           </h1>
-          <p className="mt-1 text-xs text-[#667085] dark:text-[#9AA6B2]">
-            Signed in as <strong className="text-[#17212B] dark:text-[#F5F7FA]">{profile?.full_name || user?.email}</strong>
+          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+            Signed in as <strong className="text-slate-900 dark:text-white">{profile?.full_name || user?.email}</strong>
           </p>
         </div>
 
         {/* Card Panel */}
-        <Card className="p-6 sm:p-8 border border-[#E5E9EF] dark:border-[#303943] fintech-card-shadow bg-[#FFFFFF] dark:bg-[#171D23] rounded-2xl">
+        <Card className="p-6 sm:p-8 glass-card rounded-3xl shadow-2xl border border-white/70 dark:border-white/10">
           {errorMessage && (
-            <div className="mb-6 p-3.5 rounded-xl bg-[#DC5252]/10 border border-[#DC5252]/20 text-[#DC5252] dark:text-[#FF6666] text-xs font-medium flex items-start gap-2.5">
-              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+            <div className="mb-6 p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/25 text-rose-700 dark:text-rose-300 text-xs font-medium flex items-start gap-2.5 backdrop-blur-md">
+              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-rose-500" />
               <div className="flex-1">
                 <span>{errorMessage}</span>
               </div>
@@ -176,11 +180,11 @@ export const OnboardingWizard: React.FC = () => {
           {step === 1 && (
             <div className="space-y-5">
               <div>
-                <h2 className="font-heading font-semibold text-base text-[#17212B] dark:text-[#F5F7FA] flex items-center gap-2">
-                  <Wallet className="w-5 h-5 text-[#008F62] dark:text-[#00C78A]" />
+                <h2 className="font-heading font-semibold text-base text-slate-900 dark:text-white flex items-center gap-2">
+                  <Wallet className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                   Select Primary Currency
                 </h2>
-                <p className="text-xs text-[#667085] dark:text-[#9AA6B2] mt-1">
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                   All transaction ledgers, analytics, and reports will use this monetary unit.
                 </p>
               </div>
@@ -193,24 +197,24 @@ export const OnboardingWizard: React.FC = () => {
                       key={c.code}
                       type="button"
                       onClick={() => setSelectedCurrency(c.code)}
-                      className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
+                      className={`p-3.5 rounded-2xl border text-left transition-all duration-200 cursor-pointer backdrop-blur-md ${
                         isSelected
-                          ? 'border-[#008F62] dark:border-[#00C78A] bg-[#008F62]/5 dark:bg-[#00C78A]/10 ring-1 ring-[#008F62] dark:ring-[#00C78A]'
-                          : 'border-[#E5E9EF] dark:border-[#303943] bg-[#FFFFFF] dark:bg-[#202830] hover:border-[#008F62]/50'
+                          ? 'border-emerald-500 dark:border-emerald-400 bg-emerald-500/10 dark:bg-emerald-400/15 shadow-md shadow-emerald-500/10 ring-1 ring-emerald-500 dark:ring-emerald-400'
+                          : 'border-slate-200/80 dark:border-white/10 bg-white/50 dark:bg-white/5 hover:border-emerald-500/40 hover:bg-white/80 dark:hover:bg-white/10'
                       }`}
                     >
                       <div className="flex items-center justify-between mb-1">
-                        <span className="font-mono text-xl font-bold text-[#17212B] dark:text-[#F5F7FA]">
+                        <span className="font-mono text-xl font-bold text-slate-900 dark:text-white">
                           {c.symbol}
                         </span>
                         {isSelected && (
-                          <CheckCircle2 className="w-4 h-4 text-[#008F62] dark:text-[#00C78A]" />
+                          <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                         )}
                       </div>
-                      <div className="font-semibold text-xs text-[#17212B] dark:text-[#F5F7FA]">
+                      <div className="font-semibold text-xs text-slate-900 dark:text-white">
                         {c.code}
                       </div>
-                      <div className="text-[11px] text-[#667085] dark:text-[#9AA6B2] truncate">
+                      <div className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
                         {c.name}
                       </div>
                     </button>
@@ -218,7 +222,7 @@ export const OnboardingWizard: React.FC = () => {
                 })}
               </div>
 
-              <div className="pt-4 border-t border-[#E5E9EF] dark:border-[#303943] flex justify-end">
+              <div className="pt-4 border-t border-slate-200/60 dark:border-white/10 flex justify-end">
                 <Button
                   variant="primary"
                   size="md"
@@ -235,11 +239,11 @@ export const OnboardingWizard: React.FC = () => {
           {step === 2 && (
             <div className="space-y-5">
               <div>
-                <h2 className="font-heading font-semibold text-base text-[#17212B] dark:text-[#F5F7FA] flex items-center gap-2">
-                  <PieChart className="w-5 h-5 text-[#008F62] dark:text-[#00C78A]" />
+                <h2 className="font-heading font-semibold text-base text-slate-900 dark:text-white flex items-center gap-2">
+                  <PieChart className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                   Monthly Spending Ceiling
                 </h2>
-                <p className="text-xs text-[#667085] dark:text-[#9AA6B2] mt-1">
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                   Define your aggregate monthly expenditure ceiling. DuesDock warns you automatically at 80% and 100% capacity.
                 </p>
               </div>
@@ -254,7 +258,7 @@ export const OnboardingWizard: React.FC = () => {
                   value={budgetTarget}
                   onChange={(e) => setBudgetTarget(e.target.value)}
                   leftElement={
-                    <span className="font-mono font-bold text-[#17212B] dark:text-[#F5F7FA] text-sm">
+                    <span className="font-mono font-bold text-slate-800 dark:text-slate-200 text-sm">
                       {CURRENCY_SYMBOLS[selectedCurrency]}
                     </span>
                   }
@@ -262,9 +266,9 @@ export const OnboardingWizard: React.FC = () => {
                   error={!isBudgetValid ? 'Enter a valid positive number' : undefined}
                 />
 
-                {/* Quick Presets */}
+                {/* Quick Presets with Liquid Pills */}
                 <div>
-                  <span className="text-xs font-medium text-[#667085] dark:text-[#9AA6B2] block mb-2">
+                  <span className="text-xs font-medium text-slate-500 dark:text-slate-400 block mb-2">
                     Quick presets for {selectedCurrency}:
                   </span>
                   <div className="flex flex-wrap gap-2">
@@ -273,10 +277,10 @@ export const OnboardingWizard: React.FC = () => {
                         key={val}
                         type="button"
                         onClick={() => setBudgetTarget(String(val))}
-                        className={`text-xs px-3 py-1.5 rounded-lg border font-mono transition-colors cursor-pointer ${
+                        className={`text-xs px-3 py-1.5 rounded-xl border font-mono transition-all cursor-pointer backdrop-blur-md ${
                           budgetTarget === String(val)
-                            ? 'bg-[#008F62] dark:bg-[#00C78A] text-white dark:text-[#101418] border-transparent font-semibold shadow-xs'
-                            : 'bg-[#F1F4F6] dark:bg-[#202830] text-[#17212B] dark:text-[#F5F7FA] border-[#E5E9EF] dark:border-[#303943] hover:bg-[#E5E9EF] dark:hover:bg-[#28323C]'
+                            ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white border-transparent font-bold shadow-md shadow-emerald-500/20'
+                            : 'bg-white/60 dark:bg-white/5 text-slate-700 dark:text-slate-300 border-slate-300/70 dark:border-white/10 hover:bg-white/90 dark:hover:bg-white/10'
                         }`}
                       >
                         {formatCurrency(val, selectedCurrency)}
@@ -286,7 +290,7 @@ export const OnboardingWizard: React.FC = () => {
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-[#E5E9EF] dark:border-[#303943] flex items-center justify-between">
+              <div className="pt-4 border-t border-slate-200/60 dark:border-white/10 flex items-center justify-between">
                 <Button
                   variant="outline"
                   size="md"
@@ -312,31 +316,31 @@ export const OnboardingWizard: React.FC = () => {
           {step === 3 && (
             <div className="space-y-5">
               <div>
-                <h2 className="font-heading font-semibold text-base text-[#17212B] dark:text-[#F5F7FA] flex items-center gap-2">
-                  <Tag className="w-5 h-5 text-[#008F62] dark:text-[#00C78A]" />
+                <h2 className="font-heading font-semibold text-base text-slate-900 dark:text-white flex items-center gap-2">
+                  <Tag className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                   Review Expense Categories
                 </h2>
-                <p className="text-xs text-[#667085] dark:text-[#9AA6B2] mt-1">
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                   Default categories are prepared. You can add custom categories now or anytime later.
                 </p>
               </div>
 
-              {/* Category Badges Preview - Fixed High Contrast Chips without clipping */}
-              <div className="max-h-48 overflow-y-auto p-3.5 rounded-xl bg-[#F7F8FA] dark:bg-[#101418] border border-[#E5E9EF] dark:border-[#303943]">
+              {/* Category Badges Preview in Liquid Glass Card */}
+              <div className="max-h-48 overflow-y-auto p-3.5 rounded-2xl glass-card-subtle">
                 <div className="flex flex-wrap gap-2">
                   {userCategories.map((cat, i) => (
                     <div
                       key={i}
-                      className="inline-flex items-center gap-2 px-2.5 py-1.5 rounded-lg border border-[#E5E9EF] dark:border-[#303943] bg-[#FFFFFF] dark:bg-[#171D23] shadow-xs"
+                      className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border border-slate-200/80 dark:border-white/10 bg-white/70 dark:bg-white/5 shadow-xs backdrop-blur-md"
                     >
                       <span
-                        className="w-2.5 h-2.5 rounded-full shrink-0"
+                        className="w-2.5 h-2.5 rounded-full shrink-0 shadow-xs"
                         style={{ backgroundColor: cat.color }}
                       />
-                      <span className="text-xs font-medium text-[#17212B] dark:text-[#F5F7FA]">
+                      <span className="text-xs font-medium text-slate-800 dark:text-slate-200">
                         {cat.name}
                       </span>
-                      <span className="text-[10px] capitalize px-1.5 py-0.2 rounded-full bg-[#F1F4F6] dark:bg-[#202830] text-[#667085] dark:text-[#9AA6B2]">
+                      <span className="text-[10px] capitalize px-1.5 py-0.5 rounded-md bg-slate-200/50 dark:bg-white/10 text-slate-600 dark:text-slate-400">
                         {cat.type}
                       </span>
                     </div>
@@ -345,8 +349,8 @@ export const OnboardingWizard: React.FC = () => {
               </div>
 
               {/* Add Custom Category Inline */}
-              <div className="p-3.5 bg-[#F7F8FA] dark:bg-[#202830] border border-[#E5E9EF] dark:border-[#303943] rounded-xl space-y-2">
-                <span className="text-xs font-medium text-[#17212B] dark:text-[#F5F7FA] block">
+              <div className="p-4 glass-card-subtle rounded-2xl space-y-2.5">
+                <span className="text-xs font-semibold text-slate-800 dark:text-slate-200 block">
                   Add Custom Category (Optional)
                 </span>
                 <div className="flex items-center gap-2 flex-col sm:flex-row">
@@ -355,13 +359,13 @@ export const OnboardingWizard: React.FC = () => {
                     placeholder="e.g. Gym, Subscriptions, Freelance..."
                     value={customCategoryName}
                     onChange={(e) => setCustomCategoryName(e.target.value)}
-                    className="w-full sm:flex-1 rounded-lg border border-[#E5E9EF] dark:border-[#303943] bg-[#FFFFFF] dark:bg-[#101418] px-3 py-1.5 text-xs text-[#17212B] dark:text-[#F5F7FA] focus:outline-none focus:border-[#008F62] dark:focus:border-[#00C78A]"
+                    className="w-full sm:flex-1 rounded-xl border border-slate-300/80 dark:border-white/10 bg-white/70 dark:bg-[#0B1118]/70 px-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 dark:focus:border-emerald-400 backdrop-blur-md"
                   />
                   <div className="flex gap-2 w-full sm:w-auto">
                     <select
                       value={customCategoryType}
                       onChange={(e) => setCustomCategoryType(e.target.value as 'expense' | 'income')}
-                      className="rounded-lg border border-[#E5E9EF] dark:border-[#303943] bg-[#FFFFFF] dark:bg-[#101418] px-2.5 py-1.5 text-xs text-[#17212B] dark:text-[#F5F7FA] focus:outline-none"
+                      className="rounded-xl border border-slate-300/80 dark:border-white/10 bg-white/70 dark:bg-[#0B1118]/70 px-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none backdrop-blur-md"
                     >
                       <option value="expense">Expense</option>
                       <option value="income">Income</option>
@@ -379,29 +383,29 @@ export const OnboardingWizard: React.FC = () => {
                 </div>
               </div>
 
-              {/* Summary Overview */}
-              <div className="p-4 rounded-xl bg-[#F1F4F6] dark:bg-[#202830] text-xs space-y-2 border border-[#E5E9EF] dark:border-[#303943]">
+              {/* Summary Overview in Frosted Glass Box */}
+              <div className="p-4 rounded-2xl glass-card-subtle text-xs space-y-2.5 border border-white/50 dark:border-white/10">
                 <div className="flex justify-between items-center">
-                  <span className="text-[#667085] dark:text-[#9AA6B2]">Base Currency:</span>
-                  <span className="font-semibold text-[#008F62] dark:text-[#00C78A]">
+                  <span className="text-slate-500 dark:text-slate-400">Base Currency:</span>
+                  <span className="font-semibold text-emerald-600 dark:text-emerald-400">
                     {selectedCurrency} ({CURRENCY_SYMBOLS[selectedCurrency]})
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-[#667085] dark:text-[#9AA6B2]">Monthly Target:</span>
-                  <span className="font-semibold font-mono text-[#17212B] dark:text-[#F5F7FA]">
+                  <span className="text-slate-500 dark:text-slate-400">Monthly Target:</span>
+                  <span className="font-semibold font-mono text-slate-900 dark:text-white">
                     {formatCurrency(parsedBudget, selectedCurrency)}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-[#667085] dark:text-[#9AA6B2]">Security:</span>
-                  <span className="font-medium text-[#008F62] dark:text-[#00C78A] flex items-center gap-1">
-                    <ShieldCheck className="w-3.5 h-3.5" /> PostgreSQL RLS Active
+                  <span className="text-slate-500 dark:text-slate-400">Security Posture:</span>
+                  <span className="font-medium text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                    <ShieldCheck className="w-3.5 h-3.5" /> PostgreSQL RLS Cryptographic Isolation
                   </span>
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-[#E5E9EF] dark:border-[#303943] flex items-center justify-between">
+              <div className="pt-4 border-t border-slate-200/60 dark:border-white/10 flex items-center justify-between">
                 <Button
                   variant="outline"
                   size="md"

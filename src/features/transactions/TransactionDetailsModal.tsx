@@ -74,7 +74,7 @@ export const TransactionDetailsModal: React.FC<TransactionDetailsModalProps> = (
     >
       <div className="space-y-4">
         {/* Top Header Card */}
-        <div className="p-5 bg-[#F7F8FA] dark:bg-[#101418] rounded-xl border border-[#E5E9EF] dark:border-[#303943] flex items-center justify-between">
+        <div className="p-5 bg-slate-100/60 dark:bg-slate-900/50 backdrop-blur-md rounded-xl border border-slate-200/70 dark:border-white/10 flex items-center justify-between shadow-xs">
           <div>
             <div className="flex items-center gap-2 mb-2">
               <TransactionTypeBadge type={transaction.type} />
@@ -99,7 +99,7 @@ export const TransactionDetailsModal: React.FC<TransactionDetailsModalProps> = (
 
         {/* Detailed Metadata Grid */}
         <div className="grid grid-cols-2 gap-3 text-xs">
-          <div className="p-3.5 rounded-xl border border-[#E5E9EF] dark:border-[#303943] bg-[#FFFFFF] dark:bg-[#171D23] space-y-1">
+          <div className="p-3.5 rounded-xl border border-slate-200/60 dark:border-white/[0.08] bg-white/70 dark:bg-slate-900/40 backdrop-blur-sm space-y-1 shadow-xs">
             <span className="text-[#667085] dark:text-[#9AA6B2] text-[11px] font-medium flex items-center gap-1.5">
               <Calendar className="w-3.5 h-3.5" /> Date
             </span>
@@ -108,7 +108,7 @@ export const TransactionDetailsModal: React.FC<TransactionDetailsModalProps> = (
             </span>
           </div>
 
-          <div className="p-3.5 rounded-xl border border-[#E5E9EF] dark:border-[#303943] bg-[#FFFFFF] dark:bg-[#171D23] space-y-1">
+          <div className="p-3.5 rounded-xl border border-slate-200/60 dark:border-white/[0.08] bg-white/70 dark:bg-slate-900/40 backdrop-blur-sm space-y-1 shadow-xs">
             <span className="text-[#667085] dark:text-[#9AA6B2] text-[11px] font-medium flex items-center gap-1.5">
               <Store className="w-3.5 h-3.5" /> Merchant / Payee
             </span>
@@ -120,7 +120,7 @@ export const TransactionDetailsModal: React.FC<TransactionDetailsModalProps> = (
 
         {/* Notes */}
         {transaction.notes && (
-          <div className="p-3.5 rounded-xl border border-[#E5E9EF] dark:border-[#303943] bg-[#FFFFFF] dark:bg-[#171D23] text-xs space-y-1">
+          <div className="p-3.5 rounded-xl border border-slate-200/60 dark:border-white/[0.08] bg-white/70 dark:bg-slate-900/40 backdrop-blur-sm text-xs space-y-1 shadow-xs">
             <span className="text-[#667085] dark:text-[#9AA6B2] text-[11px] font-medium flex items-center gap-1.5">
               <FileText className="w-3.5 h-3.5" /> Description & Notes
             </span>
@@ -132,7 +132,7 @@ export const TransactionDetailsModal: React.FC<TransactionDetailsModalProps> = (
 
         {/* Receipt Attachment Viewer */}
         {transaction.receipt_path && (
-          <div className="p-4 rounded-xl border border-[#E5E9EF] dark:border-[#303943] bg-[#F7F8FA] dark:bg-[#101418] space-y-3">
+          <div className="p-4 rounded-xl border border-slate-200/60 dark:border-white/[0.08] bg-slate-100/50 dark:bg-slate-900/40 backdrop-blur-sm space-y-3">
             <span className="text-xs font-semibold text-[#17212B] dark:text-[#F5F7FA] flex items-center gap-1.5">
               <Paperclip className="w-4 h-4 text-[#008F62] dark:text-[#00C78A]" />
               Attached Receipt (Encrypted Supabase Storage)
@@ -177,7 +177,7 @@ export const TransactionDetailsModal: React.FC<TransactionDetailsModalProps> = (
         )}
 
         {/* Action Buttons */}
-        <div className="flex justify-between items-center pt-3 border-t border-[#E5E9EF] dark:border-[#303943]">
+        <div className="flex justify-between items-center pt-3 border-t border-slate-200/60 dark:border-white/[0.08]">
           <div className="flex gap-2">
             <Button
               variant="outline"

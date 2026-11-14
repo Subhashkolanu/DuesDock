@@ -7,79 +7,84 @@
   --font-heading: 'Space Grotesk', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 
-  /* Premium Fintech (Template 01) Color System */
-  /* Light Theme Tokens */
-  --color-fintech-light-bg: #F7F8FA;
-  --color-fintech-light-surface: #FFFFFF;
-  --color-fintech-light-surface-2: #F1F4F6;
-  --color-fintech-light-accent: #008F62;
-  --color-fintech-light-text: #17212B;
-  --color-fintech-light-muted: #667085;
-  --color-fintech-light-border: #E5E9EF;
-  --color-fintech-light-expense: #DC5252;
-  --color-fintech-light-income: #008F62;
-  --color-fintech-light-warning: #D99A27;
+  /* Liquid Glass (Template 02) Color Palette */
+  --color-glass-emerald: #10B981;
+  --color-glass-emerald-dark: #059669;
+  --color-glass-teal: #14B8A6;
+  --color-glass-cyan: #06B6D4;
+  --color-glass-sky: #0284C7;
+  --color-glass-sky-light: #38BDF8;
 
-  /* Dark Theme Tokens */
-  --color-fintech-dark-bg: #101418;
-  --color-fintech-dark-surface: #171D23;
-  --color-fintech-dark-surface-2: #202830;
-  --color-fintech-dark-accent: #00C78A;
-  --color-fintech-dark-text: #F5F7FA;
-  --color-fintech-dark-muted: #9AA6B2;
-  --color-fintech-dark-border: #303943;
-  --color-fintech-dark-expense: #FF6666;
-  --color-fintech-dark-income: #00C78A;
-  --color-fintech-dark-warning: #F0B94B;
+  --color-glass-rose: #F43F5E;
+  --color-glass-rose-light: #FB7185;
+  --color-glass-amber: #F59E0B;
+  --color-glass-amber-light: #FBBF24;
 }
 
 :root {
-  --bg-app: #F7F8FA;
-  --surface-main: #FFFFFF;
-  --surface-secondary: #F1F4F6;
-  --accent-primary: #008F62;
-  --text-main: #17212B;
-  --text-secondary: #667085;
-  --border-subtle: #E5E9EF;
-  --color-income: #008F62;
-  --color-expense: #DC5252;
-  --color-warning: #D99A27;
+  /* Light Liquid Glass Tokens */
+  --bg-app: #F4F7FB;
+  --text-main: #0F172A;
+  --text-secondary: #475569;
+  --text-muted: #64748B;
 
-  --card-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
-  --elevated-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.06), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
-  --modal-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+  --glass-surface: rgba(255, 255, 255, 0.78);
+  --glass-surface-subtle: rgba(255, 255, 255, 0.52);
+  --glass-border: rgba(255, 255, 255, 0.85);
+  --glass-border-subtle: rgba(226, 232, 240, 0.75);
+  --glass-highlight: rgba(16, 185, 129, 0.25);
+  --glass-shadow: 0 8px 32px 0 rgba(15, 23, 42, 0.05), inset 0 1px 0 0 rgba(255, 255, 255, 0.9);
+  --glass-shadow-elevated: 0 16px 40px -8px rgba(15, 23, 42, 0.08), inset 0 1px 0 0 rgba(255, 255, 255, 0.95);
+  --glass-modal-shadow: 0 24px 48px -12px rgba(15, 23, 42, 0.18), inset 0 1px 0 0 rgba(255, 255, 255, 1);
+
+  --accent-primary: #059669;
+  --accent-secondary: #0284C7;
 }
 
 .dark {
-  --bg-app: #101418;
-  --surface-main: #171D23;
-  --surface-secondary: #202830;
-  --accent-primary: #00C78A;
-  --text-main: #F5F7FA;
-  --text-secondary: #9AA6B2;
-  --border-subtle: #303943;
-  --color-income: #00C78A;
-  --color-expense: #FF6666;
-  --color-warning: #F0B94B;
+  /* Dark Liquid Glass Tokens */
+  --bg-app: #070B10;
+  --text-main: #F8FAFC;
+  --text-secondary: #94A3B8;
+  --text-muted: #64748B;
 
-  --card-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.25), 0 1px 2px -1px rgba(0, 0, 0, 0.25);
-  --elevated-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.35), 0 2px 4px -2px rgba(0, 0, 0, 0.25);
-  --modal-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+  --glass-surface: rgba(13, 20, 30, 0.72);
+  --glass-surface-subtle: rgba(18, 27, 40, 0.55);
+  --glass-border: rgba(255, 255, 255, 0.09);
+  --glass-border-subtle: rgba(255, 255, 255, 0.05);
+  --glass-highlight: rgba(0, 199, 138, 0.3);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.42), inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
+  --glass-shadow-elevated: 0 16px 40px -8px rgba(0, 0, 0, 0.6), inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+  --glass-modal-shadow: 0 24px 56px -12px rgba(0, 0, 0, 0.75), inset 0 1px 0 0 rgba(255, 255, 255, 0.12);
+
+  --accent-primary: #00C78A;
+  --accent-secondary: #38BDF8;
 }
 
 body {
   background-color: var(--bg-app);
   color: var(--text-main);
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  transition: background-color 0.2s ease, color 0.2s ease;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-attachment: fixed;
+  background-image: 
+    radial-gradient(circle at 10% 8%, rgba(16, 185, 129, 0.07) 0%, transparent 35%),
+    radial-gradient(circle at 90% 85%, rgba(2, 132, 199, 0.06) 0%, transparent 40%),
+    radial-gradient(circle at 50% 50%, rgba(20, 184, 166, 0.03) 0%, transparent 50%);
+}
+
+.dark body {
+  background-image: 
+    radial-gradient(circle at 15% 10%, rgba(0, 199, 138, 0.09) 0%, transparent 40%),
+    radial-gradient(circle at 85% 85%, rgba(56, 189, 248, 0.07) 0%, transparent 45%),
+    radial-gradient(circle at 50% 50%, rgba(20, 184, 166, 0.04) 0%, transparent 55%);
 }
 
 .font-heading {
   font-family: 'Space Grotesk', system-ui, sans-serif;
-  letter-spacing: -0.015em;
+  letter-spacing: -0.02em;
 }
 
 .font-mono {
@@ -87,17 +92,59 @@ body {
   font-feature-settings: 'tnum' on, 'zero' on;
 }
 
-/* Subtle elevation utilities */
-.fintech-card-shadow {
-  box-shadow: var(--card-shadow);
+/* Liquid Glass Surface Utilities */
+.glass-card {
+  background: var(--glass-surface);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.fintech-elevated-shadow {
-  box-shadow: var(--elevated-shadow);
+.glass-card:hover {
+  border-color: var(--glass-highlight);
 }
 
-.fintech-modal-shadow {
-  box-shadow: var(--modal-shadow);
+.glass-card-subtle {
+  background: var(--glass-surface-subtle);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border-subtle);
+}
+
+.glass-panel {
+  background: var(--glass-surface);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-modal-shadow);
+}
+
+.glass-input {
+  background: var(--glass-surface-subtle);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border-subtle);
+  transition: all 0.2s ease;
+}
+
+.glass-input:focus {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+}
+
+/* Liquid Pill Nav Indicator */
+.liquid-pill-active {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.18) 0%, rgba(2, 132, 199, 0.15) 100%);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  box-shadow: 0 4px 16px -2px rgba(16, 185, 129, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.dark .liquid-pill-active {
+  background: linear-gradient(135deg, rgba(0, 199, 138, 0.22) 0%, rgba(56, 189, 248, 0.18) 100%);
+  border: 1px solid rgba(0, 199, 138, 0.4);
+  box-shadow: 0 4px 16px -2px rgba(0, 199, 138, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
 /* Respect reduced motion */
@@ -110,30 +157,31 @@ body {
   }
 }
 
-/* Scrollbar styling */
+/* Glass Scrollbar styling */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--surface-secondary);
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--border-subtle);
+  background: rgba(100, 116, 139, 0.35);
   border-radius: 9999px;
+  backdrop-filter: blur(4px);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--text-secondary);
+  background: rgba(16, 185, 129, 0.5);
 }
 
 /* Print Styles for PDF Statements */
 @media print {
   body {
-    background-color: #FFFFFF !important;
-    color: #17212B !important;
+    background: #FFFFFF !important;
+    color: #0F172A !important;
   }
 
   .no-print {
@@ -142,9 +190,9 @@ body {
 
   .print-page {
     box-shadow: none !important;
-    border: 1px solid #E5E9EF !important;
+    border: 1px solid #CBD5E1 !important;
     background: #FFFFFF !important;
-    color: #17212B !important;
+    color: #0F172A !important;
     padding: 24px !important;
   }
 }

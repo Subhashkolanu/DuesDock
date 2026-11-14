@@ -312,7 +312,7 @@ export const ReportsManager: React.FC = () => {
             <select
               value={period}
               onChange={(e) => setPeriod(e.target.value as ReportPeriod)}
-              className="w-full h-10 rounded-lg border border-[#E5E9EF] dark:border-[#303943] bg-[#FFFFFF] dark:bg-[#101418] px-3 py-2 text-xs font-medium text-[#17212B] dark:text-[#F5F7FA] focus:outline-none focus:border-[#008F62] dark:focus:border-[#00C78A]"
+              className="w-full h-10 rounded-xl border border-slate-200/70 dark:border-white/10 bg-white/70 dark:bg-slate-900/60 backdrop-blur-md px-3 py-2 text-xs font-medium text-slate-800 dark:text-slate-100 shadow-xs focus:outline-none focus:border-emerald-500/60 dark:focus:border-emerald-400/60 focus:ring-2 focus:ring-emerald-500/20 transition-all"
             >
               <option value="this_month">This Month</option>
               <option value="last_month">Last Month</option>
@@ -330,7 +330,7 @@ export const ReportsManager: React.FC = () => {
             <select
               value={typeFilter}
               onChange={(e) => setTypeFilter(e.target.value as any)}
-              className="w-full h-10 rounded-lg border border-[#E5E9EF] dark:border-[#303943] bg-[#FFFFFF] dark:bg-[#101418] px-3 py-2 text-xs font-medium text-[#17212B] dark:text-[#F5F7FA] focus:outline-none focus:border-[#008F62] dark:focus:border-[#00C78A]"
+              className="w-full h-10 rounded-xl border border-slate-200/70 dark:border-white/10 bg-white/70 dark:bg-slate-900/60 backdrop-blur-md px-3 py-2 text-xs font-medium text-slate-800 dark:text-slate-100 shadow-xs focus:outline-none focus:border-emerald-500/60 dark:focus:border-emerald-400/60 focus:ring-2 focus:ring-emerald-500/20 transition-all"
             >
               <option value="all">All Types (Income + Expenses)</option>
               <option value="expense">Expenses Only</option>
@@ -346,7 +346,7 @@ export const ReportsManager: React.FC = () => {
             <select
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
-              className="w-full h-10 rounded-lg border border-[#E5E9EF] dark:border-[#303943] bg-[#FFFFFF] dark:bg-[#101418] px-3 py-2 text-xs font-medium text-[#17212B] dark:text-[#F5F7FA] focus:outline-none focus:border-[#008F62] dark:focus:border-[#00C78A]"
+              className="w-full h-10 rounded-xl border border-slate-200/70 dark:border-white/10 bg-white/70 dark:bg-slate-900/60 backdrop-blur-md px-3 py-2 text-xs font-medium text-slate-800 dark:text-slate-100 shadow-xs focus:outline-none focus:border-emerald-500/60 dark:focus:border-emerald-400/60 focus:ring-2 focus:ring-emerald-500/20 transition-all"
             >
               <option value="all">All Categories</option>
               {categories.map((c) => (
@@ -358,7 +358,7 @@ export const ReportsManager: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex items-center justify-between pt-3 border-t border-[#E5E9EF] dark:border-[#303943] text-xs text-[#667085] dark:text-[#9AA6B2]">
+        <div className="flex items-center justify-between pt-3 border-t border-slate-200/60 dark:border-white/[0.08] text-xs text-[#667085] dark:text-[#9AA6B2]">
           <span>
             Selected: <strong className="text-[#17212B] dark:text-[#F5F7FA] font-medium">{filteredTransactions.length}</strong> transactions matching filters.
           </span>
@@ -371,7 +371,7 @@ export const ReportsManager: React.FC = () => {
       {/* 3. PRINTABLE FINANCIAL STATEMENT (Optimized for Screen & Browser Print/PDF) */}
       <div className="print-page bg-[#FFFFFF] dark:bg-[#171D23] print:bg-white print:text-black rounded-2xl border border-[#E5E9EF] dark:border-[#303943] print:border print:border-gray-300 fintech-card-shadow print:shadow-none p-6 sm:p-10 space-y-8">
         {/* Statement Header */}
-        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 pb-6 border-b border-[#E5E9EF] dark:border-[#303943] print:border-gray-300">
+        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 pb-6 border-b border-slate-200/60 dark:border-white/[0.08] print:border-gray-300">
           <div>
             <div className="flex items-center gap-2 mb-2">
               <Logo size="sm" showText={false} />
@@ -409,7 +409,7 @@ export const ReportsManager: React.FC = () => {
             1. Executive Cash Flow Summary
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="p-4 rounded-xl bg-[#F7F8FA] dark:bg-[#101418] print:bg-gray-50 border border-[#E5E9EF] dark:border-[#303943] print:border-gray-300">
+            <div className="p-4 rounded-xl bg-slate-100/50 dark:bg-slate-900/40 backdrop-blur-sm print:bg-gray-50 border border-slate-200/60 dark:border-white/[0.08] print:border-gray-300 shadow-xs">
               <span className="text-xs font-medium text-[#008F62] dark:text-[#00C78A] print:text-black block">
                 Total Inflow (Income)
               </span>
@@ -421,7 +421,7 @@ export const ReportsManager: React.FC = () => {
               </span>
             </div>
 
-            <div className="p-4 rounded-xl bg-[#F7F8FA] dark:bg-[#101418] print:bg-gray-50 border border-[#E5E9EF] dark:border-[#303943] print:border-gray-300">
+            <div className="p-4 rounded-xl bg-slate-100/50 dark:bg-slate-900/40 backdrop-blur-sm print:bg-gray-50 border border-slate-200/60 dark:border-white/[0.08] print:border-gray-300 shadow-xs">
               <span className="text-xs font-medium text-[#DC5252] dark:text-[#FF6666] print:text-black block">
                 Total Outflow (Expenses)
               </span>
@@ -433,7 +433,7 @@ export const ReportsManager: React.FC = () => {
               </span>
             </div>
 
-            <div className="p-4 rounded-xl bg-[#F7F8FA] dark:bg-[#101418] print:bg-gray-50 border border-[#E5E9EF] dark:border-[#303943] print:border-gray-300">
+            <div className="p-4 rounded-xl bg-slate-100/50 dark:bg-slate-900/40 backdrop-blur-sm print:bg-gray-50 border border-slate-200/60 dark:border-white/[0.08] print:border-gray-300 shadow-xs">
               <span className="text-xs font-medium text-[#667085] dark:text-[#9AA6B2] print:text-black block">
                 Net Cash Flow
               </span>
@@ -459,19 +459,19 @@ export const ReportsManager: React.FC = () => {
             <h3 className="text-xs font-semibold uppercase tracking-wider text-[#667085] dark:text-[#9AA6B2] print:text-black mb-3">
               2. Spending Breakdown by Category
             </h3>
-            <div className="overflow-x-auto rounded-xl border border-[#E5E9EF] dark:border-[#303943] print:border-gray-300">
+            <div className="overflow-x-auto rounded-xl border border-slate-200/60 dark:border-white/[0.08] print:border-gray-300">
               <table className="w-full text-left border-collapse text-xs">
                 <thead>
-                  <tr className="bg-[#F7F8FA] dark:bg-[#101418] print:bg-gray-100 font-semibold text-[11px] text-[#667085] dark:text-[#9AA6B2] print:text-black border-b border-[#E5E9EF] dark:border-[#303943] print:border-gray-300">
+                  <tr className="bg-slate-100/60 dark:bg-slate-900/50 backdrop-blur-md print:bg-gray-100 font-semibold text-[11px] text-slate-500 dark:text-slate-400 print:text-black border-b border-slate-200/70 dark:border-white/10 print:border-gray-300">
                     <th className="py-3 px-6">Category Name</th>
                     <th className="py-3 px-6">Type</th>
                     <th className="py-3 px-6 text-right">Total Amount</th>
                     <th className="py-3 px-6 text-right">% of Outflow</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#E5E9EF] dark:divide-[#303943] print:divide-gray-200">
+                <tbody className="divide-y divide-slate-200/60 dark:divide-white/[0.06] print:divide-gray-200">
                   {categoryBreakdown.map((cat, i) => (
-                    <tr key={i} className="hover:bg-[#F1F4F6]/50 dark:hover:bg-[#202830]/50 print:hover:bg-transparent">
+                    <tr key={i} className="hover:bg-emerald-500/[0.04] dark:hover:bg-emerald-400/[0.05] print:hover:bg-transparent transition-colors">
                       <td className="py-3 px-6 font-medium text-[#17212B] dark:text-[#F5F7FA] print:text-black">
                         {cat.name}
                       </td>
@@ -501,14 +501,14 @@ export const ReportsManager: React.FC = () => {
           </h3>
 
           {filteredTransactions.length === 0 ? (
-            <div className="p-8 text-center text-xs text-[#667085] dark:text-[#9AA6B2] bg-[#F7F8FA] dark:bg-[#101418] print:bg-gray-50 rounded-xl border border-[#E5E9EF] dark:border-[#303943] print:border-gray-300">
+            <div className="p-8 text-center text-xs text-[#667085] dark:text-[#9AA6B2] bg-[#F7F8FA] dark:bg-[#101418] print:bg-gray-50 rounded-xl border border-slate-200/60 dark:border-white/[0.08] print:border-gray-300">
               No transactions recorded for the selected period and filters.
             </div>
           ) : (
-            <div className="overflow-x-auto rounded-xl border border-[#E5E9EF] dark:border-[#303943] print:border-gray-300">
+            <div className="overflow-x-auto rounded-xl border border-slate-200/60 dark:border-white/[0.08] print:border-gray-300">
               <table className="w-full text-left border-collapse text-xs">
                 <thead>
-                  <tr className="bg-[#F7F8FA] dark:bg-[#101418] print:bg-gray-100 font-semibold text-[11px] text-[#667085] dark:text-[#9AA6B2] print:text-black border-b border-[#E5E9EF] dark:border-[#303943] print:border-gray-300">
+                  <tr className="bg-slate-100/60 dark:bg-slate-900/50 backdrop-blur-md print:bg-gray-100 font-semibold text-[11px] text-slate-500 dark:text-slate-400 print:text-black border-b border-slate-200/70 dark:border-white/10 print:border-gray-300">
                     <th className="py-3 px-6">Date</th>
                     <th className="py-3 px-6">Merchant / Description</th>
                     <th className="py-3 px-6">Category</th>
@@ -516,13 +516,13 @@ export const ReportsManager: React.FC = () => {
                     <th className="py-3 px-6 text-right">Amount</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#E5E9EF] dark:divide-[#303943] print:divide-gray-200">
+                <tbody className="divide-y divide-slate-200/60 dark:divide-white/[0.06] print:divide-gray-200">
                   {filteredTransactions.map((tx) => {
                     const cat = categories.find((c) => c.id === tx.category_id);
                     const isIncome = tx.type === 'income';
 
                     return (
-                      <tr key={tx.id} className="hover:bg-[#F1F4F6]/50 dark:hover:bg-[#202830]/50 print:hover:bg-transparent">
+                      <tr key={tx.id} className="hover:bg-emerald-500/[0.04] dark:hover:bg-emerald-400/[0.05] print:hover:bg-transparent transition-colors">
                         <td className="py-3 px-6 font-mono text-[#667085] dark:text-[#9AA6B2] print:text-gray-700 whitespace-nowrap">
                           {tx.transaction_date}
                         </td>
@@ -560,10 +560,10 @@ export const ReportsManager: React.FC = () => {
             <h3 className="text-xs font-semibold uppercase tracking-wider text-[#667085] dark:text-[#9AA6B2] print:text-black mb-3">
               4. Payment Obligations & Pending Dues ({payments.length} items)
             </h3>
-            <div className="overflow-x-auto rounded-xl border border-[#E5E9EF] dark:border-[#303943] print:border-gray-300">
+            <div className="overflow-x-auto rounded-xl border border-slate-200/60 dark:border-white/[0.08] print:border-gray-300">
               <table className="w-full text-left border-collapse text-xs">
                 <thead>
-                  <tr className="bg-[#F7F8FA] dark:bg-[#101418] print:bg-gray-100 font-semibold text-[11px] text-[#667085] dark:text-[#9AA6B2] print:text-black border-b border-[#E5E9EF] dark:border-[#303943] print:border-gray-300">
+                  <tr className="bg-slate-100/60 dark:bg-slate-900/50 backdrop-blur-md print:bg-gray-100 font-semibold text-[11px] text-slate-500 dark:text-slate-400 print:text-black border-b border-slate-200/70 dark:border-white/10 print:border-gray-300">
                     <th className="py-3 px-6">Due Date</th>
                     <th className="py-3 px-6">Title & Counterparty</th>
                     <th className="py-3 px-6">Direction</th>
@@ -572,11 +572,11 @@ export const ReportsManager: React.FC = () => {
                     <th className="py-3 px-6">Status</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#E5E9EF] dark:divide-[#303943] print:divide-gray-200">
+                <tbody className="divide-y divide-slate-200/60 dark:divide-white/[0.06] print:divide-gray-200">
                   {payments.map((p) => {
                     const remaining = Math.max(0, Number(p.total_amount) - Number(p.paid_amount));
                     return (
-                      <tr key={p.id} className="hover:bg-[#F1F4F6]/50 dark:hover:bg-[#202830]/50 print:hover:bg-transparent">
+                      <tr key={p.id} className="hover:bg-emerald-500/[0.04] dark:hover:bg-emerald-400/[0.05] print:hover:bg-transparent transition-colors">
                         <td className="py-3 px-6 font-mono text-[#667085] dark:text-[#9AA6B2] print:text-gray-700 whitespace-nowrap">
                           {p.due_date}
                         </td>
@@ -608,7 +608,7 @@ export const ReportsManager: React.FC = () => {
         )}
 
         {/* Statement Footer */}
-        <div className="pt-6 border-t border-[#E5E9EF] dark:border-[#303943] print:border-gray-300 text-xs text-[#667085] dark:text-[#9AA6B2] print:text-black flex flex-col sm:flex-row justify-between items-center gap-2">
+        <div className="pt-6 border-t border-slate-200/60 dark:border-white/[0.08] print:border-gray-300 text-xs text-[#667085] dark:text-[#9AA6B2] print:text-black flex flex-col sm:flex-row justify-between items-center gap-2">
           <span>DuesDock Personal Finance • Cryptographically secure records</span>
           <span>End of Statement</span>
         </div>

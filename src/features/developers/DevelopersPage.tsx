@@ -28,11 +28,94 @@ function GithubIcon({ className = 'w-4 h-4' }: { className?: string }) {
   );
 }
 
+function LinkedinIcon({ className = 'w-4 h-4' }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+      <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 8.76a1.62 1.62 0 1 0 0-3.24 1.62 1.62 0 0 0 0 3.24M7.86 18.5V10.1H5.06v8.4h2.8z" />
+    </svg>
+  );
+}
+
+interface TeamMember {
+  name: string;
+  role?: string;
+  initials: string;
+  avatarUrl?: string;
+  email?: string;
+  githubUrl?: string;
+  linkedinUrl?: string;
+}
+
+const teamMembers: TeamMember[] = [
+  {
+    name: 'Sai Subhash Kolanu',
+    role: 'Lead Developer',
+    initials: 'SS',
+    avatarUrl: '/assets/team/sai-subhash-kolanu.jpg',
+    email: 'saisubhash.kolanu@gmail.com',
+    githubUrl: 'https://github.com/Subhashkolanu',
+    linkedinUrl: 'https://www.linkedin.com/in/sai-subhash-kolanu-358ba0376/',
+  },
+  {
+    name: 'Kolisetty Madhavi Venkata Durga',
+    initials: 'MD',
+    avatarUrl: '/assets/team/madhavi-kolisetty.jpg',
+    githubUrl: 'https://github.com/madhavikolisetty717',
+  },
+  {
+    name: 'Katta Lakshmi Lahari',
+    initials: 'LL',
+    avatarUrl: '/assets/team/katta-lakshmi-lahari.jpg',
+    githubUrl: undefined,
+  },
+  {
+    name: 'Katragadda Anjali Durga',
+    initials: 'AD',
+    avatarUrl: '/assets/team/katragadda-anjali-durga.jpg',
+    githubUrl: 'https://github.com/anjalidurgakatragadda-glitch',
+  },
+  {
+    name: 'Katla Venu',
+    initials: 'KV',
+    avatarUrl: '/assets/team/katla-venu.jpg',
+    githubUrl: 'https://github.com/katlakishore86-oss',
+  },
+];
+
+function DeveloperAvatar({
+  name,
+  initials,
+  avatarUrl,
+}: {
+  name: string;
+  initials: string;
+  avatarUrl?: string;
+}) {
+  const [imageError, setImageError] = React.useState(false);
+
+  return (
+    <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden shrink-0 border-2 border-white/60 dark:border-white/15 bg-emerald-500/10 dark:bg-emerald-400/15 flex items-center justify-center shadow-md backdrop-blur-sm">
+      {avatarUrl && !imageError ? (
+        <img
+          src={avatarUrl}
+          alt={name}
+          onError={() => setImageError(true)}
+          className="w-full h-full object-cover"
+        />
+      ) : (
+        <span className="text-xl sm:text-2xl font-heading font-extrabold text-[#008F62] dark:text-[#00C78A]">
+          {initials}
+        </span>
+      )}
+    </div>
+  );
+}
+
 export const DevelopersPage: React.FC = () => {
   return (
     <div className="space-y-8 max-w-5xl mx-auto py-2">
       {/* 1. Hero & Mission Section */}
-      <div className="relative overflow-hidden rounded-2xl bg-[#FFFFFF] dark:bg-[#171D23] border border-[#E5E9EF] dark:border-[#303943] p-8 sm:p-10 fintech-card-shadow">
+      <div className="relative overflow-hidden rounded-2xl glass-card p-8 sm:p-10 border border-slate-200/70 dark:border-white/10 shadow-lg">
         <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <div className="space-y-3 max-w-2xl">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#008F62]/10 dark:bg-[#00C78A]/15 text-[#008F62] dark:text-[#00C78A] text-xs font-semibold">
@@ -47,7 +130,7 @@ export const DevelopersPage: React.FC = () => {
             </p>
           </div>
 
-          <div className="shrink-0 flex items-center justify-center p-6 bg-[#F7F8FA] dark:bg-[#101418] rounded-2xl border border-[#E5E9EF] dark:border-[#303943]">
+          <div className="shrink-0 flex items-center justify-center p-6 bg-slate-100/60 dark:bg-slate-900/50 backdrop-blur-md rounded-2xl border border-slate-200/60 dark:border-white/10 shadow-inner">
             <Logo size="xl" showText={false} />
           </div>
         </div>
@@ -80,87 +163,115 @@ export const DevelopersPage: React.FC = () => {
         </Card>
       </div>
 
-      {/* 3. Verified Developer Profile */}
-      <Card className="p-6 sm:p-8 space-y-6">
-        <div className="flex items-center gap-2 pb-4 border-b border-[#E5E9EF] dark:border-[#303943]">
+      {/* 3. Engineering Team & Leadership */}
+      <div className="space-y-6">
+        <div className="flex items-center gap-2 pb-2 border-b border-slate-200/60 dark:border-white/[0.08]">
           <Award className="w-5 h-5 text-[#008F62] dark:text-[#00C78A]" />
           <h2 className="font-heading font-bold text-lg text-[#17212B] dark:text-[#F5F7FA]">
-            Developer Profile & Leadership
+            Engineering Team
           </h2>
         </div>
 
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-2xl bg-[#008F62]/10 dark:bg-[#00C78A]/20 border border-[#008F62]/30 dark:border-[#00C78A]/40 text-[#008F62] dark:text-[#00C78A] font-heading font-extrabold text-2xl flex items-center justify-center shadow-xs">
-              SS
-            </div>
-            <div className="space-y-1">
-              <div className="flex items-center gap-2">
-                <h3 className="font-heading font-bold text-xl text-[#17212B] dark:text-[#F5F7FA]">
-                  Sai Subhash Kolanu
-                </h3>
-                <span className="px-2 py-0.5 rounded-full bg-[#008F62]/10 dark:bg-[#00C78A]/15 text-[#008F62] dark:text-[#00C78A] text-[11px] font-semibold">
-                  Lead Developer
-                </span>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* 1. Sai Subhash Kolanu — Lead Developer (Featured top card spanning full width on md+) */}
+          <Card className="p-6 sm:p-7 md:col-span-2 space-y-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
+              <div className="flex items-center gap-4">
+                <DeveloperAvatar
+                  name={teamMembers[0].name}
+                  initials={teamMembers[0].initials}
+                  avatarUrl={teamMembers[0].avatarUrl}
+                />
+                <div className="space-y-1.5">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h3 className="font-heading font-bold text-xl text-[#17212B] dark:text-[#F5F7FA]">
+                      {teamMembers[0].name}
+                    </h3>
+                    <span className="px-2.5 py-0.5 rounded-full bg-[#008F62]/10 dark:bg-[#00C78A]/15 text-[#008F62] dark:text-[#00C78A] text-xs font-semibold">
+                      {teamMembers[0].role}
+                    </span>
+                  </div>
+                  <a
+                    href={`mailto:${teamMembers[0].email}`}
+                    className="text-xs font-mono text-[#667085] dark:text-[#9AA6B2] hover:text-[#008F62] dark:hover:text-[#00C78A] flex items-center gap-1.5 transition-colors"
+                  >
+                    <Mail className="w-3.5 h-3.5" />
+                    <span>{teamMembers[0].email}</span>
+                  </a>
+                </div>
               </div>
-              <p className="text-xs text-[#667085] dark:text-[#9AA6B2]">
-                Full-Stack Engineer & Product Systems Architect
-              </p>
-              <p className="text-xs font-mono text-[#667085] dark:text-[#9AA6B2] flex items-center gap-1.5 pt-0.5">
-                <Mail className="w-3.5 h-3.5" />
-                <span>2025DCSBT10480@vvitu.ac.in</span>
-              </p>
+
+              <div className="flex flex-wrap items-center gap-2.5 w-full sm:w-auto">
+                {teamMembers[0].githubUrl && (
+                  <a
+                    href={teamMembers[0].githubUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-200/70 dark:border-white/10 bg-white/70 dark:bg-slate-900/60 backdrop-blur-md hover:bg-slate-100/90 dark:hover:bg-slate-800/80 text-xs font-medium text-slate-800 dark:text-slate-100 transition-all shadow-xs hover:border-emerald-500/40"
+                  >
+                    <GithubIcon className="w-4 h-4" />
+                    <span>GitHub Profile</span>
+                    <ExternalLink className="w-3.5 h-3.5 text-[#667085]" />
+                  </a>
+                )}
+                {teamMembers[0].linkedinUrl && (
+                  <a
+                    href={teamMembers[0].linkedinUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-[#0077B5]/30 bg-[#0077B5]/10 hover:bg-[#0077B5]/20 text-xs font-medium text-[#0077B5] dark:text-[#38BDF8] transition-colors"
+                  >
+                    <LinkedinIcon className="w-4 h-4" />
+                    <span>LinkedIn Profile</span>
+                    <ExternalLink className="w-3.5 h-3.5 opacity-70" />
+                  </a>
+                )}
+              </div>
             </div>
-          </div>
+          </Card>
 
-          <div className="flex items-center gap-3">
-            <a
-              href="https://github.com/Subhashkolanu/DuesDock"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-[#E5E9EF] dark:border-[#303943] bg-[#F7F8FA] dark:bg-[#101418] hover:bg-[#F1F4F6] dark:hover:bg-[#202830] text-xs font-medium text-[#17212B] dark:text-[#F5F7FA] transition-colors"
-            >
-              <GithubIcon className="w-4 h-4" />
-              <span>GitHub Repository</span>
-              <ExternalLink className="w-3.5 h-3.5 text-[#667085]" />
-            </a>
-          </div>
+          {/* Team Members 2, 3, 4, 5 (Balanced 2x2 grid) */}
+          {teamMembers.slice(1).map((member) => (
+            <Card key={member.name} className="p-6 flex flex-col justify-between gap-5">
+              <div className="flex items-center gap-4">
+                <DeveloperAvatar
+                  name={member.name}
+                  initials={member.initials}
+                  avatarUrl={member.avatarUrl}
+                />
+                <div className="space-y-1 min-w-0">
+                  <h3 className="font-heading font-bold text-base sm:text-lg text-[#17212B] dark:text-[#F5F7FA] leading-snug">
+                    {member.name}
+                  </h3>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end pt-2 border-t border-slate-200/60 dark:border-white/[0.06] min-h-[42px]">
+                {member.githubUrl ? (
+                  <a
+                    href={member.githubUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200/70 dark:border-white/10 bg-white/70 dark:bg-slate-900/60 backdrop-blur-md hover:bg-slate-100/90 dark:hover:bg-slate-800/80 text-xs font-medium text-slate-800 dark:text-slate-100 transition-all shadow-xs hover:border-emerald-500/40"
+                  >
+                    <GithubIcon className="w-3.5 h-3.5" />
+                    <span>GitHub Profile</span>
+                    <ExternalLink className="w-3 h-3 text-[#667085]" />
+                  </a>
+                ) : (
+                  <span className="text-xs text-[#9AA6B2] dark:text-[#667085] italic">
+                    GitHub profile pending
+                  </span>
+                )}
+              </div>
+            </Card>
+          ))}
         </div>
+      </div>
 
-        {/* Roles and Responsibilities */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
-          <div className="p-4 rounded-xl border border-[#E5E9EF] dark:border-[#303943] bg-[#F7F8FA] dark:bg-[#101418] space-y-1">
-            <span className="text-[11px] font-semibold text-[#008F62] dark:text-[#00C78A] block">
-              Frontend & UI/UX
-            </span>
-            <p className="text-xs text-[#667085] dark:text-[#9AA6B2]">
-              React 19, TypeScript architecture, Neo-Brutalist & Modern Emerald design systems, and responsive layouts.
-            </p>
-          </div>
-
-          <div className="p-4 rounded-xl border border-[#E5E9EF] dark:border-[#303943] bg-[#F7F8FA] dark:bg-[#101418] space-y-1">
-            <span className="text-[11px] font-semibold text-[#0284C7] dark:text-[#38BDF8] block">
-              Database & Security
-            </span>
-            <p className="text-xs text-[#667085] dark:text-[#9AA6B2]">
-              PostgreSQL schema design, Row-Level Security (RLS) data isolation, Google OAuth, and encrypted Supabase Storage.
-            </p>
-          </div>
-
-          <div className="p-4 rounded-xl border border-[#E5E9EF] dark:border-[#303943] bg-[#F7F8FA] dark:bg-[#101418] space-y-1">
-            <span className="text-[11px] font-semibold text-[#D99A27] dark:text-[#F0B94B] block">
-              Calculations & QA
-            </span>
-            <p className="text-xs text-[#667085] dark:text-[#9AA6B2]">
-              Airtight cash flow ledgers, partial payment reconciliation, date timezone offset elimination, and bundle optimization.
-            </p>
-          </div>
-        </div>
-      </Card>
-
-      {/* 4. Technology Stack & Infrastructure */}
+      {/* 4. Technology Stack & Production Architecture */}
       <Card className="p-6 sm:p-8 space-y-5">
-        <div className="flex items-center gap-2 pb-3 border-b border-[#E5E9EF] dark:border-[#303943]">
+        <div className="flex items-center gap-2 pb-3 border-b border-slate-200/60 dark:border-white/[0.08]">
           <Cpu className="w-5 h-5 text-[#008F62] dark:text-[#00C78A]" />
           <h2 className="font-heading font-bold text-lg text-[#17212B] dark:text-[#F5F7FA]">
             Technology Stack & Production Architecture
@@ -168,7 +279,7 @@ export const DevelopersPage: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="p-4 rounded-xl border border-[#E5E9EF] dark:border-[#303943] bg-[#FFFFFF] dark:bg-[#171D23] space-y-2">
+          <div className="p-4 rounded-xl border border-slate-200/60 dark:border-white/[0.08] bg-slate-100/50 dark:bg-slate-900/40 backdrop-blur-sm space-y-2 shadow-xs">
             <div className="flex items-center gap-2 text-xs font-semibold text-[#17212B] dark:text-[#F5F7FA]">
               <Code2 className="w-4 h-4 text-[#008F62] dark:text-[#00C78A]" />
               <span>Frontend Core</span>
@@ -181,7 +292,7 @@ export const DevelopersPage: React.FC = () => {
             </ul>
           </div>
 
-          <div className="p-4 rounded-xl border border-[#E5E9EF] dark:border-[#303943] bg-[#FFFFFF] dark:bg-[#171D23] space-y-2">
+          <div className="p-4 rounded-xl border border-slate-200/60 dark:border-white/[0.08] bg-slate-100/50 dark:bg-slate-900/40 backdrop-blur-sm space-y-2 shadow-xs">
             <div className="flex items-center gap-2 text-xs font-semibold text-[#17212B] dark:text-[#F5F7FA]">
               <Database className="w-4 h-4 text-[#0284C7] dark:text-[#38BDF8]" />
               <span>Database & RLS</span>
@@ -194,7 +305,7 @@ export const DevelopersPage: React.FC = () => {
             </ul>
           </div>
 
-          <div className="p-4 rounded-xl border border-[#E5E9EF] dark:border-[#303943] bg-[#FFFFFF] dark:bg-[#171D23] space-y-2">
+          <div className="p-4 rounded-xl border border-slate-200/60 dark:border-white/[0.08] bg-slate-100/50 dark:bg-slate-900/40 backdrop-blur-sm space-y-2 shadow-xs">
             <div className="flex items-center gap-2 text-xs font-semibold text-[#17212B] dark:text-[#F5F7FA]">
               <ShieldCheck className="w-4 h-4 text-[#059669] dark:text-[#00C78A]" />
               <span>Authentication</span>
@@ -207,7 +318,7 @@ export const DevelopersPage: React.FC = () => {
             </ul>
           </div>
 
-          <div className="p-4 rounded-xl border border-[#E5E9EF] dark:border-[#303943] bg-[#FFFFFF] dark:bg-[#171D23] space-y-2">
+          <div className="p-4 rounded-xl border border-slate-200/60 dark:border-white/[0.08] bg-slate-100/50 dark:bg-slate-900/40 backdrop-blur-sm space-y-2 shadow-xs">
             <div className="flex items-center gap-2 text-xs font-semibold text-[#17212B] dark:text-[#F5F7FA]">
               <Globe className="w-4 h-4 text-[#8B5CF6] dark:text-[#C084FC]" />
               <span>Cloud & Deployment</span>
@@ -223,7 +334,7 @@ export const DevelopersPage: React.FC = () => {
       </Card>
 
       {/* 5. Production Details Banner */}
-      <div className="p-4 rounded-xl border border-[#E5E9EF] dark:border-[#303943] bg-[#F7F8FA] dark:bg-[#101418] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[#667085] dark:text-[#9AA6B2]">
+      <div className="p-4 rounded-xl border border-slate-200/60 dark:border-white/[0.08] bg-slate-100/50 dark:bg-slate-900/40 backdrop-blur-sm flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-600 dark:text-slate-400 shadow-xs">
         <div className="flex items-center gap-2">
           <CheckCircle2 className="w-4 h-4 text-[#008F62] dark:text-[#00C78A]" />
           <span>Live Deployment: <a href="https://duesdock.vercel.app" target="_blank" rel="noopener noreferrer" className="text-[#008F62] dark:text-[#00C78A] font-semibold underline">duesdock.vercel.app</a></span>

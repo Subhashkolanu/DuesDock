@@ -274,7 +274,7 @@ export const PaymentDetailsModal: React.FC<PaymentDetailsModalProps> = ({
         </div>
 
         {/* Modal Bottom Actions */}
-        <div className="flex items-center justify-between pt-4 border-t border-[#E5E9EF] dark:border-[#303943]">
+        <div className="flex items-center justify-between pt-4 border-t border-slate-200/60 dark:border-white/[0.08]">
           <div className="flex items-center gap-2">
             <Button
               variant="outline"

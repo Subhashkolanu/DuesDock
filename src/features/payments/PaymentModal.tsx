@@ -158,7 +158,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
           <label className="block text-xs font-medium text-[#17212B] dark:text-[#F5F7FA] mb-1.5">
             Payment Direction
           </label>
-          <div className="grid grid-cols-2 gap-2 p-1 bg-[#F1F4F6] dark:bg-[#202830] rounded-xl border border-[#E5E9EF] dark:border-[#303943]">
+          <div className="grid grid-cols-2 gap-2 p-1.5 bg-slate-100/70 dark:bg-slate-900/60 backdrop-blur-md rounded-xl border border-slate-200/60 dark:border-white/10">
             <button
               type="button"
               onClick={() => setDirection('payable')}
@@ -280,7 +280,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
         </div>
 
         {/* Actions */}
-        <div className="flex justify-end gap-3 pt-3 border-t border-[#E5E9EF] dark:border-[#303943]">
+        <div className="flex justify-end gap-3 pt-3 border-t border-slate-200/60 dark:border-white/[0.08]">
           <Button variant="outline" size="sm" type="button" onClick={onClose} disabled={isLoading}>
             Cancel
           </Button>

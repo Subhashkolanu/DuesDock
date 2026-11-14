@@ -4,7 +4,7 @@ import { useTheme } from '@/context/ThemeContext';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
-import { CURRENCY_SYMBOLS, formatCurrency } from '@/lib/utils';
+import { CURRENCY_SYMBOLS } from '@/lib/utils';
 import type { CurrencyCode } from '@/types/database.types';
 import {
   User,
@@ -118,7 +118,7 @@ export const SettingsManager: React.FC = () => {
       <form onSubmit={handleSaveSettings} className="space-y-6">
         {/* 1. Profile Information */}
         <Card className="p-6 space-y-4">
-          <div className="flex items-center gap-2 pb-3 border-b border-[#E5E9EF] dark:border-[#303943]">
+          <div className="flex items-center gap-2 pb-3 border-b border-slate-200/60 dark:border-white/[0.08]">
             <User className="w-4 h-4 text-[#008F62] dark:text-[#00C78A]" />
             <h2 className="font-heading font-bold text-base text-[#17212B] dark:text-[#F5F7FA]">
               Personal Profile
@@ -145,7 +145,7 @@ export const SettingsManager: React.FC = () => {
                 <Input
                   value={user?.email || ''}
                   disabled
-                  className="bg-[#F1F4F6] dark:bg-[#202830] text-[#667085] cursor-not-allowed"
+                  className="bg-slate-100/80 dark:bg-slate-800/60 text-slate-500 dark:text-slate-400 cursor-not-allowed"
                   leftElement={<Mail className="w-4 h-4 text-[#667085]" />}
                 />
               </div>
@@ -158,7 +158,7 @@ export const SettingsManager: React.FC = () => {
 
         {/* 2. Currency & Financial Preferences */}
         <Card className="p-6 space-y-4">
-          <div className="flex items-center gap-2 pb-3 border-b border-[#E5E9EF] dark:border-[#303943]">
+          <div className="flex items-center gap-2 pb-3 border-b border-slate-200/60 dark:border-white/[0.08]">
             <Wallet className="w-4 h-4 text-[#008F62] dark:text-[#00C78A]" />
             <h2 className="font-heading font-bold text-base text-[#17212B] dark:text-[#F5F7FA]">
               Currency & Spending Targets
@@ -174,7 +174,7 @@ export const SettingsManager: React.FC = () => {
               <select
                 value={preferredCurrency}
                 onChange={(e) => setPreferredCurrency(e.target.value as CurrencyCode)}
-                className="w-full h-10 rounded-lg border border-[#E5E9EF] dark:border-[#303943] bg-[#FFFFFF] dark:bg-[#101418] px-3 py-2 text-xs font-medium text-[#17212B] dark:text-[#F5F7FA] focus:border-[#008F62] dark:focus:border-[#00C78A] focus:outline-none"
+                className="w-full h-10 rounded-xl border border-slate-200/70 dark:border-white/10 bg-white/70 dark:bg-slate-900/60 backdrop-blur-md px-3 py-2 text-xs font-medium text-slate-800 dark:text-slate-100 shadow-xs focus:border-emerald-500/60 dark:focus:border-emerald-400/60 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none transition-all"
               >
                 {CURRENCY_LIST.map((c) => (
                   <option key={c.code} value={c.code}>
@@ -210,14 +210,14 @@ export const SettingsManager: React.FC = () => {
 
         {/* 3. Theme & Appearance */}
         <Card className="p-6 space-y-4">
-          <div className="flex items-center gap-2 pb-3 border-b border-[#E5E9EF] dark:border-[#303943]">
+          <div className="flex items-center gap-2 pb-3 border-b border-slate-200/60 dark:border-white/[0.08]">
             {isDark ? <Moon className="w-4 h-4 text-[#00C78A]" /> : <Sun className="w-4 h-4 text-[#D99A27]" />}
             <h2 className="font-heading font-bold text-base text-[#17212B] dark:text-[#F5F7FA]">
               Appearance & Interface Theme
             </h2>
           </div>
 
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl border border-[#E5E9EF] dark:border-[#303943] bg-[#F7F8FA] dark:bg-[#101418]">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl border border-slate-200/60 dark:border-white/[0.08] bg-slate-100/50 dark:bg-slate-900/40 backdrop-blur-sm shadow-xs">
             <div>
               <p className="font-semibold text-xs text-[#17212B] dark:text-[#F5F7FA]">
                 Current Active Mode: {isDark ? 'Dark Theme (Deep Navy & Emerald)' : 'Light Theme (Clean White & Slate)'}
@@ -241,7 +241,7 @@ export const SettingsManager: React.FC = () => {
 
         {/* 4. Security & Data Isolation Status */}
         <Card className="p-6 space-y-3">
-          <div className="flex items-center gap-2 pb-3 border-b border-[#E5E9EF] dark:border-[#303943]">
+          <div className="flex items-center gap-2 pb-3 border-b border-slate-200/60 dark:border-white/[0.08]">
             <ShieldCheck className="w-4 h-4 text-[#008F62] dark:text-[#00C78A]" />
             <h2 className="font-heading font-bold text-base text-[#17212B] dark:text-[#F5F7FA]">
               Security & Cryptographic Isolation
@@ -249,7 +249,7 @@ export const SettingsManager: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-            <div className="p-3.5 rounded-xl border border-[#E5E9EF] dark:border-[#303943] bg-[#F7F8FA] dark:bg-[#101418] space-y-1">
+            <div className="p-3.5 rounded-xl border border-slate-200/60 dark:border-white/[0.08] bg-slate-100/50 dark:bg-slate-900/40 backdrop-blur-sm space-y-1 shadow-xs">
               <span className="font-semibold text-[#008F62] dark:text-[#00C78A] block">
                 PostgreSQL RLS
               </span>
@@ -258,7 +258,7 @@ export const SettingsManager: React.FC = () => {
               </p>
             </div>
 
-            <div className="p-3.5 rounded-xl border border-[#E5E9EF] dark:border-[#303943] bg-[#F7F8FA] dark:bg-[#101418] space-y-1">
+            <div className="p-3.5 rounded-xl border border-slate-200/60 dark:border-white/[0.08] bg-slate-100/50 dark:bg-slate-900/40 backdrop-blur-sm space-y-1 shadow-xs">
               <span className="font-semibold text-[#008F62] dark:text-[#00C78A] block">
                 Private Storage
               </span>
@@ -267,7 +267,7 @@ export const SettingsManager: React.FC = () => {
               </p>
             </div>
 
-            <div className="p-3.5 rounded-xl border border-[#E5E9EF] dark:border-[#303943] bg-[#F7F8FA] dark:bg-[#101418] space-y-1">
+            <div className="p-3.5 rounded-xl border border-slate-200/60 dark:border-white/[0.08] bg-slate-100/50 dark:bg-slate-900/40 backdrop-blur-sm space-y-1 shadow-xs">
               <span className="font-semibold text-[#008F62] dark:text-[#00C78A] block">
                 OAuth Verification
               </span>

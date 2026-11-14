@@ -61,7 +61,7 @@ export const DeleteConfirmDialog: React.FC<DeleteConfirmDialogProps> = ({
           )}
         </div>
 
-        <div className="flex justify-end gap-3 pt-3 border-t border-[#E5E9EF] dark:border-[#303943]">
+        <div className="flex justify-end gap-3 pt-3 border-t border-slate-200/60 dark:border-white/[0.08]">
           <Button variant="outline" size="sm" onClick={onClose} disabled={isDeleting}>
             Cancel
           </Button>

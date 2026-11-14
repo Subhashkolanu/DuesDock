@@ -176,25 +176,25 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({ onNavigateTa
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2 rounded-lg text-[#667085] dark:text-[#9AA6B2] hover:text-[#17212B] dark:hover:text-[#F5F7FA] hover:bg-[#F1F4F6] dark:hover:bg-[#202830] transition-colors cursor-pointer"
+        className="relative inline-flex items-center justify-center p-2 rounded-xl text-xs font-medium text-slate-800 dark:text-slate-100 bg-white/70 dark:bg-white/5 border border-slate-300/70 dark:border-white/10 backdrop-blur-md hover:bg-white/90 dark:hover:bg-white/10 shadow-xs hover:border-emerald-500/40 dark:hover:border-emerald-400/40 transition-all duration-200 select-none cursor-pointer"
         title="Notifications & Reminders"
         aria-label="View notifications"
       >
-        <Bell className="w-4 h-4" />
+        <Bell className="w-4 h-4 text-slate-600 dark:text-slate-300" />
         {notifications.length > 0 && (
-          <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-[#DC5252] dark:bg-[#FF6666] ring-2 ring-[#FFFFFF] dark:ring-[#171D23]" />
+          <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-rose-500 ring-2 ring-white dark:ring-[#070B10] shadow-xs shadow-rose-500/50" />
         )}
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-80 sm:w-96 rounded-2xl bg-[#FFFFFF] dark:bg-[#171D23] border border-[#E5E9EF] dark:border-[#303943] shadow-xl p-3 z-50 animate-in fade-in zoom-in-95 space-y-2">
-          <div className="flex items-center justify-between pb-2 border-b border-[#E5E9EF] dark:border-[#303943] px-1">
-            <div className="flex items-center gap-1.5">
-              <span className="font-heading font-bold text-xs text-[#17212B] dark:text-[#F5F7FA]">
+        <div className="absolute right-0 mt-2 w-80 sm:w-96 rounded-2xl glass-panel p-3.5 z-50 animate-in fade-in zoom-in-95 space-y-2.5 shadow-2xl border border-white/60 dark:border-white/10">
+          <div className="flex items-center justify-between pb-2 border-b border-slate-200/60 dark:border-white/10 px-1">
+            <div className="flex items-center gap-2">
+              <span className="font-heading font-bold text-xs text-slate-900 dark:text-white">
                 In-App Reminders & Alerts
               </span>
               {notifications.length > 0 && (
-                <span className="px-1.5 py-0.2 rounded-full bg-[#008F62]/10 dark:bg-[#00C78A]/15 text-[#008F62] dark:text-[#00C78A] text-[10px] font-bold">
+                <span className="px-2 py-0.5 rounded-full bg-emerald-500/15 dark:bg-emerald-400/20 text-emerald-700 dark:text-emerald-300 text-[10px] font-bold border border-emerald-500/25">
                   {notifications.length}
                 </span>
               )}
@@ -202,7 +202,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({ onNavigateTa
             {notifications.length > 0 && (
               <button
                 onClick={() => setDismissedIds(notifications.map((n) => n.id))}
-                className="text-[11px] text-[#667085] dark:text-[#9AA6B2] hover:underline cursor-pointer"
+                className="text-[11px] text-slate-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:underline cursor-pointer transition-colors"
               >
                 Dismiss All
               </button>
@@ -211,13 +211,13 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({ onNavigateTa
 
           {notifications.length === 0 ? (
             <div className="py-8 px-4 text-center space-y-2">
-              <div className="w-9 h-9 rounded-full bg-[#008F62]/10 dark:bg-[#00C78A]/15 text-[#008F62] dark:text-[#00C78A] flex items-center justify-center mx-auto">
+              <div className="w-10 h-10 rounded-full bg-emerald-500/15 dark:bg-emerald-400/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto border border-emerald-500/30">
                 <CheckCircle2 className="w-5 h-5" />
               </div>
-              <p className="text-xs font-semibold text-[#17212B] dark:text-[#F5F7FA]">
+              <p className="text-xs font-semibold text-slate-900 dark:text-white">
                 All Clear!
               </p>
-              <p className="text-[11px] text-[#667085] dark:text-[#9AA6B2]">
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">
                 No pending overdue payments, urgent deadlines, or budget warnings.
               </p>
             </div>
@@ -234,24 +234,24 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({ onNavigateTa
                         setIsOpen(false);
                       }
                     }}
-                    className={`p-3 rounded-xl border transition-all cursor-pointer space-y-1 relative group ${
+                    className={`p-3 rounded-xl border transition-all cursor-pointer space-y-1 relative group backdrop-blur-md ${
                       isDanger
-                        ? 'bg-[#DC5252]/5 dark:bg-[#DC5252]/10 border-[#DC5252]/20 hover:border-[#DC5252]/40'
-                        : 'bg-[#D99A27]/5 dark:bg-[#D99A27]/10 border-[#D99A27]/20 hover:border-[#D99A27]/40'
+                        ? 'bg-rose-500/10 dark:bg-rose-500/15 border-rose-500/30 hover:border-rose-500/50 text-rose-900 dark:text-rose-100'
+                        : 'bg-amber-500/10 dark:bg-amber-500/15 border-amber-500/30 hover:border-amber-500/50 text-amber-900 dark:text-amber-100'
                     }`}
                   >
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex items-center gap-1.5">
                         {isDanger ? (
-                          <AlertTriangle className="w-3.5 h-3.5 text-[#DC5252] dark:text-[#FF6666] shrink-0" />
+                          <AlertTriangle className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400 shrink-0" />
                         ) : (
-                          <Clock className="w-3.5 h-3.5 text-[#D99A27] dark:text-[#F0B94B] shrink-0" />
+                          <Clock className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
                         )}
                         <span
                           className={`font-semibold text-xs ${
                             isDanger
-                              ? 'text-[#DC5252] dark:text-[#FF6666]'
-                              : 'text-[#D99A27] dark:text-[#F0B94B]'
+                              ? 'text-rose-700 dark:text-rose-300'
+                              : 'text-amber-700 dark:text-amber-300'
                           }`}
                         >
                           {n.title}
@@ -259,19 +259,19 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({ onNavigateTa
                       </div>
                       <button
                         onClick={(e) => handleDismiss(n.id, e)}
-                        className="text-[#667085] hover:text-[#17212B] dark:text-[#9AA6B2] dark:hover:text-[#F5F7FA] p-0.5"
+                        className="text-slate-400 hover:text-slate-700 dark:hover:text-white p-0.5"
                       >
                         <X className="w-3 h-3" />
                       </button>
                     </div>
 
-                    <p className="text-[11px] text-[#667085] dark:text-[#9AA6B2] leading-tight pl-5">
+                    <p className="text-[11px] text-slate-600 dark:text-slate-300 leading-tight pl-5">
                       {n.message}
                     </p>
 
                     {n.actionTab && (
                       <div className="pl-5 pt-1">
-                        <span className="text-[10px] font-semibold text-[#008F62] dark:text-[#00C78A] flex items-center gap-1 group-hover:underline">
+                        <span className="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1 group-hover:underline">
                           <span>View {n.actionTab === 'payments' ? 'Payments' : 'Budgets'}</span>
                           <ArrowRight className="w-3 h-3" />
                         </span>

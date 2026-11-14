@@ -17,14 +17,14 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
         {label && (
           <label
             htmlFor={generatedId}
-            className="block text-xs font-medium text-[#17212B] dark:text-[#F5F7FA]"
+            className="block text-xs font-medium text-slate-700 dark:text-slate-300"
           >
             {label}
           </label>
         )}
         <div className="relative">
           {leftElement && (
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[#667085] dark:text-[#9AA6B2]">
+            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 dark:text-slate-500">
               {leftElement}
             </div>
           )}
@@ -32,19 +32,19 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             id={generatedId}
             ref={ref}
             className={cn(
-              'block w-full rounded-lg border border-[#E5E9EF] dark:border-[#303943] bg-[#FFFFFF] dark:bg-[#101418] px-3.5 py-2 text-sm text-[#17212B] dark:text-[#F5F7FA] placeholder:text-[#667085]/60 dark:placeholder:text-[#9AA6B2]/60',
-              'focus:border-[#008F62] dark:focus:border-[#00C78A] focus:ring-2 focus:ring-[#008F62]/15 dark:focus:ring-[#00C78A]/20 focus:outline-none transition-all duration-150',
-              leftElement && 'pl-9',
-              error && 'border-[#DC5252] dark:border-[#FF6666] focus:border-[#DC5252]',
+              'block w-full rounded-xl border border-slate-300/80 dark:border-white/10 bg-white/70 dark:bg-[#0B1118]/70 px-3.5 py-2.5 text-sm text-slate-900 dark:text-white placeholder:text-slate-400/80 dark:placeholder:text-slate-500 backdrop-blur-md',
+              'focus:border-emerald-500 dark:focus:border-emerald-400 focus:ring-3 focus:ring-emerald-500/15 dark:focus:ring-emerald-400/20 focus:outline-none transition-all duration-200',
+              leftElement && 'pl-10',
+              error && 'border-rose-500 dark:border-rose-400 focus:border-rose-500 focus:ring-rose-500/20',
               className
             )}
             {...props}
           />
         </div>
         {error ? (
-          <p className="text-xs text-[#DC5252] dark:text-[#FF6666]">{error}</p>
+          <p className="text-xs text-rose-600 dark:text-rose-400">{error}</p>
         ) : helperText ? (
-          <p className="text-[11px] text-[#667085] dark:text-[#9AA6B2]">{helperText}</p>
+          <p className="text-[11px] text-slate-500 dark:text-slate-400">{helperText}</p>
         ) : null}
       </div>
     );

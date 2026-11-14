@@ -121,7 +121,7 @@ export const RecordPaymentModal: React.FC<RecordPaymentModalProps> = ({
               {formatCurrency(payment.paid_amount, currency)}
             </span>
           </div>
-          <div className="pt-2 border-t border-[#E5E9EF] dark:border-[#303943] flex items-center justify-between text-xs">
+          <div className="pt-2 border-t border-slate-200/60 dark:border-white/[0.08] flex items-center justify-between text-xs">
             <span className="font-semibold text-[#17212B] dark:text-[#F5F7FA]">Remaining Outstanding:</span>
             <span className="font-mono font-bold text-sm text-[#DC5252] dark:text-[#FF6666]">
               {formatCurrency(remainingBalance, currency)}
@@ -202,7 +202,7 @@ export const RecordPaymentModal: React.FC<RecordPaymentModalProps> = ({
         </div>
 
         {/* Modal Actions */}
-        <div className="flex justify-end gap-3 pt-3 border-t border-[#E5E9EF] dark:border-[#303943]">
+        <div className="flex justify-end gap-3 pt-3 border-t border-slate-200/60 dark:border-white/[0.08]">
           <Button variant="outline" size="sm" type="button" onClick={onClose} disabled={isLoading}>
             Cancel
           </Button>

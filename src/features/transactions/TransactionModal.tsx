@@ -210,14 +210,12 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
           <label className="block text-xs font-medium text-[#17212B] dark:text-[#F5F7FA] mb-1.5">
             Transaction Type
           </label>
-          <div className="grid grid-cols-2 gap-2 p-1 bg-[#F1F4F6] dark:bg-[#202830] rounded-xl border border-[#E5E9EF] dark:border-[#303943]">
+          <div className="grid grid-cols-2 gap-2 p-1.5 bg-slate-100/70 dark:bg-slate-900/60 backdrop-blur-md rounded-xl border border-slate-200/60 dark:border-white/10">
             <button
               type="button"
               onClick={() => setType('expense')}
               className={`flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-semibold transition-all ${
-                type === 'expense'
-                  ? 'bg-[#FFFFFF] dark:bg-[#171D23] text-[#DC5252] dark:text-[#FF6666] shadow-xs'
-                  : 'text-[#667085] dark:text-[#9AA6B2] hover:text-[#17212B] dark:hover:text-[#F5F7FA]'
+                type === 'expense' ? 'bg-white dark:bg-slate-800 text-rose-600 dark:text-rose-400 shadow-xs border border-slate-200/50 dark:border-white/10' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
               }`}
             >
               <TrendingDown className="w-4 h-4" />
@@ -227,9 +225,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
               type="button"
               onClick={() => setType('income')}
               className={`flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-semibold transition-all ${
-                type === 'income'
-                  ? 'bg-[#FFFFFF] dark:bg-[#171D23] text-[#008F62] dark:text-[#00C78A] shadow-xs'
-                  : 'text-[#667085] dark:text-[#9AA6B2] hover:text-[#17212B] dark:hover:text-[#F5F7FA]'
+                type === 'income' ? 'bg-white dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 shadow-xs border border-slate-200/50 dark:border-white/10' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
               }`}
             >
               <TrendingUp className="w-4 h-4" />
@@ -310,7 +306,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
             <select
               value={categoryId}
               onChange={(e) => setCategoryId(e.target.value)}
-              className="w-full h-10 rounded-lg border border-[#E5E9EF] dark:border-[#303943] bg-[#FFFFFF] dark:bg-[#101418] px-3 py-2 text-xs font-medium text-[#17212B] dark:text-[#F5F7FA] focus:outline-none focus:border-[#008F62] dark:focus:border-[#00C78A]"
+              className="w-full h-10 rounded-xl border border-slate-200/70 dark:border-white/10 bg-white/70 dark:bg-slate-900/60 backdrop-blur-md px-3 py-2 text-xs font-medium text-slate-800 dark:text-slate-100 shadow-xs focus:outline-none focus:border-emerald-500/60 dark:focus:border-emerald-400/60 focus:ring-2 focus:ring-emerald-500/20 transition-all"
               required
             >
               {availableCategories.length === 0 ? (
@@ -335,7 +331,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
             <select
               value={paymentMethod}
               onChange={(e) => setPaymentMethod(e.target.value as PaymentMethod)}
-              className="w-full h-10 rounded-lg border border-[#E5E9EF] dark:border-[#303943] bg-[#FFFFFF] dark:bg-[#101418] px-3 py-2 text-xs font-medium text-[#17212B] dark:text-[#F5F7FA] focus:outline-none focus:border-[#008F62] dark:focus:border-[#00C78A]"
+              className="w-full h-10 rounded-xl border border-slate-200/70 dark:border-white/10 bg-white/70 dark:bg-slate-900/60 backdrop-blur-md px-3 py-2 text-xs font-medium text-slate-800 dark:text-slate-100 shadow-xs focus:outline-none focus:border-emerald-500/60 dark:focus:border-emerald-400/60 focus:ring-2 focus:ring-emerald-500/20 transition-all"
             >
               <option value="debit_card">Debit Card</option>
               <option value="credit_card">Credit Card</option>
@@ -364,7 +360,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
             placeholder="Add memo, invoice reference, or payment note..."
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            className="w-full rounded-lg border border-[#E5E9EF] dark:border-[#303943] bg-[#FFFFFF] dark:bg-[#101418] p-3 text-xs text-[#17212B] dark:text-[#F5F7FA] placeholder:text-[#667085]/60 dark:placeholder:text-[#9AA6B2]/60 focus:outline-none focus:border-[#008F62] dark:focus:border-[#00C78A]"
+            className="w-full rounded-xl border border-slate-200/70 dark:border-white/10 bg-white/70 dark:bg-slate-900/60 backdrop-blur-md p-3 text-xs text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 shadow-xs focus:outline-none focus:border-emerald-500/60 dark:focus:border-emerald-400/60 focus:ring-2 focus:ring-emerald-500/20 transition-all"
           />
         </div>
 
@@ -405,7 +401,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
               </button>
             </div>
           ) : (
-            <label className="flex items-center justify-center gap-2 border border-dashed border-[#E5E9EF] dark:border-[#303943] rounded-xl p-4 text-xs font-medium text-[#667085] dark:text-[#9AA6B2] hover:text-[#17212B] dark:hover:text-[#F5F7FA] hover:border-[#008F62] dark:hover:border-[#00C78A] cursor-pointer transition-colors bg-[#FFFFFF] dark:bg-[#171D23]">
+            <label className="flex items-center justify-center gap-2 border border-dashed border-slate-200/80 dark:border-white/15 rounded-xl p-4 text-xs font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:border-emerald-500/60 dark:hover:border-emerald-400/60 cursor-pointer transition-all bg-white/50 dark:bg-slate-900/40 backdrop-blur-md hover:bg-emerald-500/[0.04]">
               <Paperclip className="w-4 h-4" />
               <span>Click to attach receipt (JPG, PNG, PDF)</span>
               <input
@@ -419,7 +415,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
         </div>
 
         {/* Modal Actions */}
-        <div className="flex justify-end gap-3 pt-4 border-t border-[#E5E9EF] dark:border-[#303943]">
+        <div className="flex justify-end gap-3 pt-4 border-t border-slate-200/60 dark:border-white/[0.08]">
           <Button variant="outline" size="sm" type="button" onClick={onClose} disabled={isLoading}>
             Cancel
           </Button>

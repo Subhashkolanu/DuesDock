@@ -238,6 +238,119 @@ test('Payment outstanding balance correctly calculates net position', () => {
 });
 
 // ==========================================
+// 5. DEVELOPERS / ABOUT PAGE VERIFICATION TESTS
+// ==========================================
+console.log('\n--- 5. Testing Developers / About Page Requirements ---');
+import fs from 'node:fs';
+import path from 'node:path';
+
+const devPageContent = fs.readFileSync(
+  path.resolve(process.cwd(), 'src/features/developers/DevelopersPage.tsx'),
+  'utf-8'
+);
+
+test('Developers array defines all five developers in the exact requested order', () => {
+  const expectedNames = [
+    'Sai Subhash Kolanu',
+    'Kolisetty Madhavi Venkata Durga',
+    'Katta Lakshmi Lahari',
+    'Katragadda Anjali Durga',
+    'Katla Venu',
+  ];
+  
+  for (let i = 0; i < expectedNames.length - 1; i++) {
+    const idxA = devPageContent.indexOf(`name: '${expectedNames[i]}'`);
+    const idxB = devPageContent.indexOf(`name: '${expectedNames[i + 1]}'`);
+    assert.ok(idxA !== -1, `Missing developer name: ${expectedNames[i]}`);
+    assert.ok(idxB !== -1, `Missing developer name: ${expectedNames[i + 1]}`);
+    assert.ok(idxA < idxB, `Developer ${expectedNames[i]} must appear before ${expectedNames[i + 1]}`);
+  }
+});
+
+test('Sai Subhash Kolanu has Lead Developer role, verified photo, updated email, GitHub profile, and LinkedIn URL', () => {
+  assert.ok(devPageContent.includes("role: 'Lead Developer'"));
+  assert.ok(devPageContent.includes("email: 'saisubhash.kolanu@gmail.com'"));
+  assert.ok(devPageContent.includes("githubUrl: 'https://github.com/Subhashkolanu'"));
+  assert.ok(devPageContent.includes("linkedinUrl: 'https://www.linkedin.com/in/sai-subhash-kolanu-358ba0376/'"));
+  assert.ok(devPageContent.includes("avatarUrl: '/assets/team/sai-subhash-kolanu.jpg'"));
+  assert.ok(devPageContent.includes("initials: 'SS'"));
+});
+
+test('Kolisetty Madhavi Venkata Durga has correct GitHub profile, assigned photo, and MD initials fallback', () => {
+  assert.ok(devPageContent.includes("name: 'Kolisetty Madhavi Venkata Durga'"));
+  assert.ok(devPageContent.includes("initials: 'MD'"));
+  assert.ok(devPageContent.includes("avatarUrl: '/assets/team/madhavi-kolisetty.jpg'"));
+  assert.ok(devPageContent.includes("githubUrl: 'https://github.com/madhavikolisetty717'"));
+});
+
+test('Katta Lakshmi Lahari has LL initials, assigned photo, and NO invented GitHub link', () => {
+  assert.ok(devPageContent.includes("name: 'Katta Lakshmi Lahari'"));
+  assert.ok(devPageContent.includes("initials: 'LL'"));
+  assert.ok(devPageContent.includes("avatarUrl: '/assets/team/katta-lakshmi-lahari.jpg'"));
+  // GitHub URL must be undefined or absent for Lakshmi Lahari
+  const laharySnippet = devPageContent.slice(
+    devPageContent.indexOf("name: 'Katta Lakshmi Lahari'"),
+    devPageContent.indexOf("name: 'Katragadda Anjali Durga'")
+  );
+  assert.ok(!laharySnippet.includes('https://github.com/'));
+});
+
+test('Katragadda Anjali Durga has correct GitHub profile, assigned photo, and AD initials fallback', () => {
+  assert.ok(devPageContent.includes("name: 'Katragadda Anjali Durga'"));
+  assert.ok(devPageContent.includes("initials: 'AD'"));
+  assert.ok(devPageContent.includes("avatarUrl: '/assets/team/katragadda-anjali-durga.jpg'"));
+  assert.ok(devPageContent.includes("githubUrl: 'https://github.com/anjalidurgakatragadda-glitch'"));
+});
+
+test('Katla Venu has correct GitHub profile, assigned photo, and KV initials fallback', () => {
+  assert.ok(devPageContent.includes("name: 'Katla Venu'"));
+  assert.ok(devPageContent.includes("initials: 'KV'"));
+  assert.ok(devPageContent.includes("avatarUrl: '/assets/team/katla-venu.jpg'"));
+  assert.ok(devPageContent.includes("githubUrl: 'https://github.com/katlakishore86-oss'"));
+});
+
+test('Old email, old job description, old skill cards, and repository button are removed', () => {
+  assert.ok(!devPageContent.includes('2025DCSBT10480@vvitu.ac.in'), 'Old email must not be present');
+  assert.ok(!devPageContent.includes('Full-Stack Engineer & Product Systems Architect'), 'Old title must not be present');
+  assert.ok(!devPageContent.includes('GitHub Repository'), 'Old repository button must not be present');
+  assert.ok(!devPageContent.includes('Frontend & UI/UX'), 'Old skill card 1 must not be present');
+  assert.ok(!devPageContent.includes('Database & Security'), 'Old skill card 2 must not be present');
+  assert.ok(!devPageContent.includes('Calculations & QA'), 'Old skill card 3 must not be present');
+});
+
+test('All five developers have unique, non-duplicated photograph paths in exact order', () => {
+  const avatarMatches = [...devPageContent.matchAll(/avatarUrl:\s*'([^']+)'/g)].map((m) => m[1]);
+  assert.strictEqual(avatarMatches.length, 5, 'Must have exactly 5 photo paths');
+  const uniqueSet = new Set(avatarMatches);
+  assert.strictEqual(uniqueSet.size, 5, 'All 5 photo paths must be distinct and non-duplicated');
+  
+  assert.deepStrictEqual(avatarMatches, [
+    '/assets/team/sai-subhash-kolanu.jpg',
+    '/assets/team/madhavi-kolisetty.jpg',
+    '/assets/team/katta-lakshmi-lahari.jpg',
+    '/assets/team/katragadda-anjali-durga.jpg',
+    '/assets/team/katla-venu.jpg',
+  ]);
+});
+
+test('All five developer image files exist on disk in public/assets/team with valid sizes', () => {
+  const teamDir = path.resolve(process.cwd(), 'public/assets/team');
+  const expectedFiles = [
+    'sai-subhash-kolanu.jpg',
+    'madhavi-kolisetty.jpg',
+    'katta-lakshmi-lahari.jpg',
+    'katragadda-anjali-durga.jpg',
+    'katla-venu.jpg',
+  ];
+  for (const file of expectedFiles) {
+    const fullPath = path.join(teamDir, file);
+    assert.ok(fs.existsSync(fullPath), `File ${file} must exist`);
+    const size = fs.statSync(fullPath).size;
+    assert.ok(size > 1000, `File ${file} must not be empty (size: ${size})`);
+  }
+});
+
+// ==========================================
 // TEST SUMMARY
 // ==========================================
 console.log('\n==========================================');

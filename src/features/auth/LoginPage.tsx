@@ -7,6 +7,7 @@ import {
   ShieldCheck,
   AlertCircle,
   CheckCircle2,
+  Sparkles,
 } from 'lucide-react';
 
 export const LoginPage: React.FC = () => {
@@ -26,40 +27,44 @@ export const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F7F8FA] dark:bg-[#101418] text-[#17212B] dark:text-[#F5F7FA] flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 font-sans transition-colors relative selection:bg-[#008F62] selection:text-white dark:selection:bg-[#00C78A] dark:selection:text-[#101418]">
+    <div className="min-h-screen text-slate-900 dark:text-white flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 font-sans transition-colors relative overflow-hidden">
+      {/* Ambient background light orbs for liquid refraction */}
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-emerald-500/10 dark:bg-emerald-500/15 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-sky-500/10 dark:bg-sky-500/15 rounded-full blur-3xl pointer-events-none" />
+
       {/* Top Floating Theme Toggle */}
-      <div className="absolute top-5 right-5 sm:top-8 sm:right-8">
+      <div className="absolute top-5 right-5 sm:top-8 sm:right-8 z-10">
         <ThemeToggle showLabel />
       </div>
 
-      <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
+      <div className="sm:mx-auto sm:w-full sm:max-w-md text-center relative z-10">
         {/* Brand Header */}
         <div className="flex justify-center mb-4">
           <Logo size="xl" showText={false} />
         </div>
-        <h1 className="font-heading font-bold text-3xl sm:text-4xl text-[#17212B] dark:text-[#F5F7FA] tracking-tight">
-          Dues<span className="text-[#008F62] dark:text-[#00C78A]">Dock</span>
+        <h1 className="font-heading font-extrabold text-3xl sm:text-4xl text-slate-900 dark:text-white tracking-tight">
+          Dues<span className="bg-gradient-to-r from-emerald-600 to-sky-600 dark:from-emerald-400 dark:to-cyan-400 bg-clip-text text-transparent">Dock</span>
         </h1>
-        <p className="mt-2 text-sm text-[#667085] dark:text-[#9AA6B2]">
+        <p className="mt-2 text-sm text-slate-500 dark:text-slate-400 font-medium">
           Track Every Expense. Understand Every Rupee.
         </p>
       </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <Card className="p-7 sm:p-8 border border-[#E5E9EF] dark:border-[#303943] fintech-card-shadow bg-[#FFFFFF] dark:bg-[#171D23] rounded-2xl">
+      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md relative z-10">
+        <Card className="p-7 sm:p-9 glass-card shadow-2xl border border-white/70 dark:border-white/10 rounded-3xl">
           {!isConfigured && (
-            <div className="mb-6 p-4 rounded-xl bg-[#D99A27]/10 border border-[#D99A27]/20 text-[#17212B] dark:text-[#F5F7FA] text-xs flex items-start gap-3">
-              <AlertCircle className="w-5 h-5 text-[#D99A27] dark:text-[#F0B94B] shrink-0 mt-0.5" />
+            <div className="mb-6 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/25 text-slate-800 dark:text-slate-200 text-xs flex items-start gap-3 backdrop-blur-md">
+              <AlertCircle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
               <div>
                 <span className="font-semibold block mb-1">
                   Supabase Setup Notice
                 </span>
                 To enable live Google OAuth authentication, configure{' '}
-                <code className="bg-[#F1F4F6] dark:bg-[#202830] px-1.5 py-0.5 rounded text-[11px] font-mono">
+                <code className="bg-white/40 dark:bg-black/30 px-1.5 py-0.5 rounded text-[11px] font-mono border border-amber-500/20">
                   VITE_SUPABASE_URL
                 </code>{' '}
                 and{' '}
-                <code className="bg-[#F1F4F6] dark:bg-[#202830] px-1.5 py-0.5 rounded text-[11px] font-mono">
+                <code className="bg-white/40 dark:bg-black/30 px-1.5 py-0.5 rounded text-[11px] font-mono border border-amber-500/20">
                   VITE_SUPABASE_ANON_KEY
                 </code>{' '}
                 in your <code className="font-mono">.env</code> file.
@@ -68,28 +73,32 @@ export const LoginPage: React.FC = () => {
           )}
 
           {(errorMessage || authError) && (
-            <div className="mb-6 p-3 rounded-xl bg-[#DC5252]/10 border border-[#DC5252]/20 text-[#DC5252] dark:text-[#FF6666] text-xs font-medium flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 shrink-0" />
+            <div className="mb-6 p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/25 text-rose-700 dark:text-rose-300 text-xs font-medium flex items-center gap-2.5 backdrop-blur-md">
+              <AlertCircle className="w-4 h-4 shrink-0 text-rose-500" />
               <span>{errorMessage || authError}</span>
             </div>
           )}
 
           <div className="space-y-6">
             <div className="text-center">
-              <h2 className="font-heading font-semibold text-lg text-[#17212B] dark:text-[#F5F7FA]">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 dark:bg-emerald-400/15 text-emerald-700 dark:text-emerald-300 text-xs font-semibold mb-2 border border-emerald-500/20">
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>Liquid Glass Workspace</span>
+              </div>
+              <h2 className="font-heading font-bold text-xl text-slate-900 dark:text-white">
                 Welcome Back
               </h2>
-              <p className="text-xs text-[#667085] dark:text-[#9AA6B2] mt-1">
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                 Sign in securely to your personal wealth management workspace
               </p>
             </div>
 
-            {/* Official Google OAuth Sign-In Button */}
+            {/* Official Google OAuth Sign-In Button in Liquid Glass */}
             <button
               onClick={handleGoogleSignIn}
               disabled={isSubmitting}
               type="button"
-              className="w-full flex items-center justify-center gap-3 bg-[#FFFFFF] dark:bg-[#202830] hover:bg-[#F7F8FA] dark:hover:bg-[#28323C] text-[#17212B] dark:text-[#F5F7FA] font-medium text-sm px-4 py-3 rounded-xl border border-[#E5E9EF] dark:border-[#303943] shadow-xs hover:shadow transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-[#008F62]/20 dark:focus:ring-[#00C78A]/20 disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
+              className="w-full flex items-center justify-center gap-3 bg-white/80 hover:bg-white dark:bg-white/10 dark:hover:bg-white/15 text-slate-900 dark:text-white font-medium text-sm px-4 py-3.5 rounded-2xl border border-slate-300/80 dark:border-white/15 shadow-md hover:shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer active:scale-[0.98] backdrop-blur-md"
             >
               {/* Official Google Icon SVG */}
               <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24">
@@ -114,17 +123,17 @@ export const LoginPage: React.FC = () => {
             </button>
 
             {/* Feature Highlights */}
-            <div className="pt-4 border-t border-[#E5E9EF] dark:border-[#303943] space-y-2 text-xs text-[#667085] dark:text-[#9AA6B2]">
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-[#008F62] dark:text-[#00C78A] shrink-0" />
+            <div className="pt-5 border-t border-slate-200/60 dark:border-white/10 space-y-2.5 text-xs text-slate-600 dark:text-slate-300">
+              <div className="flex items-center gap-2.5">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
                 <span>Private & isolated with PostgreSQL Row Level Security</span>
               </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-[#008F62] dark:text-[#00C78A] shrink-0" />
+              <div className="flex items-center gap-2.5">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
                 <span>Multi-currency tracking: INR, USD, EUR, GBP, CAD, AUD</span>
               </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-[#008F62] dark:text-[#00C78A] shrink-0" />
+              <div className="flex items-center gap-2.5">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
                 <span>Audit-ready CSV ledgers & printable statements</span>
               </div>
             </div>
@@ -132,8 +141,8 @@ export const LoginPage: React.FC = () => {
         </Card>
 
         {/* Security badge footer */}
-        <div className="mt-6 text-center text-xs text-[#667085] dark:text-[#9AA6B2] flex items-center justify-center gap-1.5">
-          <ShieldCheck className="w-4 h-4 text-[#008F62] dark:text-[#00C78A]" />
+        <div className="mt-6 text-center text-xs text-slate-500 dark:text-slate-400 flex items-center justify-center gap-2">
+          <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
           <span>Encrypted Supabase OAuth • Strictly No Secret Keys In Client</span>
         </div>
       </div>

@@ -277,15 +277,13 @@ export const AnalyticsManager: React.FC = () => {
         </div>
 
         {/* Period Selector Tabs */}
-        <div className="flex items-center gap-1 p-1 bg-[#F1F4F6] dark:bg-[#202830] rounded-xl border border-[#E5E9EF] dark:border-[#303943] text-xs">
+        <div className="flex items-center gap-1 p-1 bg-slate-100/70 dark:bg-slate-900/60 backdrop-blur-md rounded-xl border border-slate-200/60 dark:border-white/10 text-xs">
           {periodOptions.map((opt) => (
             <button
               key={opt.id}
               onClick={() => setPeriod(opt.id)}
               className={`px-3 py-1.5 rounded-lg font-medium transition-all cursor-pointer ${
-                period === opt.id
-                  ? 'bg-[#FFFFFF] dark:bg-[#171D23] text-[#008F62] dark:text-[#00C78A] shadow-xs font-semibold'
-                  : 'text-[#667085] dark:text-[#9AA6B2] hover:text-[#17212B] dark:hover:text-[#F5F7FA]'
+                period === opt.id ? 'bg-white dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 shadow-sm border border-slate-200/50 dark:border-white/10 font-semibold' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
               }`}
             >
               {opt.label}
@@ -349,7 +347,7 @@ export const AnalyticsManager: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Monthly Inflow vs Outflow Trend */}
             <Card className="lg:col-span-2 p-6 flex flex-col justify-between">
-              <div className="pb-4 border-b border-[#E5E9EF] dark:border-[#303943]">
+              <div className="pb-4 border-b border-slate-200/60 dark:border-white/[0.08]">
                 <h3 className="font-heading font-semibold text-base text-[#17212B] dark:text-[#F5F7FA] flex items-center gap-2">
                   <BarChart3 className="w-4 h-4 text-[#008F62] dark:text-[#00C78A]" />
                   Monthly Cash Flow Trends
@@ -382,12 +380,14 @@ export const AnalyticsManager: React.FC = () => {
                     <Tooltip
                       formatter={(value: any) => [formatCurrency(Number(value), currency), '']}
                       contentStyle={{
-                        backgroundColor: isDark ? '#171D23' : '#FFFFFF',
-                        borderRadius: '8px',
-                        border: `1px solid ${isDark ? '#303943' : '#E5E9EF'}`,
+                        backgroundColor: isDark ? 'rgba(10, 16, 25, 0.90)' : 'rgba(255, 255, 255, 0.90)',
+                        backdropFilter: 'blur(16px)',
+                        WebkitBackdropFilter: 'blur(16px)',
+                        borderRadius: '12px',
+                        border: isDark ? '1px solid rgba(255, 255, 255, 0.12)' : '1px solid rgba(226, 232, 240, 0.8)',
                         color: isDark ? '#F5F7FA' : '#17212B',
                         fontSize: '12px',
-                        boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)',
+                        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.25)',
                       }}
                     />
                     <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} iconType="circle" />
@@ -410,7 +410,7 @@ export const AnalyticsManager: React.FC = () => {
 
             {/* Category Distribution Donut */}
             <Card className="p-6 flex flex-col justify-between">
-              <div className="pb-4 border-b border-[#E5E9EF] dark:border-[#303943]">
+              <div className="pb-4 border-b border-slate-200/60 dark:border-white/[0.08]">
                 <h3 className="font-heading font-semibold text-base text-[#17212B] dark:text-[#F5F7FA] flex items-center gap-2">
                   <PieIcon className="w-4 h-4 text-[#008F62] dark:text-[#00C78A]" />
                   Spending by Category
@@ -448,11 +448,14 @@ export const AnalyticsManager: React.FC = () => {
                         <Tooltip
                           formatter={(value: any) => [formatCurrency(Number(value), currency), '']}
                           contentStyle={{
-                            backgroundColor: isDark ? '#171D23' : '#FFFFFF',
-                            borderRadius: '8px',
-                            border: `1px solid ${isDark ? '#303943' : '#E5E9EF'}`,
+                            backgroundColor: isDark ? 'rgba(10, 16, 25, 0.90)' : 'rgba(255, 255, 255, 0.90)',
+                            backdropFilter: 'blur(16px)',
+                            WebkitBackdropFilter: 'blur(16px)',
+                            borderRadius: '12px',
+                            border: isDark ? '1px solid rgba(255, 255, 255, 0.12)' : '1px solid rgba(226, 232, 240, 0.8)',
                             color: isDark ? '#F5F7FA' : '#17212B',
                             fontSize: '11px',
+                            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.25)',
                           }}
                         />
                       </PieChart>
@@ -490,7 +493,7 @@ export const AnalyticsManager: React.FC = () => {
           {/* 3. Top Spending Merchants & Payees */}
           {topMerchants.length > 0 && (
             <Card className="p-6">
-              <div className="pb-4 border-b border-[#E5E9EF] dark:border-[#303943]">
+              <div className="pb-4 border-b border-slate-200/60 dark:border-white/[0.08]">
                 <h3 className="font-heading font-semibold text-base text-[#17212B] dark:text-[#F5F7FA] flex items-center gap-2">
                   <Building className="w-4 h-4 text-[#008F62] dark:text-[#00C78A]" />
                   Top Payees & Merchants
@@ -504,7 +507,7 @@ export const AnalyticsManager: React.FC = () => {
                 {topMerchants.map((m, i) => (
                   <div
                     key={m.merchant}
-                    className="p-3.5 rounded-xl border border-[#E5E9EF] dark:border-[#303943] bg-[#F7F8FA] dark:bg-[#101418] space-y-1"
+                    className="p-3.5 rounded-xl border border-slate-200/60 dark:border-white/[0.08] bg-slate-100/50 dark:bg-slate-900/40 backdrop-blur-sm space-y-1 shadow-xs"
                   >
                     <div className="flex items-center justify-between">
                       <span className="text-[10px] font-semibold text-[#008F62] dark:text-[#00C78A]">
@@ -528,7 +531,7 @@ export const AnalyticsManager: React.FC = () => {
 
           {/* 4. Payment Obligations & Dues Settlement Velocity */}
           <Card className="p-6">
-            <div className="pb-4 border-b border-[#E5E9EF] dark:border-[#303943]">
+            <div className="pb-4 border-b border-slate-200/60 dark:border-white/[0.08]">
               <h3 className="font-heading font-semibold text-base text-[#17212B] dark:text-[#F5F7FA] flex items-center gap-2">
                 <CreditCard className="w-4 h-4 text-[#008F62] dark:text-[#00C78A]" />
                 Payment Obligations & Settlement Insights
@@ -539,7 +542,7 @@ export const AnalyticsManager: React.FC = () => {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4">
-              <div className="p-4 rounded-xl border border-[#E5E9EF] dark:border-[#303943] bg-[#F7F8FA] dark:bg-[#101418] space-y-1">
+              <div className="p-4 rounded-xl border border-slate-200/60 dark:border-white/[0.08] bg-slate-100/50 dark:bg-slate-900/40 backdrop-blur-sm space-y-1 shadow-xs">
                 <span className="text-[11px] text-[#667085] dark:text-[#9AA6B2] font-medium block">
                   Pending Payables
                 </span>
@@ -551,7 +554,7 @@ export const AnalyticsManager: React.FC = () => {
                 </span>
               </div>
 
-              <div className="p-4 rounded-xl border border-[#E5E9EF] dark:border-[#303943] bg-[#F7F8FA] dark:bg-[#101418] space-y-1">
+              <div className="p-4 rounded-xl border border-slate-200/60 dark:border-white/[0.08] bg-slate-100/50 dark:bg-slate-900/40 backdrop-blur-sm space-y-1 shadow-xs">
                 <span className="text-[11px] text-[#667085] dark:text-[#9AA6B2] font-medium block">
                   Expected Receivables
                 </span>
@@ -563,7 +566,7 @@ export const AnalyticsManager: React.FC = () => {
                 </span>
               </div>
 
-              <div className="p-4 rounded-xl border border-[#E5E9EF] dark:border-[#303943] bg-[#F7F8FA] dark:bg-[#101418] space-y-1">
+              <div className="p-4 rounded-xl border border-slate-200/60 dark:border-white/[0.08] bg-slate-100/50 dark:bg-slate-900/40 backdrop-blur-sm space-y-1 shadow-xs">
                 <span className="text-[11px] text-[#667085] dark:text-[#9AA6B2] font-medium block">
                   Settlement Rate
                 </span>
@@ -575,7 +578,7 @@ export const AnalyticsManager: React.FC = () => {
                 </span>
               </div>
 
-              <div className="p-4 rounded-xl border border-[#E5E9EF] dark:border-[#303943] bg-[#F7F8FA] dark:bg-[#101418] space-y-1">
+              <div className="p-4 rounded-xl border border-slate-200/60 dark:border-white/[0.08] bg-slate-100/50 dark:bg-slate-900/40 backdrop-blur-sm space-y-1 shadow-xs">
                 <span className="text-[11px] text-[#667085] dark:text-[#9AA6B2] font-medium block">
                   Active Dues Count
                 </span>

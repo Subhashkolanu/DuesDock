@@ -16,13 +16,16 @@ export const Card: React.FC<CardProps> = ({
   return (
     <div
       className={cn(
-        'bg-[#FFFFFF] dark:bg-[#171D23] rounded-xl border border-[#E5E9EF] dark:border-[#303943] transition-all duration-200',
-        !flat && 'fintech-card-shadow',
-        hoverEffect && 'hover:border-[#008F62]/30 dark:hover:border-[#00C78A]/30 hover:shadow-md',
+        'rounded-2xl transition-all duration-300 relative overflow-hidden',
+        flat ? 'glass-card-subtle' : 'glass-card',
+        hoverEffect &&
+          'hover:-translate-y-0.5 hover:shadow-xl hover:border-emerald-500/30 dark:hover:border-emerald-400/40',
         className
       )}
       {...props}
     >
+      {/* Specular top-edge refraction highlight */}
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/40 dark:via-white/15 to-transparent pointer-events-none" />
       {children}
     </div>
   );
@@ -36,7 +39,7 @@ export const CardHeader: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
   return (
     <div
       className={cn(
-        'px-6 py-4 border-b border-[#E5E9EF] dark:border-[#303943] flex items-center justify-between',
+        'px-6 py-4.5 border-b border-slate-200/60 dark:border-white/5 flex items-center justify-between',
         className
       )}
       {...props}
@@ -54,7 +57,7 @@ export const CardTitle: React.FC<React.HTMLAttributes<HTMLHeadingElement>> = ({
   return (
     <h3
       className={cn(
-        'font-heading font-semibold text-base text-[#17212B] dark:text-[#F5F7FA] tracking-tight',
+        'font-heading font-semibold text-base text-slate-900 dark:text-white tracking-tight',
         className
       )}
       {...props}

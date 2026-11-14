@@ -229,7 +229,7 @@ export const BudgetManager: React.FC = () => {
         </div>
 
         {/* Month Selector Controls */}
-        <div className="flex items-center gap-1 p-1 bg-[#F1F4F6] dark:bg-[#202830] rounded-xl border border-[#E5E9EF] dark:border-[#303943]">
+        <div className="flex items-center gap-1 p-1 bg-slate-100/70 dark:bg-slate-900/60 backdrop-blur-md rounded-xl border border-slate-200/60 dark:border-white/10">
           <button
             onClick={handlePrevMonth}
             className="p-1.5 rounded-lg text-[#667085] dark:text-[#9AA6B2] hover:text-[#17212B] dark:hover:text-[#F5F7FA] hover:bg-[#FFFFFF] dark:hover:bg-[#171D23] transition-colors cursor-pointer"
@@ -264,7 +264,7 @@ export const BudgetManager: React.FC = () => {
 
       {/* 1. OVERALL MONTHLY BUDGET CARD */}
       <Card className="p-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#E5E9EF] dark:border-[#303943]">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200/60 dark:border-white/[0.08]">
           <div>
             <div className="flex items-center gap-2">
               <span className="text-[11px] font-semibold text-[#008F62] dark:text-[#00C78A] bg-[#008F62]/10 dark:bg-[#00C78A]/15 px-2.5 py-0.5 rounded-full">
@@ -314,7 +314,7 @@ export const BudgetManager: React.FC = () => {
           </div>
 
           {/* Subtle Progress Bar */}
-          <div className="w-full bg-[#F1F4F6] dark:bg-[#202830] rounded-full h-2.5 overflow-hidden">
+          <div className="w-full bg-slate-200/60 dark:bg-slate-800/80 rounded-full h-2.5 overflow-hidden shadow-inner">
             <div
               className={`h-full rounded-full transition-all duration-300 ${
                 overallPercentUsed >= 100
@@ -375,7 +375,7 @@ export const BudgetManager: React.FC = () => {
           <span>Loading category budgets...</span>
         </div>
       ) : budgets.length === 0 ? (
-        <Card className="p-10 text-center space-y-3 border border-dashed border-[#E5E9EF] dark:border-[#303943]">
+        <Card className="p-10 text-center space-y-3 border border-dashed border-slate-200/70 dark:border-white/15">
           <div className="w-12 h-12 rounded-2xl bg-[#008F62]/10 dark:bg-[#00C78A]/15 text-[#008F62] dark:text-[#00C78A] flex items-center justify-center mx-auto">
             <PieChart className="w-6 h-6" />
           </div>
@@ -437,7 +437,7 @@ export const BudgetManager: React.FC = () => {
 
                   {/* Subtle Progress Bar */}
                   <div className="space-y-1.5 mb-4">
-                    <div className="w-full bg-[#F1F4F6] dark:bg-[#202830] rounded-full h-2 overflow-hidden">
+                    <div className="w-full bg-slate-200/60 dark:bg-slate-800/80 rounded-full h-2 overflow-hidden shadow-inner">
                       <div
                         className={`h-full rounded-full transition-all duration-300 ${
                           percentUsed >= 100
@@ -469,7 +469,7 @@ export const BudgetManager: React.FC = () => {
                 </div>
 
                 {/* Actions */}
-                <div className="flex items-center justify-end gap-1.5 pt-3 border-t border-[#E5E9EF] dark:border-[#303943]">
+                <div className="flex items-center justify-end gap-1.5 pt-3 border-t border-slate-200/60 dark:border-white/[0.08]">
                   <button
                     onClick={() => handleOpenEdit(b)}
                     className="p-1.5 rounded-lg text-[#667085] dark:text-[#9AA6B2] hover:text-[#008F62] dark:hover:text-[#00C78A] hover:bg-[#F1F4F6] dark:hover:bg-[#202830] transition-colors"
@@ -511,7 +511,7 @@ export const BudgetManager: React.FC = () => {
               value={modalCategoryId}
               onChange={(e) => setModalCategoryId(e.target.value)}
               disabled={Boolean(editingBudget)}
-              className="w-full h-10 rounded-lg border border-[#E5E9EF] dark:border-[#303943] bg-[#FFFFFF] dark:bg-[#101418] px-3 py-2 text-xs font-medium text-[#17212B] dark:text-[#F5F7FA] focus:outline-none focus:border-[#008F62] dark:focus:border-[#00C78A] disabled:opacity-50"
+              className="w-full h-10 rounded-xl border border-slate-200/70 dark:border-white/10 bg-white/70 dark:bg-slate-900/60 backdrop-blur-md px-3 py-2 text-xs font-medium text-slate-800 dark:text-slate-100 shadow-xs focus:outline-none focus:border-emerald-500/60 dark:focus:border-emerald-400/60 focus:ring-2 focus:ring-emerald-500/20 disabled:opacity-50 transition-all"
               required
             >
               {expenseCategories.map((c) => (
@@ -543,7 +543,7 @@ export const BudgetManager: React.FC = () => {
             required
           />
 
-          <div className="flex justify-end gap-3 pt-3 border-t border-[#E5E9EF] dark:border-[#303943]">
+          <div className="flex justify-end gap-3 pt-3 border-t border-slate-200/60 dark:border-white/[0.08]">
             <Button
               variant="outline"
               size="sm"
@@ -588,7 +588,7 @@ export const BudgetManager: React.FC = () => {
             required
           />
 
-          <div className="flex justify-end gap-3 pt-3 border-t border-[#E5E9EF] dark:border-[#303943]">
+          <div className="flex justify-end gap-3 pt-3 border-t border-slate-200/60 dark:border-white/[0.08]">
             <Button
               variant="outline"
               size="sm"
@@ -626,7 +626,7 @@ export const BudgetManager: React.FC = () => {
               </span>
             </div>
 
-            <div className="flex justify-end gap-3 pt-3 border-t border-[#E5E9EF] dark:border-[#303943]">
+            <div className="flex justify-end gap-3 pt-3 border-t border-slate-200/60 dark:border-white/[0.08]">
               <Button
                 variant="outline"
                 size="sm"
