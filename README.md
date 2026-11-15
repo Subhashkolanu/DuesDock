@@ -1,329 +1,303 @@
-# DuesDock — Personal Finance & Payment Tracking Platform
+# DuesDock — Personal Finance & Payment Tracking
 
-[![Production Deployment](https://img.shields.io/badge/Production-Live-00C78A?style=flat&logo=vercel&logoColor=white)](https://duesdock.vercel.app)
-[![React](https://img.shields.io/badge/React-19.3-61DAFB?style=flat&logo=react&logoColor=black)](https://react.dev)
-[![TypeScript](https://img.shields.io/badge/TypeScript-7.0-3178C6?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
-[![Vite](https://img.shields.io/badge/Vite-8.3-646CFF?style=flat&logo=vite&logoColor=white)](https://vitejs.dev)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-38B2AC?style=flat&logo=tailwind-css&logoColor=white)](https://tailwindcss.com)
-[![Supabase](https://img.shields.io/badge/Database-Supabase_PostgreSQL-3ECF8E?style=flat&logo=supabase&logoColor=white)](https://supabase.com)
-[![Tests](https://img.shields.io/badge/Tests-27%2F27_Passing-008F62?style=flat&logo=checkmarx&logoColor=white)](scripts/verify-all.mjs)
+<p align="center">
+  <img src="https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black" />
+  <img src="https://img.shields.io/badge/TypeScript-7-3178C6?style=for-the-badge&logo=typescript&logoColor=white" />
+  <img src="https://img.shields.io/badge/Vite-8-646CFF?style=for-the-badge&logo=vite&logoColor=white" />
+  <img src="https://img.shields.io/badge/Tailwind_CSS-v4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white" />
+  <img src="https://img.shields.io/badge/Supabase-PostgreSQL-3FCF8E?style=for-the-badge&logo=supabase&logoColor=white" />
+  <img src="https://img.shields.io/badge/Deployment-Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white" />
+</p>
 
-> **Track Every Expense. Understand Every Rupee.**  
-> A high-performance personal wealth management platform and payment tracking system built with React 19, TypeScript, Supabase PostgreSQL with airtight Row-Level Security, and a Liquid Glass design system.
+<p align="center">
+  <strong>Track Every Expense. Understand Every Rupee.</strong>
+  <br />
+  A modern personal finance and payment tracking platform.
+</p>
 
----
-
-## Live Application
-
-- **Production URL:** [https://duesdock.vercel.app](https://duesdock.vercel.app)
-- **Repository:** [https://github.com/Subhashkolanu/DuesDock](https://github.com/Subhashkolanu/DuesDock)
-- **Active Branch:** `duesdock_initial_setup_plan`
-
----
-
-## Table of Contents
-
-- [Overview](#overview)
-- [Key Features](#key-features)
-- [Design Identity — Liquid Glass](#design-identity--liquid-glass)
-- [Technology Stack](#technology-stack)
-- [Project Structure](#project-structure)
-- [Getting Started](#getting-started)
-  - [Prerequisites](#prerequisites)
-  - [Local Installation](#local-installation)
-  - [Environment Variables](#environment-variables)
-- [Supabase Configuration & Database Migrations](#supabase-configuration--database-migrations)
-- [Available Scripts](#available-scripts)
-- [Deployment](#deployment)
-- [Engineering Team](#engineering-team)
-- [License](#license)
+<p align="center">
+  <a href="https://duesdock.vercel.app/">
+    <img src="https://img.shields.io/badge/LIVE_DEMO-Visit_DuesDock-00C78A?style=for-the-badge" />
+  </a>
+  <a href="https://github.com/Subhashkolanu/DuesDock">
+    <img src="https://img.shields.io/badge/GitHub-Repository-181717?style=for-the-badge&logo=github" />
+  </a>
+</p>
 
 ---
 
 ## Overview
 
-Managing personal cash flows, multi-category budgets, recurring obligations, and counterparty dues often results in fragmented notes, spreadsheet clutter, and lost receipts.
+DuesDock is a personal finance and payment tracking application designed to simplify how people manage their money.
 
-**DuesDock** is an engineer-led personal finance command center designed to give you complete visibility into your financial health. Built from the ground up on strict PostgreSQL Row-Level Security (RLS), it enforces complete cryptographic data isolation per authenticated user, guarantees zero mock financial values, and provides high-density analytics in a responsive, glassmorphic interface.
+It brings income, expenses, budgets, payables, receivables, analytics, and financial reports together in one centralized platform.
 
----
+Built using React, TypeScript, Supabase, and PostgreSQL, DuesDock combines practical financial tools with a responsive Liquid Glass interface.
 
 ## Key Features
 
-### 1. Financial Overview & Executive Dashboard
-- **Real-Time KPI Metrics:** Monitor total inflow (income), total outflow (expenses), and net savings cushion with instant visual surplus/deficit indicators.
-- **Payables & Receivables Summary:** Track outstanding debts and incoming receivables side-by-side.
-- **Recent Activity Ledger:** Immediate visibility into your latest deposits, payments, and receipt attachments.
-- **Spending Velocity Charts:** 6-month comparative cash flow bar charts and category distribution donut visualizations.
-- **Budget Tracking:** Live utilization progress bars with automated visual warning thresholds.
+### 1. Financial Dashboard
 
-### 2. Transaction Management & Digital Receipt Storage
-- **Double-Entry Personal Ledgers:** Record and categorize every deposit and expenditure.
-- **Encrypted Receipt Attachments:** Upload image receipts (JPG, PNG, PDF < 5MB) directly to a private Supabase Storage bucket, viewable through secure time-limited signed URLs.
-- **Filtering & Audit Tools:** Filter by transaction type (income/expense), category, date ranges (this month, last month, last 30 days, current year), or full-text search across merchants and notes.
-- **Custom Categories:** Inline creation of personalized income and expense categories in addition to system defaults.
+- Monitor total income, expenses, and net cash flow.
+- View outstanding payables and receivables.
+- Track recent financial activity.
+- Explore monthly cash flow and spending charts.
+- Monitor budget utilization.
 
-### 3. Payment Obligations & Dues Engine
-- **Directional Debt Tracking:** Clear distinction between *Payable* (money you owe) and *Receivable* (money owed to you).
-- **Flexible Installments:** Record partial settlements and installments with automated balance calculations and overpayment prevention.
-- **Lifecycle Status Computation:** Dynamic calculation of status (`pending`, `partially_paid`, `paid`, `overdue`, `cancelled`) based on due dates and recorded payment progress.
-- **Zero Double-Counting:** Obligations maintain an isolated lifecycle that does not corrupt verified cash transaction ledgers.
+### 2. Transaction Management
 
-### 4. Budgets & Spending Limits
-- **Monthly Spending Ceiling:** Define an overarching monthly expenditure limit to benchmark total outflows.
-- **Category-Specific Limits:** Assign dedicated limits to individual categories (e.g., Groceries, Housing, Dining, Entertainment).
-- **Automated Threshold Warnings:** Visual alert states trigger at **80% utilization** (warning) and **100% utilization** (exceeded).
-- **Calendar Month Navigation:** Seamlessly jump across previous months to review historical budget discipline.
+- Record income and expenses.
+- Organize transactions by categories.
+- Add merchant details, dates, payment methods, and notes.
+- Filter transactions by type, category, and date.
+- Upload and manage receipt attachments.
 
-### 5. Analytics & Visual Insights
-- **Cash Flow Trends:** Interactive Recharts bar visualization comparing monthly income vs. expenses over the preceding 6 months.
-- **Category Expense Breakdown:** Donut chart illustrating percentage distribution across all spending categories.
-- **Top Payees & Merchants:** Algorithmic ranking of payees receiving the highest transaction volume.
-- **Settlement Velocity:** Key ratios tracking overall obligation clearance rate and active debt counts.
+### 3. Payment Tracking
 
-### 6. Statements & Data Export
-- **Printable Financial Statements:** Clean, executive-formatted personal financial reports optimized for browser printing and PDF export.
-- **Audit-Ready CSV Exports:** 1-click export of your complete itemized transaction ledger or payment obligations table via PapaParse.
+- Track Payables — money you owe.
+- Track Receivables — money owed to you.
+- Record partial payments and installments.
+- Automatically calculate remaining balances.
+- Monitor payment statuses: Pending, Partially Paid, Paid, Overdue, and Cancelled.
 
-### 7. Google OAuth & Account Isolation
-- **Google OAuth 2.0:** Secure login via Supabase Auth with PKCE and dynamic multi-environment redirect resolution (development, preview, and production).
-- **Zero Local Passwords:** Strict OAuth delegation ensures no credentials or secrets are handled on client devices.
-- **Airtight PostgreSQL RLS:** Every database query is cryptographically filtered by `auth.uid() = user_id`.
+### 4. Budget Management
 
----
+- Set monthly spending limits.
+- Create category-specific budgets.
+- Monitor budget utilization.
+- View spending threshold indicators.
+- Navigate between monthly budgets.
+
+### 5. Analytics & Insights
+
+- Monthly income versus expense comparisons.
+- Category-wise spending breakdown.
+- Top payees and merchants.
+- Payment settlement insights.
+
+### 6. Reports & Exports
+
+- Generate printable financial statements.
+- Export transaction records as CSV.
+- Export payment records as CSV.
+
+### 7. Authentication & Security
+
+- Google sign-in through Supabase Authentication.
+- PostgreSQL Row-Level Security (RLS).
+- User-scoped database access.
+- Private Supabase Storage bucket for receipts.
 
 ## Design Identity — Liquid Glass
 
-DuesDock implements a custom **Liquid Glass / Glassmorphism** design language:
+DuesDock uses a custom Liquid Glass design system.
 
-- **Translucent Surfaces:** Controlled backdrop blur (`backdrop-filter: blur(16px)`) with specular top-edge refraction borders.
-- **Ambient Lighting Mesh:** Subtle background gradient orbs (emerald `#008F62` and cyan `#0284C7`) that softly refract through UI cards.
-- **Refined Typography & Monospace Numerics:** Clear tabular font hierarchies with monospace figures for currency precision.
-- **Dual-D Liquid Flow Emblem:** Custom geometric brand logo symbolizing financial flow and balance settlement.
-- **Persistent Dual Themes:** High-contrast Dark theme (deep navy `#0B0F15` and vibrant emerald `#00C78A`) and Light theme (cool frosted slate `#F8FAFC`). Theme choices persist in `localStorage`.
-
----
+- Translucent glass-style surfaces.
+- Ambient gradient backgrounds.
+- Responsive layouts.
+- Dark and light themes.
+- Consistent typography and financial data formatting.
+- Custom DuesDock branding and logo.
 
 ## Technology Stack
 
-| Layer | Technologies |
-| :--- | :--- |
-| **Frontend Framework** | [React 19.3](https://react.dev/) + [TypeScript 7.0](https://www.typescriptlang.org/) |
-| **Build Bundler** | [Vite 8.3](https://vitejs.dev/) with `@vitejs/plugin-react` |
-| **Styling & Design** | [Tailwind CSS v4](https://tailwindcss.com/) via `@tailwindcss/vite` |
-| **Backend & Auth** | [Supabase](https://supabase.com/) (`@supabase/supabase-js` v2.119) with Google OAuth 2.0 |
-| **Database** | PostgreSQL with Row-Level Security (RLS) & B-Tree indexes |
-| **Storage** | Encrypted Supabase Storage bucket (`receipts`) |
-| **State Management** | [Zustand 5.1](https://zustand-demo.pmnd.rs/) & [TanStack Query v5](https://tanstack.com/query) |
-| **Data Visualization** | [Recharts 3.10](https://recharts.org/) |
-| **Icons & UI** | [Lucide React](https://lucide.dev/), [canvas-confetti](https://www.npmjs.com/package/canvas-confetti) |
-| **Data Parsing & Dates** | [PapaParse 5.7](https://www.papaparse.com/), [date-fns 4.4](https://date-fns.org/) |
-| **Code Quality** | [Oxlint 1.90](https://oxc.rs/docs/guide/usage/linter.html), Automated Custom Test Suite |
-
----
+| Layer                    | Technologies            |
+| ------------------------ | ----------------------- |
+| Frontend                 | React, TypeScript       |
+| Build Tool               | Vite                    |
+| Styling                  | Tailwind CSS v4         |
+| Backend & Authentication | Supabase                |
+| Database                 | PostgreSQL              |
+| File Storage             | Supabase Storage        |
+| State Management         | Zustand, TanStack Query |
+| Data Visualization       | Recharts                |
+| Icons                    | Lucide React            |
+| CSV Processing           | PapaParse               |
+| Date Utilities           | date-fns                |
+| Code Quality             | Oxlint                  |
 
 ## Project Structure
 
 ```text
 DuesDock/
 ├── public/
-│   ├── assets/
-│   │   └── team/              # Verified team member photographs
-│   ├── favicon.svg            # Liquid Glass dual-D vector favicon
-│   └── robots.txt
+│   └── assets/
+│       └── team/
 ├── scripts/
-│   └── verify-all.mjs         # 27-test automated regression & verification suite
+│   └── verify-all.mjs
 ├── src/
-│   ├── assets/                # Static brand SVGs and vector artwork
 │   ├── components/
-│   │   ├── common/            # Logo, StatCard, ThemeToggle, NotificationBell
-│   │   ├── layout/            # Navbar, App Shell, Footer
-│   │   └── ui/                # Liquid Glass primitives: Button, Card, Input, Modal, Badge
+│   │   ├── common/
+│   │   ├── layout/
+│   │   └── ui/
 │   ├── context/
-│   │   └── ThemeContext.tsx   # Dark/Light theme provider and persistent state
 │   ├── features/
-│   │   ├── analytics/         # AnalyticsManager, comparative charts, payee breakdowns
-│   │   ├── auth/              # AuthContext, Google OAuth, LoginPage
-│   │   ├── budgets/           # BudgetManager, category limits, threshold alerts
-│   │   ├── dashboard/         # FinanceDashboard, KPI metrics, recent activity
-│   │   ├── developers/        # DevelopersPage, team roster, architecture summary
-│   │   ├── onboarding/        # OnboardingWizard, currency selection, base budget
-│   │   ├── payments/          # PaymentManager, obligations, installments, modal dialogs
-│   │   ├── reports/           # ReportsManager, printable statements, CSV export
-│   │   ├── settings/          # SettingsManager, profile preferences, security audit
-│   │   └── transactions/      # TransactionManager, ledgers, modal forms, receipt upload
+│   │   ├── analytics/
+│   │   ├── auth/
+│   │   ├── budgets/
+│   │   ├── dashboard/
+│   │   ├── developers/
+│   │   ├── onboarding/
+│   │   ├── payments/
+│   │   ├── reports/
+│   │   ├── settings/
+│   │   └── transactions/
 │   ├── lib/
-│   │   ├── supabase.ts        # Supabase client, storage upload, dynamic OAuth redirects
-│   │   └── utils.ts           # Financial formatting, calendar utilities, event dispatchers
 │   ├── services/
-│   │   ├── budgetService.ts   # Category and global budget targets Supabase RPCs
-│   │   ├── paymentService.ts  # Obligations and installment tracking engine
-│   │   └── transactionService.ts # Income and expense ledger CRUD operations
 │   ├── types/
-│   │   └── database.types.ts  # Database models, enum types, TypeScript interfaces
-│   ├── App.tsx                # Route switcher, auth gatekeeper, layout shell
-│   ├── index.css              # Liquid Glass design tokens, ambient lighting, keyframes
-│   └── main.tsx               # Application bootstrap and root DOM mounting
+│   ├── App.tsx
+│   ├── index.css
+│   └── main.tsx
 ├── supabase/
 │   ├── migrations/
-│   │   ├── 20261112000001_personal_finance_schema.sql # Profiles, categories, transactions, budgets, RLS
-│   │   └── 20261114000001_payments_system.sql        # Payments, installments, triggers, RLS
-│   └── schema.sql             # Consolidated base schema
-├── package.json               # Dependencies, scripts, and build configuration
-├── tailwind.config.js
+│   └── schema.sql
+├── .env.example
+├── package.json
 ├── tsconfig.json
-└── vite.config.ts             # Vite bundler configuration with Tailwind CSS v4
+└── vite.config.ts
 ```
-
----
 
 ## Getting Started
 
 ### Prerequisites
 
-- **Node.js**: v18.0.0 or higher (v20+ recommended)
-- **npm**: v9.0.0 or higher
-- A free [Supabase](https://supabase.com/) account for database and authentication services.
+- Node.js (20 or later recommended)
+- npm
+- Supabase account
+- Google Cloud project for Google OAuth
 
-### Local Installation
+### 1. Clone the Repository
 
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/Subhashkolanu/DuesDock.git
-   cd DuesDock
-   ```
+```bash
+git clone https://github.com/Subhashkolanu/DuesDock.git
+cd DuesDock
+```
 
-2. **Install project dependencies:**
-   ```bash
-   npm install
-   ```
+### 2. Install Dependencies
 
-3. **Configure Environment Variables:**
-   Copy `.env.example` to create your local `.env`:
-   ```bash
-   cp .env.example .env
-   ```
+```bash
+npm install
+```
 
----
+### 3. Configure Environment Variables
 
-## Environment Variables
-
-Edit `.env` with your project configuration. **Only use standard client-safe publishable keys.** Never put service-role keys or private credentials in this file:
+Create a `.env` file in the project root using `.env.example` as a reference.
 
 ```env
-# Supabase Project Settings (found in Supabase Dashboard > Project Settings > API)
 VITE_SUPABASE_URL=https://your-project-ref.supabase.co
-VITE_SUPABASE_ANON_KEY=your-publishable-anon-key-here
+VITE_SUPABASE_ANON_KEY=your-supabase-publishable-key
 
-# Application Settings
-VITE_APP_NAME="DuesDock"
-VITE_DEFAULT_CURRENCY="INR"
+VITE_APP_NAME=DuesDock
+VITE_DEFAULT_CURRENCY=INR
 ```
 
----
+**Important:** Use only client-safe Supabase publishable/anon keys. Never expose service-role keys or private credentials in frontend environment variables.
 
-## Supabase Configuration & Database Migrations
+### 4. Configure Supabase Database
 
-DuesDock uses additive PostgreSQL migrations to configure tables, triggers, and Row-Level Security policies.
+Apply the SQL migrations in the following order using the Supabase SQL Editor:
 
-### 1. Apply Database Migrations
+1. `supabase/migrations/20261112000001_personal_finance_schema.sql`
+2. `supabase/migrations/20261114000001_payments_system.sql`
 
-You can apply the migrations using either the Supabase CLI or the Supabase SQL Editor:
+These migrations configure the database tables, payment tracking system, and associated access policies.
 
-#### Option A: Using the Supabase SQL Editor
-1. Log into your [Supabase Dashboard](https://supabase.com/dashboard).
-2. Navigate to your project, open the **SQL Editor**, and create a **New Query**.
-3. Sequentially run the contents of each migration file:
-   - First: `supabase/migrations/20261112000001_personal_finance_schema.sql` (Creates `profiles`, `categories`, `transactions`, `budgets`, storage buckets, and RLS policies).
-   - Second: `supabase/migrations/20261114000001_payments_system.sql` (Creates `payments`, `payment_installments`, payment trigger functions, and RLS policies).
+### 5. Configure Google Authentication
 
-#### Option B: Using the Supabase CLI
+In your Supabase Dashboard:
+
+1. Open Authentication → Providers → Google.
+2. Enable Google authentication.
+3. Configure your Google OAuth Client ID and Client Secret.
+4. Open Authentication → URL Configuration.
+5. Set the production Site URL:
+
+```text
+https://duesdock.vercel.app
+```
+
+Add these redirect URLs:
+
+```text
+https://duesdock.vercel.app/**
+http://localhost:5173/**
+http://localhost:4173/**
+```
+
+### 6. Run the Application
+
 ```bash
-npx supabase link --project-ref your-project-ref
-npx supabase db push
+npm run dev
 ```
 
-### 2. Configure Google OAuth in Supabase
-
-1. In Supabase Dashboard, navigate to **Authentication** → **Providers** → **Google**.
-2. Enable Google authentication and input your Google OAuth **Client ID** and **Client Secret** (from the [Google Cloud Console](https://console.cloud.google.com/)).
-3. In **Authentication** → **URL Configuration**:
-   - Set **Site URL** to your production domain: `https://duesdock.vercel.app`
-   - Add the following to **Redirect URLs**:
-     ```text
-     https://duesdock.vercel.app/**
-     http://localhost:5173/**
-     http://localhost:4173/**
-     ```
-
-### 3. Verify Storage Bucket
-
-The migrations automatically configure the `receipts` storage bucket with private row-level access. Receipts can only be uploaded and accessed by the authenticated user who created them via signed URLs.
-
----
+Open `http://localhost:5173` in your browser.
 
 ## Available Scripts
 
-| Command | Action |
-| :--- | :--- |
-| `npm run dev` | Starts the local Vite development server at `http://localhost:5173` |
-| `npm test` | Runs the 27-test automated verification suite (`scripts/verify-all.mjs`) |
-| `npm run lint` | Runs the high-performance Oxlint code quality auditor |
-| `npm run build` | Compiles TypeScript types and builds production assets into `dist/` |
-| `npm run preview` | Locally serves the production build at `http://localhost:4173` |
+| Command             | Description                      |
+| ------------------- | -------------------------------- |
+| `npm run dev`     | Start development server         |
+| `npm test`        | Run automated verification suite |
+| `npm run lint`    | Run Oxlint                       |
+| `npm run build`   | Type-check and build application |
+| `npm run preview` | Preview production build         |
 
-### Automated Verification Suite
+## Database Structure
 
-Run all functional, financial calculation, and identity tests with:
+DuesDock uses Supabase PostgreSQL.
 
-```bash
-npm test
-```
+| Table               | Purpose                                 |
+| ------------------- | --------------------------------------- |
+| `profiles`        | User profiles and preferences           |
+| `categories`      | Income and expense categories           |
+| `transactions`    | Financial transaction records           |
+| `budgets`         | Monthly and category budgets            |
+| `payments`        | Payable and receivable obligations      |
+| `payment_records` | Partial payments and settlement records |
 
-The test runner validates:
-1. **Date & Timezone Utilities:** Month key generation across year boundaries and UTC offset resilience.
-2. **Financial Calculations:** Total inflow, outflow, net cash flow, savings rate formulas, and budget deductions.
-3. **Analytics Engine:** Subtitle resolver fallback hierarchy and zero-state accuracy.
-4. **Payment Obligations:** State computation (`pending`, `partially_paid`, `paid`, `overdue`), installment limits, and net balances.
-5. **Developers & Identity:** Correct developer ordering, verified photograph paths, initials fallbacks, and personal profile links.
-
----
+Row-Level Security policies restrict access to user-owned records. Receipt files are stored in a private Supabase Storage bucket with access controlled by storage policies.
 
 ## Deployment
 
-DuesDock is deployed on [Vercel](https://vercel.com/) with automated continuous deployment connected to the `duesdock_initial_setup_plan` branch.
+<p align="center">
+  <img src="https://img.shields.io/badge/Hosted_on-Vercel-000000?style=flat-square&logo=vercel" />
+  <img src="https://img.shields.io/badge/Backend-Supabase-3FCF8E?style=flat-square&logo=supabase" />
+  <img src="https://img.shields.io/badge/Database-PostgreSQL-4169E1?style=flat-square&logo=postgresql" />
+</p>
 
-### Manual Vercel Deployment Steps
+**Production URL:** https://duesdock.vercel.app
 
-1. Push your changes to GitHub:
-   ```bash
-   git push origin duesdock_initial_setup_plan
-   ```
-2. In the Vercel Dashboard, import the repository and configure:
-   - **Framework Preset:** Vite
-   - **Build Command:** `npm run build`
-   - **Output Directory:** `dist`
-3. Add Production Environment Variables in Vercel:
-   - `VITE_SUPABASE_URL`
-   - `VITE_SUPABASE_ANON_KEY`
-4. Deploy and verify at [https://duesdock.vercel.app](https://duesdock.vercel.app).
+DuesDock is deployed on Vercel with the GitHub repository connected to the configured deployment branch.
 
----
+| Setting          | Value             |
+| ---------------- | ----------------- |
+| Framework        | Vite              |
+| Build Command    | `npm run build` |
+| Output Directory | `dist`          |
+
+Configure the required environment variables in Vercel before deployment.
 
 ## Engineering Team
 
-DuesDock is engineered by:
+| # | Name                            | Role           | Profile                                                                                                           |
+| - | ------------------------------- | -------------- | ----------------------------------------------------------------------------------------------------------------- |
+| 1 | Sai Subhash Kolanu              | Lead Developer | [GitHub](https://github.com/Subhashkolanu) · [LinkedIn](https://www.linkedin.com/in/sai-subhash-kolanu-358ba0376/) |
+| 2 | Kolisetty Madhavi Venkata Durga | Team Member    | [GitHub](https://github.com/madhavikolisetty717)                                                                   |
+| 3 | Katta Lakshmi Lahari            | Team Member    |                                                                                                                   |
+| 4 | Katragadda Anjali Durga         | Team Member    | [GitHub](https://github.com/anjalidurgakatragadda-glitch)                                                          |
+| 5 | Katla Venu                      | Team Member    | [GitHub](https://github.com/katlakishore86-oss)                                                                    |
 
-| # | Name | Role | Links |
-| :-: | :--- | :--- | :--- |
-| **1** | **Sai Subhash Kolanu** | Lead Developer | [GitHub](https://github.com/Subhashkolanu) • [LinkedIn](https://www.linkedin.com/in/sai-subhash-kolanu-358ba0376/) • [Email](mailto:saisubhash.kolanu@gmail.com) |
-| **2** | **Kolisetty Madhavi Venkata Durga** | Software Engineer | [GitHub](https://github.com/madhavikolisetty717) |
-| **3** | **Katta Lakshmi Lahari** | Software Engineer | *GitHub pending* |
-| **4** | **Katragadda Anjali Durga** | Software Engineer | [GitHub](https://github.com/anjalidurgakatragadda-glitch) |
-| **5** | **Katla Venu** | Software Engineer | [GitHub](https://github.com/katlakishore86-oss) |
+## Links
+
+- **Live Application:** https://duesdock.vercel.app/
+- **GitHub Repository:** https://github.com/Subhashkolanu/DuesDock
 
 ---
 
-## License
-
-This project is licensed under the [MIT License](LICENSE).
+<p align="center">
+  <strong>DuesDock</strong>
+  <br />
+  Track Smarter. Manage Better.
+  <br /><br />
+  Built with React, TypeScript & Supabase.
+</p>
