@@ -34,6 +34,28 @@ It brings income, expenses, budgets, payables, receivables, analytics, and finan
 
 Built using React, TypeScript, Supabase, and PostgreSQL, DuesDock combines practical financial tools with a responsive Liquid Glass interface.
 
+## Application Preview
+
+### Dashboard
+
+![DuesDock Dashboard](screenshots/dashboard.png)
+
+### Transaction Management
+
+![DuesDock Transactions](screenshots/transactions.png)
+
+### Payment Tracking
+
+![DuesDock Payments](screenshots/payments.png)
+
+### Analytics
+
+![DuesDock Analytics](screenshots/analytics.png)
+
+### Budget Management
+
+![DuesDock Budgets](screenshots/budgets.png)
+
 ## Key Features
 
 ### 1. Financial Dashboard
