@@ -26,35 +26,37 @@
 
 ---
 
+
+
 ## Overview
 
-DuesDock is a personal finance and payment tracking application designed to simplify how people manage their money.
+DuesDock is a personal finance and payment tracking platform designed to make managing money simpler and more organized.
 
-It brings income, expenses, budgets, payables, receivables, analytics, and financial reports together in one centralized platform.
+It brings income, expenses, budgets, payables, receivables, analytics, and financial reports together in one centralized application.
 
-Built using React, TypeScript, Supabase, and PostgreSQL, DuesDock combines practical financial tools with a responsive Liquid Glass interface.
+Built with React, TypeScript, Vite, Tailwind CSS, and Supabase, DuesDock combines practical financial management features with a responsive Liquid Glass interface.
 
 ## Application Preview
 
 ### Dashboard
 
-![DuesDock Dashboard](screenshots/dashboard.png)
+![DuesDock Dashboard](Screenshots/DASHBOARD.png)
 
 ### Transaction Management
 
-![DuesDock Transactions](screenshots/transactions.png)
+![DuesDock Transactions](Screenshots/TRANSACTIONS.png)
 
 ### Payment Tracking
 
-![DuesDock Payments](screenshots/payments.png)
+![DuesDock Payments](Screenshots/PAYMENTS.png)
 
 ### Analytics
 
-![DuesDock Analytics](screenshots/analytics.png)
+![DuesDock Analytics](Screenshots/ANALYTICS.png)
 
 ### Budget Management
 
-![DuesDock Budgets](screenshots/budgets.png)
+![DuesDock Budgets](Screenshots/BUDGETS.png)
 
 ## Key Features
 
